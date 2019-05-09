@@ -1,0 +1,21 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nem2 - ByzantinePosts</title>
+    <link>https://mijinc0.github.io/blog/categories/nem2/</link>
+    <description>Recent content in nem2 on ByzantinePosts</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Wed, 08 May 2019 18:58:30 +0900</lastBuildDate>
+    
+        <atom:link href="https://mijinc0.github.io/blog/categories/nem2/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>catapult cache</title>
+      <link>https://mijinc0.github.io/blog/post/20190508_catapult_cache/</link>
+      <pubDate>Wed, 08 May 2019 18:58:30 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20190508_catapult_cache/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

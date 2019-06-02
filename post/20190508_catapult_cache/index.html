@@ -67,7 +67,7 @@
 
 <h1 id="subcaches">SubCaches</h1>
 
-<p>これを書いている時点でcatapultに登録されているサブキャッシュは下記表の通り。</p>
+<p>これを書いている時点でcatapult cacheに登録されているサブキャッシュは下記表の通り。</p>
 
 <table>
 <thead>
@@ -149,8 +149,8 @@
 
 <p><code>state hash</code>は、上記キャッシュのうち、<code>supportMerkleRoot</code>が<code>true</code>のものの状態を集計したハッシュ値になる。</p>
 
-<p>catapultではこの<code>state hash</code>をBlockElement(ブロックの生データ+αがはいったデータの塊)に詰めて、peerとのキャッシュの状態の整合性を確認できるようになっている。
-つまり、生のブロックとトランザクションだけ送信し合うだけでなく、キャッシュの状態をハッシュ値としてやり取りする。これにより、状態が違う相手から送られてきたエンティティを判定して捨てることが出来る。</p>
+<p>catapultではこの<code>state hash</code>をBlockHeaderに詰めて、peerとのキャッシュの状態の整合性を確認できるようになっている。
+つまり、生のトランザクションだけ送信し合うだけでなく、キャッシュの状態をハッシュ値としてやり取りする。これにより、状態が違う相手から送られてきたエンティティを判定して捨てることが出来る。</p>
 
 <p><code>state hash</code>はLogの設定が<code>Debug</code>の時に出力されるログから確認することが出来る。Logが<code>Debug</code>モードの時、下記のようがログが出力されているはず。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">2019-05-06 08:26:30.456527 0x00007f1eb4e2e700: &lt;debug&gt; (consumers::BlockChainProcessor.cpp@49) cache state hash (7 components) at height 10000

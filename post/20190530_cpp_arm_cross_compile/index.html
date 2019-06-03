@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>C&#43;&#43;のコードをARM用にコンパイルする &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog-hugo/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">C&#43;&#43;のコードをARM用にコンパイルする</h1>
+          <p class="post-date">Posted <time datetime="2019-05-30">May 30, 2019</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog-hugo/blob/image/featured/programing.png?raw=true">
+          <img src="https://github.com/mijinc0/blog-hugo/blob/image/featured/programing.png?raw=true" alt="programing">
+        </picture>
+        
+        
+
+<p>C++のソースコードをubuntu(x86/x64)とCMakeを使ってARM上で動くようにコンパイルする。</p>
+
+<h1 id="armについて">ARMについて</h1>
+
+<p><code>ARM</code>は<code>ARM Ltd</code>によって設計されたCPUのアーキテクチャ。<code>ARM</code>はこれを自らは製造しておらず、intelやfreescaleなどがライセンス供与して製造している。</p>
+
+<p><code>ARM</code>はCPUの命令セットのアーキテクチャとして<code>RISC</code>(ReduceInstructionSetComputer)を採用している。これは命令の数を減らし、回路を単純化することで演算の速度を高速にしようとする設計手法。ARMは</p>
+
+<p><code>ARM</code>はスマートフォンなどの小型の端末に広く採用されている。</p>
+
+<h1 id="コンパイラのインストール">コンパイラのインストール</h1>
+
+<p>armが<code>hf</code>なのか<code>arm64</code>なのかでコンパイラが変わる。コンパイラは変わるが、操作は基本的には同じ。</p>
+
+<h2 id="for-hf">for hf</h2>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ sudo apt install g++-arm-linux-gnueabihf</code></pre></div>
+<p>インストールはこれだけだが、<code>gnueabihf</code>という部分について触れておく。
+<code>gnu</code>,<code>eabi</code>,<code>hf</code>が連結されている。</p>
+
+<p><code>eabi</code>はARMのABI(ApplicationBinaryInterface)の一つで、ARMのABIにはもう一つ、<code>oabi</code>がある。<code>eabi</code>はEmbeddedApplicationBinaryInterface、<code>oabi</code>はOldApplicationBinaryInterfaceの略。<br />
+<code>hf</code>はHardFloatの略。Floatと名がつく通り、浮動小数点の扱いについての表記。</p>
+
+<h2 id="for-arm64">for arm64</h2>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ sudo apt install g++-aarch64-linux-gnu</code></pre></div>
+<h1 id="cmakeでコンパイラの指定">CMakeでコンパイラの指定</h1>
+
+<p>いくつか方法がある。</p>
+
+<h3 id="cmake実行時のオプションで指定する">cmake実行時のオプションで指定する</h3>
+
+<p><code>CMAKE_CXX_COMPILER</code>(C++用)と<code>CMAKE_C_COMPILER</code>(C用)がcmake内でコンパイラのパスが格納される場所になるので、cmakeコマンド実行時にパスを指定する。下記のようになる。(<code>/usr/bin/arm-linux-gnueabihf-g++-7</code>を指定している。)</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$~/_build$ cmake -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-g++-7 -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-gcc-7 ..</code></pre></div>
+<h3 id="toolchainを使う">toolchainを使う</h3>
+
+<p>cmakeに下記の行を追加してコンパイラを指定する。直接書き込みたくなければ、CMakeのツールチェイン機能を使って指定することも出来る。その際は、<code>cmake</code>コマンドに<code>-DCMAKE_TOOLCHAIN_FILE=&lt;ツールチェイン用のcmakeファイル&gt;</code>オプションを渡してあげる。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cmake" data-lang="cmake"><span style="color:#999">set</span>(<span style="color:#b84">CMAKE_SYSTEM_NAME</span> <span style="color:#b84">Linux</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">set</span>(<span style="color:#b84">CMAKE_C_COMPILER</span> <span style="color:#b84">/usr/bin/arm-linux-gnueabihf-g++</span>)</code></pre></div>
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20190508_catapult_cache/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog-hugo/blob/image/featured/catapult.png?raw=true">
+        <img src="https://github.com/mijinc0/blog-hugo/blob/image/featured/catapult.png?raw=true" class="card-img" alt="catapult">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">catapult cache</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2019-05-08 58:00">May 8, 2019</time></p>
+      <p>#nem2 </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog-hugo/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

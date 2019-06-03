@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>C&#43;&#43;の共有ライブラリの作成と利用 &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog-hugo/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">C&#43;&#43;の共有ライブラリの作成と利用</h1>
+          <p class="post-date">Posted <time datetime="2019-05-30">May 30, 2019</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog-hugo/blob/image/featured/programing.png?raw=true">
+          <img src="https://github.com/mijinc0/blog-hugo/blob/image/featured/programing.png?raw=true" alt="programing">
+        </picture>
+        
+        
+
+<p>C++の共有ライブラリの生成と利用に関して。備忘録。</p>
+
+<p>OS : ubuntu 18.04<br />
+コンパイラ : g++ 7.4.0</p>
+
+<h1 id="共有ライブラリと静的ライブラリ">共有ライブラリと静的ライブラリ</h1>
+
+<p>Linuxにおいて、C++のライブラリには静的ライブラリ（拡張子<code>a</code>）と共有ライブラリ（拡張子<code>so</code>）がある。</p>
+
+<p>静的ライブラリは、ビルド時に組み込まれるので、静的ライブラリが存在しない場でも実行ファイルだけで正しく動く。一方、共有ライブラリは、ビルド時には組み込まれず、リンクされるのみで、実行時に共有ライブラリを探査して見つけたものを利用する。</p>
+
+<p>そのため、共有ライブラリを利用した実行ファイルは利用している共有ライブラリが存在しない場では正しく動くことができず、また、共有ライブラリを実行時に探査される場に置く（または探査する場を指定して見つけられるようにする）必要がある。</p>
+
+<h1 id="共有ライブラリの作成">共有ライブラリの作成</h1>
+
+<p>共有ライブラリの作成は、<code>g++</code>コマンドに<code>-shared</code>オプションを付けてコンパイルする。このとき、さらにいくつか追加でオプションを渡す必要がある。</p>
+
+<p>以下のような<code>cpp</code>ファイルがあったとする。</p>
+
+<p>`mylib.cpp&rsquo;</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#999;font-weight:bold">#include</span><span style="color:#999;font-weight:bold">&lt;iostream&gt;</span><span style="color:#999;font-weight:bold">
+</span><span style="color:#999;font-weight:bold"></span>
+<span style="color:#458;font-weight:bold">int</span> <span style="color:#900;font-weight:bold">lib_func</span>(){
+    std<span style="font-weight:bold">::</span>cout <span style="font-weight:bold">&lt;&lt;</span> <span style="color:#b84">&#34;lib_func called&#34;</span> <span style="font-weight:bold">&lt;&lt;</span> std<span style="font-weight:bold">::</span>endl;
+}
+</code></pre></div>
+<p>これを、共有ライブラリにするには、以下のオプションと共に<code>g++</code>コマンドを使う。</p>
+
+<p><code>-shared</code> 共有ライブラリを生成するオプション<br />
+<code>-fPIC</code> PositionIndependentCodeなアセンブラのソースを生成するオプション※<br />
+<code>-o</code> 出力ファイル（この場合はライブラリファイル）の指示</p>
+
+<p>結果、下記のようにする。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ g++ -shared -fPIC ./myib.cpp -o libmine.so</code></pre></div>
+<p>このとき、<code>-o</code>オプションで指定するライブラリの名前は、<code>lib + ライブラリ名 + .so</code>とすること。これは決められたもので、<code>soname</code>と呼ばれている。</p>
+
+<p>以上で、<code>libmine.so</code>という共有ライブラリが生成されるはず。</p>
+
+<blockquote>
+<p>[ -fPICオプションについて ]</p>
+
+<p>fPICオプションは、位置独立実行形式(PositionIndependentCode)なアセンブラのソースを生成することを指定するオプション。これを付けずに -shared オプションのみで g++ を利用すると、 -fPIC を付けるように警告が出るはずだ。<br />
+そもそも、初期のPCではプログラムはメインメモリに配置される位置にプログラムが依存していたらしい。そのため、複数のプログラムを走らせるときは、使用しているメモリが重複しないように注意しながらプログラムを走らせる必要があった。<br />
+しかし、これだと大変なので、位置独立コードが発明された。この位置独立のコードは、共有オブジェクトを作成する場合に推奨されている。</p>
+</blockquote>
+
+<h1 id="共有ライブラリの利用">共有ライブラリの利用</h1>
+
+<p>前項で作成した共有ライブラリを利用したい場合、下記のようにする。</p>
+
+<p><code>main.cpp</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#458;font-weight:bold">int</span> <span style="color:#900;font-weight:bold">lib_func</span>();
+
+<span style="color:#458;font-weight:bold">int</span> <span style="color:#900;font-weight:bold">main</span>(){
+    lib_func();<span style="color:#a61717;background-color:#e3d2d2">に</span>
+    <span style="font-weight:bold">return</span> <span style="color:#099">0</span>;
+}
+</code></pre></div>
+<p>これを、<code>g++</code>でコンパイルする時に、ライブラリを利用することをコンパイラに知らせる。以下のようになる。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ g++ -o main main.cpp -lmine -L./</code></pre></div>
+<p>ここで、<code>-l</code>オプションと<code>-L</code>オプションを利用する。(実際には<code>-o</code>オプションも)</p>
+
+<p><code>-l</code>オプションでは、使用するライブラリを指定している。このとき、ライブラリの名前は<code>soname</code>の接頭語の<code>lib</code>と接尾語の<code>.so</code>を除いた部分によって指定する。</p>
+
+<p><code>-L</code>オプションでは、使用するライブラリのあるディレクトリパスを指定している。上記の場合、<code>main.cpp</code>と同じディレクトリに<code>libmine.so</code>が存在していることをコンパイラに教えている。</p>
+
+<p>これで、<code>main</code>という名前の実行ファイルが生成され、それが実行されれば、コンソールに<code>&quot;lib_func called&quot;</code>の文字が表示されるはずだ。</p>
+
+<p>実は、実行してみれば分かるが、恐らく正しく実行されずに、下記のようなエラーが出る。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">./main: error while loading shared libraries: libmine.so: cannot open shared object file: No such file or directory</code></pre></div>
+<p>読んでみるとそのままだが、<code>libmine.so</code>が見つからないとエラーを吐いてプログラムが止まっている。</p>
+
+<p>最初にも述べたとおり、共有ライブラリはリンクされるのみで実行ファイルの中には組み込まれず、実行時に動的なリンカがリンクされている共有ライブラリ（今回だと<code>libmine.so</code>）を探査し、読み込んでから実行ファイルが実行される。</p>
+
+<p>つまり、動的なリンカが共有ライブラリを見つけられなかったということだ。では、動的なリンカはどこを探しているのか、何をすれば探査場所を指定することが出来るのかという話になる。</p>
+
+<p>結論から言うと、<code>/etc/ld.so.conf</code>にパスを書くか、環境変数<code>LD_LIBRARY_PATH</code>にパスを追加する。</p>
+
+<h1 id="動的リンカの探査">動的リンカの探査</h1>
+
+<p>共有ライブラリは、実行時に動的リンカに探査され、発見された後にその中にあるプログラムが利用される。この動的リンカの探査場所は、<code>/etc/ld.so.conf</code>と、環境変数<code>LD_LIBRARY_PATH</code>に書かれる。</p>
+
+<p>では<code>/etc/ld.so.conf</code>にパスを書けばよいだけかというとそうではない。動的なリンカは探しに行く時にいつも<code>/etc/ld.so.conf</code>の中身を確認しているわけではないからだ。普通、<code>/etc/ld.so.cache</code>というキャッシュを確認している。そのため、<code>/etc/ld.so.conf</code>の中身を書き換えたときは、その内容を<code>ldconfig</code>コマンドを使って<code>/etc/ld.so.cache</code>に反映させてやらなくてはいけない。</p>
+
+<p>動的リンカに共有ライブラリの場所を教えてあげる、または、デフォルトで設定されているであろう<code>/usr/local/lib</code>にここまでで作った共有ライブラリを入れて、再度 実行ファイル<code>main</code>を実行すると、プログラムは期待した動きをするはずだ。</p>
+
+<h1 id="cmakeを使う">CMakeを使う</h1>
+
+<p>ここまででやったこと（共有ライブラリの作成と利用）をCMakeを使って行う。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cmake" data-lang="cmake"><span style="color:#998;font-style:italic"># cmakeの必須バージョン（最低）
+</span><span style="color:#998;font-style:italic"></span><span style="color:#999">cmake_minimum_required</span>(<span style="color:#b84">VERSION</span> <span style="color:#b84">3.8</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># ライブラリの生成。2つ目の引数は共有ライブラリならSHARED,静的ライブラリならSTATIC
+</span><span style="color:#998;font-style:italic"></span><span style="color:#999">add_library</span>(<span style="color:#b84">mine</span> <span style="color:#b84">SHARED</span> <span style="color:#b84">mylib.cpp</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 実行ファイルの生成
+</span><span style="color:#998;font-style:italic"></span><span style="color:#999">add_executable</span>(<span style="color:#b84">main</span> <span style="color:#b84">main.cpp</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># ライブラリのリンク librariesと複数形、typo注意
+</span><span style="color:#998;font-style:italic"></span><span style="color:#999">target_link_libraries</span>(<span style="color:#b84">main</span> <span style="color:#b84">hello</span>)</code></pre></div>
+<p>なお、<code>add_library</code>の１つめの引数は、特に何もしなければライブラリの名前に使われるが、実際にはcmake内で使われるターゲット名で、これはcmake実行環境内でユニークでなくてはいけない。</p>
+
+<p>つまり、下記のように同じ名前のターゲットを作ることは出来ない。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cmake" data-lang="cmake"><span style="color:#998;font-style:italic"># 意図としては、同じ名前の共有ライブラリと静的ライブラリの両方を同時に作りたい
+</span><span style="color:#998;font-style:italic"></span><span style="color:#999">add_library</span>(<span style="color:#b84">mine</span> <span style="color:#b84">SHARED</span> <span style="color:#b84">mylib.cpp</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">add_library</span>(<span style="color:#b84">mine</span> <span style="color:#b84">STATIC</span> <span style="color:#b84">mylib.cpp</span>) <span style="color:#a61717;background-color:#e3d2d2">#</span> <span style="color:#a61717;background-color:#e3d2d2">これはだめ</span></code></pre></div>
+<p>では、一度のコンパイルで同じ名前の共有ライブラリと静的ライブラリの両方を出力したいときにはどうするか。</p>
+
+<p>結論から言うと、一報を別のターゲット名に設定した後、そのターゲットのプロパティを変更する。下記のように書く。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cmake" data-lang="cmake"><span style="color:#999">add_library</span>(<span style="color:#b84">mine</span> <span style="color:#b84">SHARED</span> <span style="color:#b84">mylib.cpp</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 一度、別の名前に避難
+</span><span style="color:#998;font-style:italic"></span><span style="color:#999">add_library</span>(<span style="color:#b84">mine-static</span> <span style="color:#b84">STATIC</span> <span style="color:#b84">mylib.cpp</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># ターゲットのOUTPUT_NAMEプロパティを変更して同じ名前にする
+</span><span style="color:#998;font-style:italic"></span><span style="color:#999">set_target_properties</span>(<span style="color:#b84">mine-static</span> <span style="color:#b84">PROPERTIES</span> <span style="color:#b84">OUTPUT_NAME</span> <span style="color:#b84">mine</span>)</code></pre></div>
+<p>これで同じ名前の共有ライブラリと静的ライブラリが同時に作れる。</p>
+
+<p>今回はライブラリを生成してその場でリンクしているのでコレで良い。</p>
+
+<p>だが、外部の（ダウンロードした）ライブラリを利用するときは、そのライブラリがどこにあるのかを教えてあげる必要がある。</p>
+
+<p>また、可能なものであれば、ライブラリなどを探査するモジュールもあるので、それを使ってライブラリをモジュールに探させることも出来る。</p>
+
+<h3 id="ダウンロードしたライブラリを使う">ダウンロードしたライブラリを使う</h3>
+
+<p>ダウンロードしたライブラリ（又は自分でビルドしたライブラリ）の多くは、<code>include</code>と名付けられたディレクトリにヘッダファイルが、<code>lib</code>と名付けられたディレクトリに共有ライブラリや静的ライブラリが収められている。</p>
+
+<p>実際、<code>/usr/local</code>の中を見てみると、<code>include</code>と<code>lib</code>ディレクトリがあり、その中にそれぞれ対応するファイルが収められているのが分かると思う。</p>
+
+<p>これをcmakeでどう書くかというと、<code>include</code>ディレクトリ、つまりヘッダファイルをcmakeに認識させたい場合は、<code>include_direcotries</code>を使い、<code>lib</code>ディレクトリの中にあるライブラリを認識させたい場合は、<code>link_directories</code>を使う。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cmake" data-lang="cmake"><span style="color:#999">cmake_minimum_required</span>(<span style="color:#b84">VERSION</span> <span style="color:#b84">3.0</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># インクルードディレクトリの指定
+</span><span style="color:#998;font-style:italic"></span><span style="color:#999">include_directories</span>(<span style="color:#b84">somewhere/include</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># リンクディレクトリの指定
+</span><span style="color:#998;font-style:italic"></span><span style="color:#999">link_directories</span>(<span style="color:#b84">somewhere/lib</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">add_executable</span>(<span style="color:#b84">main</span> <span style="color:#b84">main.cpp</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">target_link_libraries</span>(<span style="color:#b84">main</span> <span style="color:#b84">some_library</span>)</code></pre></div>
+<p>上記だと、指定した<code>somewhere/lib</code>ディレクトリの中に<code>libsome_library.so</code>があるので、それを使いたいということになる。また、<code>libsome_library.so</code>を使う際に利用するヘッダファイルは<code>somewhere/incliude</code>の中にあるので、それを使いたいということでもある。</p>
+
+<p>ちなみに、<code>somewhere/lib</code>の中に、<code>libsome_library.so</code>と<code>libsome_library.a</code>の両方が合った場合、共有ライブラリが優先される。静的ライブラリを使いたいバイは、<code>target_link_libraries(main some_library.a)</code>（<code>.a</code>だと明記する）と書けば良い。</p>
+
+<p>上記では、リンクディレクトリやインクルードディレクトリのパスはハードコードしたが、実際はこんなことはしない。パッケージ（ヘッダ+ライブラリ）を探査する<code>find_package</code>というモジュールを使う。</p>
+
+<h3 id="find-package">find_package</h3>
+
+<p><code>find_package</code>は <strong>ある方法</strong> によって外部ライブラリを探し、</p>
+
+<ul>
+<li>XXX_FOUND</li>
+<li>XXX_INCLUDE_DIRS または XXX_INCLUDES</li>
+<li>XXX_LIBRARIESまたはXXX_LIBS</li>
+<li>XXX_DEFINITIONS</li>
+</ul>
+
+<p>にその結果を代入してくれる。（XXXはパッケージ名）</p>
+
+<p>例えば、<code>find_package(SOMEPACKAGE REQUIRED)</code>とcmakeファイル上に書き込めば、find_packageモジュールは<code>SOMEPACKAGE</code>を探し、見受かれば<code>SOMEPACKAGE_FOUND</code>にtrueの旨の値を代入する。といった具合。<br />
+ちなみに、<code>REQUIRED</code>オプションは、パッケージが見つからなければその場で処理を中断させるオプション。</p>
+
+<p>では、その <strong>ある方法</strong> とは何か。その方法は2つあり、<code>モジュールモード</code>と<code>コンフィグモード</code>がある。</p>
+
+<h4 id="モジュールモード">モジュールモード</h4>
+
+<p><code>モジュールモード</code>では、<code>/usr/share/cmake-3.10/Modules</code>(<code>3.10</code>の部分はバージョン)の中にある<code>FindXXX.cmake</code>に従って、必要な情報を集める。</p>
+
+<p>例えば、<code>GTK2</code>というパッケージを見つけたければ、<code>find_package(GTK2 REQUIRED)</code>と書く。すると、この探査モジュールは<code>/usr/share/cmake-3.10/Modules/FindGTK2.cmake</code>という名前のファイルを探し、それに従って必要な値を代入していく。</p>
+
+<p>この<code>FindXXX.cmake</code>ファイルはaptなどでインストールするとパッケージ提供側が用意してくれていて、それをaptが配置してくれたりする。そのため。当然だが自分でビルドしてcmakeファイルを適切な場所に配置されなかったパッケージは、このモジュールモードを使って見つけることは出来ない。</p>
+
+<p><code>find_package</code>がcmakeファイルを探査するのは<code>/usr/share/cmake-3.10/Modules</code>の中の他に、<code>CMAKE_MODULE_PATH</code>変数で指定された場所を探す。</p>
+
+<h4 id="コンフィグモード">コンフィグモード</h4>
+
+<p><code>コンフィグモード</code>では、<code>&lt;package名&gt;Config.cmake</code>または<code>&lt;lower-case-package名&gt;-config.cmake</code>という名前のファイルに従ってパッケージを探す。探してからは、モジュールモードと同じ。</p>
+
+<p>では上記2パターンのうちのいずれかのファイルをどこに配置すればよいかと言う話になるが、かなり複雑になるのでここでは書かない。使う時に調べてみれば良い。</p>
+
+<h3 id="その他">その他</h3>
+
+<p><code>find_package</code>以外にも、探査用のモジュールはいくつかあるので、使う時に調べながら使ってみると良い。</p>
+
+<h1 id="参考">参考</h1>
+
+<p><a href="https://www.ibm.com/developerworks/jp/linux/library/l-shlibs/index.html">https://www.ibm.com/developerworks/jp/linux/library/l-shlibs/index.html</a></p>
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20190530_cpp_arm_cross_compile/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog-hugo/blob/image/featured/programing.png?raw=true">
+        <img src="https://github.com/mijinc0/blog-hugo/blob/image/featured/programing.png?raw=true" class="card-img" alt="programing">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">C&#43;&#43;のコードをARM用にコンパイルする</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2019-05-30 530:00">May 30, 2019</time></p>
+      <p></p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog-hugo/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

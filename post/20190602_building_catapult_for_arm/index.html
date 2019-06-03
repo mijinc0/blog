@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>x86_64 ubuntu上でcatapultをarm用にビルドする &middot; ByzantinePosts</title>
+  <title>x86_64 ubuntu上でcatapultをarm64用にビルドする &middot; ByzantinePosts</title>
   <meta name="description" content="" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
@@ -39,7 +39,7 @@
     <main class="content side-text-padding">
       <article class="post dropcase">
         <header class="post-header">
-        	<h1 class="post-title">x86_64 ubuntu上でcatapultをarm用にビルドする</h1>
+        	<h1 class="post-title">x86_64 ubuntu上でcatapultをarm64用にビルドする</h1>
           <p class="post-date">Posted <time datetime="2019-06-02">Jun 2, 2019</time></p>
         </header>
         
@@ -65,7 +65,7 @@
 <li>peernodeが動けば良い</li>
 </ul>
 
-<p>と思って取り組んだため、<code>mongo</code>や<code>zeromq</code>は触っていません。（これらはAPInode用のエクステンションになるはずなので）</p>
+<p>と思って取り組んだため、<code>mongo</code>や<code>zeromq</code>は触っていません。（これらはapi-node用のエクステンションになるはずなので）</p>
 
 <h1 id="catapultのバージョン">catapultのバージョン</h1>
 
@@ -79,7 +79,10 @@ VERSION=&ldquo;18.04.2 LTS (Bionic Beaver)&rdquo;</p>
 
 <h1 id="raspberrypi">RaspberryPi</h1>
 
-<p>raspberry pi 3 model B</p>
+<p>raspberry pi 3 model B<br />
+OS : ubuntu 18.04<br />
+<a href="https://wiki.ubuntu.com/ARM/RaspberryPi">https://wiki.ubuntu.com/ARM/RaspberryPi</a><br />
+(上記URLの<code>ubuntu-18.04.2-preinstalled-server-arm64+raspi3.img.xz</code>。hfではありません。)</p>
 
 <h1 id="手順の前に">手順の前に</h1>
 
@@ -91,7 +94,7 @@ VERSION=&ldquo;18.04.2 LTS (Bionic Beaver)&rdquo;</p>
 
 <h1 id="手順">手順</h1>
 
-<h2 id="クロスコンパイル用のツール群インストール">クロスコンパイル用のツール群インストール</h2>
+<h2 id="クロスコンパイラのインストール">クロスコンパイラのインストール</h2>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ sudo apt install g++-aarch64-linux-gnu</code></pre></div>
 <p>これで、クロスコンパイル用のツール群が<code>/usr/bin</code>に入ります。<br />
 <code>/usr/bin</code>の中を見てみると、<code>aarch64-linux-gnu-gcc</code>や<code>aarch64-linux-gnu-gcc-7</code>などを見つけることが出来るはずです。</p>
@@ -114,7 +117,7 @@ VERSION=&ldquo;18.04.2 LTS (Bionic Beaver)&rdquo;</p>
 </span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">SET</span>(<span style="color:#b84">CMAKE_OBJDUMP</span> <span style="color:#b84">/usr/bin/aarch64-linux-gnu-objdump</span>)<span style="color:#a61717;background-color:#e3d2d2">
 </span><span style="color:#a61717;background-color:#e3d2d2">
 </span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">SET</span>(<span style="color:#b84">CMAKE_RANLIB</span> <span style="color:#b84">/usr/bin/aarch64-linux-gnu-ranlib</span>)</code></pre></div>
-<h2 id="その他ツール郡">その他ツール郡</h2>
+<h2 id="prerequisites">Prerequisites</h2>
 
 <p><code>BUILDING.md</code>に書いてあるとおりです。<code>g++</code>は既にクロスコンパイル用のものをインストール済みなのですが、別の場所で必要になるので抜かないでください。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">sudo apt install autoconf libtool cmake curl git xz-utils \
@@ -156,7 +159,14 @@ $ ./b2 install --prefix=${HOME}/boost-build-1.69.0</code></pre></div>
 <h2 id="gtest">GTest</h2>
 
 <p>toolchainの指定を追加するだけです。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ cmake -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON ..</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ git clone https://github.com/google/googletest.git googletest.git
+$ cd googletest.git
+$ git checkout release-1.8.0
+
+$ mkdir _build &amp;&amp; cd _build
+$ cmake -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON ..
+$ make
+$ sudo make install</code></pre></div>
 <h2 id="google-benchmark">google benchmark</h2>
 
 <p>下記参照<br />
@@ -171,15 +181,36 @@ $ ./b2 install --prefix=${HOME}/boost-build-1.69.0</code></pre></div>
 
 <p>これらは今回、全て指定したが、本来はいくつか指定すればよいだけかもしれない。<br />
 これに<code>toolchain.arm.cmake</code>の指定と<code>CMAKE_BUILD_TYPE=Release</code>、<code>BENCHMARK_ENABLE_GTEST_TESTS=OFF</code>を加えて、結果、cmake時のコマンドは下記のようになる。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ cmake -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake \
+        -DCMAKE_CROSSCOMPILING=1 \
+        -DRUN_HAVE_STD_REGEX=0 \
+        -DRUN_HAVE_POSIX_REGEX=0 \
+        -DRUN_HAVE_GNU_POSIX_REGEX=0 \
+        -DRUN_HAVE_STEADY_CLOCK=0 \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBENCHMARK_ENABLE_GTEST_TESTS=OFF \
+        ..</code></pre></div><div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ git clone https://github.com/google/benchmark.git google.benchmark.git
+$ git clone https: cd google.benchmark.git
+$ git checkout v1.4.1
 
-<pre><code>$ cmake -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake -DCMAKE_CROSSCOMPILING=1 -DRUN_HAVE_STD_REGEX=0 -DRUN_HAVE_POSIX_REGEX=0 -DRUN_HAVE_GNU_POSIX_REGEX=0 -DRUN_HAVE_STEADY_CLOCK=0 -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_ENABLE_GTEST_TESTS=OFF ..
-</code></pre>
+$ mkdir _build &amp;&amp; cd _build
+$ cmake -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake -DCMAKE_CROSSCOMPILING=1 -DRUN_HAVE_STD_REGEX=0 -DRUN_HAVE_POSIX_REGEX=0 -DRUN_HAVE_GNU_POSIX_REGEX=0 -DRUN_HAVE_STEADY_CLOCK=0 -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_ENABLE_GTEST_TESTS=OFF ..
+$ make
+$ sudo make install</code></pre></div>
+<h3 id="mongo">Mongo</h3>
 
-<p>その後、<code>make</code>,<code>sudo make install</code>で完了。</p>
+<p>今回はpeer向けなので不要です。</p>
+
+<h3 id="zmq">ZMQ</h3>
+
+<p>今回はpeer向けなので不要です。</p>
 
 <h3 id="rocksdb">RocksDB</h3>
-
-<p>まず、<code>rocksdb.git/CMakeLists.txt</code>の<code>211行目</code>を下記のように書き換えます。(cmake時にオプションで変更することが出来る気がするけどやり方が分からない。)</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ git clone https://github.com/facebook/rocksdb.git rocksdb.git
+$ cd rocksdb.git
+$ git checkout -B &#34;5.18.fb&#34; &#34;origin/5.18.fb&#34;</code></pre></div>
+<p>ここで、<code>rocksdb.git/CMakeLists.txt</code>の<code>211行目</code>を下記のように書き換えます。<br />
+(cmake時にオプションで変更することが出来る気がするけどやり方が分からない。)</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cmkae" data-lang="cmkae">（省略）
 else()
   if(MSVC)
@@ -195,15 +226,15 @@ endif()
 (省略)</code></pre></div>
 <p>要するに、<code>CMAKE_CXX_FLAGS</code>に<code>-march=armv8-a</code>、つまり、<code>g++</code>コマンドに<code>-march=armv8-a</code>オプションを渡してあげるために書き換える。この、<code>armv8-a</code>などは、rapsberryPiのバージョンによって変わることになります。</p>
 
-<p>これでcmkaeします。オプションは、<code>BUILDING.md</code>にあるものに加えて、ツールチェインを追加します。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ cmake -DCMAKE_BUILD_TYPE=Release -DWITH_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..</code></pre></div>
-<p>その後、<code>make</code>,<code>sudo make install</code>で完了です。</p>
-
+<p>これで、<code>BUILDING.md</code>に書いてあるとおりの操作に戻ります。<code>cmake</code>時にはツールチェインの指定を忘れずに。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ mkdir _build &amp;&amp; cd _build
+$ cmake -DCMAKE_BUILD_TYPE=Release -DWITH_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..
+$ make
+$ sudo make install</code></pre></div>
 <h3 id="catapult">catapult</h3>
-
-<p>ようやく、catapultです。</p>
-
-<p>まず、<code>CMakeGlobalSettings.cmake</code>の<code>46行名</code>に<code>set(CMAKE_CXX_FLAGS &quot;${CMAKE_CXX_FLAGS} -pthread&quot;)</code>を追記します。下記のようになります。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">git clone https://github.com/nemtech/catapult-server.git
+cd catapult-server</code></pre></div>
+<p>ここで、<code>CMakeGlobalSettings.cmake</code>の<code>46行名</code>に<code>set(CMAKE_CXX_FLAGS &quot;${CMAKE_CXX_FLAGS} -pthread&quot;)</code>を追記します。下記のようになります。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">(略)
 
 endif()
@@ -246,19 +277,24 @@ add_subdirectory(timesync)
 add_subdirectory(transactionsink)
 add_subdirectory(unbondedpruning)
 #add_subdirectory(zeromq) コメントアウト</code></pre></div>
-<p>これで下準備は完了です。例によって、cmakeにツールチェインとして<code>toolchain.arm.cmake</code>を追加で指定します。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..</code></pre></div>
+<p>これで下準備は完了です。例によって、<code>cmake</code>にツールチェインとして<code>toolchain.arm.cmake</code>を追加で指定します。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ mkdir _build &amp;&amp; cd _build
+$ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..</code></pre></div>
 <p>ここで出力されるログで、<code>CMAKE_CXX_FLAGS</code>の部分に<code>-pthread</code>があることを確認しましょう。<code>CMakeGlobalSettings.cmake</code>で追記した部分が反映されているはずです。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake -G Ninja ..
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..
 
 -- CATAPULT_VERSION_DESCRIPTION: 95e0c6a [master]
 -- CMAKE_CXX_COMPILER_ID: GNU
 -- CMAKE_CXX_FLAGS:  -pthread -Wall -Wextra -Werror -Wstrict-aliasing=1 -fvisibility=hidden
 -- CMAKE_PREFIX_PATH:
 -- BOOST_ROOT:</code></pre></div>
-<p>あとは、必要な部分をビルドしていくだけです。大量のテスト群もビルドしたくないので、必要な部分のみをビルドします。（以下、漏れがあるかもしれません。確認できたら修正します。）</p>
+<p>あとは、必要な部分をビルドしていくだけです。大量のテスト群もビルドしたくないので、必要な部分のみをビルドします。</p>
+
+<p><code>make</code>はターゲットを指定すると、本体とそれが依存するライブラリをビルドしてくれるので、それを利用して必要な部分のみをビルドします。</p>
 
 <p>extension群をビルドします。</p>
+
+<p><strong>（以下、これを書いている時点では何かしら漏れがあると思っています。確認できたら修正します。）</strong></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ make catapult.server           \
        extension.eventsource     \
        extension.harvesting      \
@@ -287,8 +323,6 @@ add_subdirectory(unbondedpruning)
        catapult.plugins.namespace   \
        catapult.plugins.property    \
        -j4</code></pre></div>
-<p><code>tools.nemgen</code>ぐらいは欲しい。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ make catapult.tools.nemgen -j4</code></pre></div>
 <h3 id="試運転">試運転</h3>
 
 <p>これで一通り入りました。あとは、設定をして動かしてみるだけです。</p>
@@ -296,9 +330,41 @@ add_subdirectory(unbondedpruning)
 <p>とりあえずエミュレーターを使って試しに動かしてみたいときは下記のようにしてください。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ sudo apt install qemu-user-binfmt
 $ qemu-aarch64 -L /usr/aarch64-linux-gnu ./catapult.server</code></pre></div>
+<h3 id="raspberrypi上で動かす">RaspberryPi上で動かす</h3>
+
+<p>必要になるのは<code>_build</code>の中身のみですが、そのままだと設定ファイルがはいっていないので、その一つ下の<code>resources</code>の中身を、<code>_build</code>内の<code>resources</code>に移しておきましょう。</p>
+
+<p>USBメモリ等でRaspberryPiに<code>_build</code>をコピーしたら、まず最初に<code>ld</code>（ライブラリ等の探査コマンド）が<code>_build/bin/boost</code>内の共有ライブラリを見つけられるように、パスを通します。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr"># lddを使って確認をする。loggeｒの辺りがnot foundになっているはず
+/_build/bin/$ ldd ./catapult.server
+
+# パスを通す
+/_build/bin/$ export LD_LIBRARYは_PATH=$LD_LIBRARY_PATH:&lt;_build/bin/boostのパス&gt;
+
+# 適応
+/_build/bin/$ ldconfig
+
+# 確認
+/_build/bin/$ ldd ./catapult.server</code></pre></div>
+<p>これで、<code>not found</code>がなく、<code>libboost_XXX</code>系のライブラリにパスが通っていることが確認できれば、あとはcatapultの設定を行い、<code>catapult.server</code>で起動します。</p>
+
+<p>ネットワークに繋ぐまではしていないので、保証は出来ませんが、ノードの起動は確認できるはずです。</p>
+
 <h1 id="さいごに">さいごに</h1>
 
-<p>セルフビルドと同じぐらい大変でした。また、どこかしらのバージョンが変われば途端にビルド出来なくなる気がしています。</p>
+<h3 id="わからないところ">わからないところ</h3>
+
+<ul>
+<li>rocksdbは２１１行目を書き換えるパワープレイをしたが、あんなので良いのか</li>
+<li>catapultでなぜarm向けにコンパイルするときだけ-pthreadオプションが要るのか</li>
+<li>cow-&gt;dragonでエクステンション、プラグインの名称など変わったようで、最低限必要なのは何か</li>
+<li>tools.nemgenがすんなりとビルドされてくれない</li>
+</ul>
+
+<h3 id="所感">所感</h3>
+
+<p>ビルドの時間は圧倒的に短縮できますが、セルフビルドと同じぐらい大変でした。<br />
+また、どこかしらのバージョンが変われば途端にビルド出来なくなる気がしています。</p>
 
       </article>
       
@@ -306,23 +372,23 @@ $ qemu-aarch64 -L /usr/aarch64-linux-gnu ./catapult.server</code></pre></div>
     <nav class="end-nav side-padding">
       
       <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
-  href="https://mijinc0.github.io/blog/post/20190508_catapult_cache/" class="card blog-card" rel="bookmark" >
+  href="https://mijinc0.github.io/blog/post/20190530_cpp_library/" class="card blog-card" rel="bookmark" >
     
     <div class="card-img-container">
       <p class="card-img-overlay">Next Article</p>
       <picture>
         
-        <source srcset="https://github.com/mijinc0/blog-hugo/blob/image/featured/catapult.png?raw=true">
-        <img src="https://github.com/mijinc0/blog-hugo/blob/image/featured/catapult.png?raw=true" class="card-img" alt="catapult">
+        <source srcset="https://github.com/mijinc0/blog-hugo/blob/image/featured/programing.png?raw=true">
+        <img src="https://github.com/mijinc0/blog-hugo/blob/image/featured/programing.png?raw=true" class="card-img" alt="programing">
       </picture>
     </div>
     
   <article class="card-body">
-    <h2 class="card-title">catapult cache</h2>
+    <h2 class="card-title">C&#43;&#43;の共有ライブラリの作成と利用</h2>
     <p class="card-text"></p>
     <div class="card-subtext muted-text">
-      <p>Posted <time datetime="2019-05-08 58:00">May 8, 2019</time></p>
-      <p>#nem2 </p>
+      <p>Posted <time datetime="2019-05-30 530:00">May 30, 2019</time></p>
+      <p></p>
     </div>
   </article>
 </a>

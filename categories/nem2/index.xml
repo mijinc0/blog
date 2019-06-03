@@ -10,7 +10,7 @@
         <atom:link href="https://mijinc0.github.io/blog/categories/nem2/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>x86_64 ubuntu上でcatapultをarm用にビルドする</title>
+      <title>x86_64 ubuntu上でcatapultをarm64用にビルドする</title>
       <link>https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/</link>
       <pubDate>Sun, 02 Jun 2019 10:59:20 +0900</pubDate>
       

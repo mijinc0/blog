@@ -348,7 +348,8 @@ $ qemu-aarch64 -L /usr/aarch64-linux-gnu ./catapult.server</code></pre></div>
 /_build/bin/$ ldd ./catapult.server</code></pre></div>
 <p>これで、<code>not found</code>がなく、<code>libboost_XXX</code>系のライブラリにパスが通っていることが確認できれば、あとはcatapultの設定を行い、<code>catapult.server</code>で起動します。</p>
 
-<p>ネットワークに繋ぐまではしていないので、保証は出来ませんが、ノードの起動は確認できるはずです。</p>
+<p>ネットワークに繋ぐまではしていないので、保証は出来ませんが、ノードの起動は確認できるはずです。
+(追記；その後、cowにバージョンを落として起動を確認しました。ただし、これも全ての機能について確認したわけではありません。)</p>
 
 <h1 id="さいごに">さいごに</h1>
 

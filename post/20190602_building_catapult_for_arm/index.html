@@ -51,7 +51,9 @@
         
         
 
-<p><strong>2019.06.07 ノードが動くことは確認しましたが色々と上手く行かない部分が多いのでcatapultのバージョンを一旦cowに下げました。</strong></p>
+<p>2019.06.07<br />
+ノードが動くことは確認しましたが色々と上手く行かない部分が多いのでcatapultのバージョンを一旦cowに下げました。<br />
+Dragonはまた別で書きます。</p>
 
 <h1 id="さいしょに">さいしょに</h1>
 
@@ -72,8 +74,7 @@
 <h1 id="catapultのバージョン">catapultのバージョン</h1>
 
 <p><del>Dragon</del><br />
-Cow<br />
-(色々と上手く行かない部分が多いので一旦バージョンを下げます)</p>
+Cow</p>
 
 <h1 id="コンパイルするpc-os">コンパイルするPC(OS)</h1>
 
@@ -283,7 +284,8 @@ add_subdirectory(unbondedpruning)
 #add_subdirectory(zeromq) コメントアウト</code></pre></div>
 <p>これで下準備は完了です。例によって、<code>cmake</code>にツールチェインとして<code>toolchain.arm.cmake</code>を追加で指定します。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ mkdir _build &amp;&amp; cd _build
-$ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..</code></pre></div>
+$ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..
+$ make publish</code></pre></div>
 <p>ここで出力されるログで、<code>CMAKE_CXX_FLAGS</code>の部分に<code>-pthread</code>があることを確認しましょう。<code>CMakeGlobalSettings.cmake</code>で追記した部分が反映されているはずです。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..
 
@@ -296,36 +298,40 @@ $ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOO
 
 <p><code>make</code>はターゲットを指定すると、本体とそれが依存するライブラリをビルドしてくれるので、それを利用して必要な部分のみをビルドします。</p>
 
-<p>extension群をビルドします。</p>
+<p>※version cowに下げたことに併せてplugin群など書き換えています。</p>
 
-<p><strong>（以下、これを書いている時点では何かしら漏れがあると思っています。確認できたら修正します。）</strong></p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ make catapult.server           \
-       extension.eventsource     \
-       extension.harvesting      \
-       extension.syncsource      \
-       extension.diagnostics     \
-       extension.hashcache       \
-       extension.networkheight   \
-       extension.nodediscovery   \
-       extension.packetserver    \
-       extension.pluginhandlers  \
-       extension.sync            \
-       extension.timesync        \
-       extension.transactionsink \
-       extension.unbondedpruning \
+<p>server</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ make catapult.server -j4</code></pre></div>
+<p>extension群。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ make extension.addressextraction  \
+       extension.diagnostics        \
+       extension.eventsource        \
+       extension.filechain          \
+       extension.harvesting         \
+       extension.hashcache          \
+       extension.networkheight      \
+       extension.nodediscovery      \
+       extension.packetserver       \
+       extension.partialtransaction \
+       extension.pluginhandlers     \
+       extension.sync               \
+       extension.syncsource         \
+       extension.timesync           \
+       extension.transactionsink    \
+       extension.unbondedpruning    \
        -j4</code></pre></div>
-<p>次にplugin群。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ make catapult.plugins             \
-       catapult.coresystem          \
-       catapult.plugins.hashcache   \
-       catapult.plugins.signature   \
-       catapult.plugins.accountlink \
+<p>plugin群。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ make catapult.plugins.accountlink \
        catapult.plugins.aggregate   \
+       catapult.plugins.hashcache   \
        catapult.plugins.lockhash    \
        catapult.plugins.locksecret  \
+       catapult.plugins.mosaic      \
        catapult.plugins.multisig    \
        catapult.plugins.namespace   \
        catapult.plugins.property    \
+       catapult.plugins.signature   \
+       catapult.plugins.transfer    \
        -j4</code></pre></div>
 <h3 id="試運転">試運転</h3>
 
@@ -336,24 +342,44 @@ $ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOO
 $ qemu-aarch64 -L /usr/aarch64-linux-gnu ./catapult.server</code></pre></div>
 <h3 id="raspberrypi上で動かす">RaspberryPi上で動かす</h3>
 
-<p>必要になるのは<code>_build</code>の中身のみですが、そのままだと設定ファイルがはいっていないので、その一つ下の<code>resources</code>の中身を、<code>_build</code>内の<code>resources</code>に移しておきましょう。</p>
+<p>必要になるのは<code>catapult-server</code>と<code>rocksdb.git</code>です。これらをRaspberryPiに移しましょう。</p>
 
-<p>USBメモリ等でRaspberryPiに<code>_build</code>をコピーしたら、まず最初に<code>ld</code>（ライブラリ等の探査コマンド）が<code>_build/bin/boost</code>内の共有ライブラリを見つけられるように、パスを通します。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr"># lddを使って確認をする。loggeｒの辺りがnot foundになっているはず
-/_build/bin/$ ldd ./catapult.server
+<p>実際、catapult内で必要になるのは<code>_build</code>の中身のみなので、抜き出しても構いません。ただし、そのままだと設定ファイルがはいっていないので、その一つ下の<code>resources</code>の中身を、<code>_build</code>内の<code>resources</code>に移しておきましょう。</p>
 
-# パスを通す
-/_build/bin/$ export LD_LIBRARYは_PATH=$LD_LIBRARY_PATH:&lt;_build/bin/boostのパス&gt;
+<p>ここで、<code>rocksdb.git</code>で、<code>librocksdb.so</code>と<code>librocksdb.so.5</code>がコピー出来ないことがあります（許可されない操作と出るはず）。</p>
+
+<p>この場合は、一旦無視して、<code>rocksdb.git</code>をRaspberryPiに移した後で、<code>librocksdb.so</code>と<code>librocksdb.so.5</code>をRaspberryPi上で作成します。</p>
+
+<p>これらはシンボリックリンクなので、<code>ln</code>コマンドで生成します。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr"># シンボリックリンクを作成
+rocksdb.git/_build$ ln -s librocksdb.so.5.18.3 librocksdb.so.5
+rocksdb.git/_build$ ln -s librocksdb.so.5 librocksdb.so
+
+# 確認
+rocksdb.git/_build$ ls -l
+lrwxrwxrwx 1 XXX  XXX        15 Jun  2 08:32 librocksdb.so -&gt; librocksdb.so.5
+lrwxrwxrwx 1 XXX  XXX        20 Jun  2 08:32 librocksdb.so.5 -&gt; librocksdb.so.5.18.3
+-rwxrwxr-x 1 XXX  XXX   6974480 Jun  2 08:32 librocksdb.so.5.18.3</code></pre></div>
+<p>USBメモリ等でRaspberryPiに<code>_build</code>をコピーできたら、まず最初に<code>ld</code>（ライブラリ等の探査コマンド）が必要な共有ライブラリを見つけられるように、パスを通します。</p>
+
+<p>まず最初に確認。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">/_build/bin$ ldd ./* | grep &#34;not found&#34;</code></pre></div>
+<p>大量の<code>not found</code>が出ると思いますが、よく見てみると、<code>libboost_XXX</code>と<code>librocksdb.so.5</code>であることが分かると思います。</p>
+
+<p>では、パスを通します。パスを通すにはふたとおりの方法があり、環境変数<code>LD_LIBRARY_PATH</code>にパスを指定するか、<code>/etc/ld.so.conf</code>にパスを書き込むかのどちらかです。<br />
+(それらの違いは別で調べてください。)</p>
+
+<p>設定を反映させるには<code>ldconfig</code>で反映させます。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">/_build/bin/$ export LD_LIBRARYは_PATH=$LD_LIBRARY_PATH:&lt;_build/bin/boostのパス&gt;:&lt;rocksdb.git/_buildのパス&gt;
 
 # 適応
 /_build/bin/$ ldconfig
 
-# 確認
-/_build/bin/$ ldd ./catapult.server</code></pre></div>
-<p>これで、<code>not found</code>がなく、<code>libboost_XXX</code>系のライブラリにパスが通っていることが確認できれば、あとはcatapultの設定を行い、<code>catapult.server</code>で起動します。</p>
+# 確認(何も表示されなければok)
+/_build/bin$ ldd ./* | grep &#34;not found&#34;</code></pre></div>
+<p>これで、<code>not found</code>がなく、全ての必要なのライブラリにパスが通っていることが確認できれば、あとはcatapultの設定を行い、<code>catapult.server</code>で起動します。</p>
 
-<p>ネットワークに繋ぐまではしていないので、保証は出来ませんが、ノードの起動は確認できるはずです。
-(追記；その後、cowにバージョンを落として起動を確認しました。ただし、これも全ての機能について確認したわけではありません。)</p>
+<p>全ての機能については確認していませんが、ノードが起動します。</p>
 
 <h1 id="さいごに">さいごに</h1>
 

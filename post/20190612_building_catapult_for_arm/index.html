@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(dragon) &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">x86_64 ubuntu上でcatapultをarm64用にビルドする(dragon)</h1>
+          <p class="post-date">Posted <time datetime="2019-06-12">Jun 12, 2019</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" alt="catapult">
+        </picture>
+        
+        
+
+<p>[注意]この記事で書かれている不具合は、これを書いている時点でarm64向けにクロスコンパイルした時に起こるものです。通常の(x64上でx64向けにビルドする)時には起きません。</p>
+
+<p>前回の記事</p>
+
+<p><a href="https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/">https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/</a></p>
+
+<p>前回、catapultのarm向けクロスコンパイルを行こないました。最初は<code>version dragon</code>でビルドをし、<code>catapult.server</code>の起動は確認しましたが、、<code>catapult.tools.nemgen</code>がどうもビルド出来ず、中途半端な状態になったためにバージョンを一旦<code>cow</code>に下げた記事に変更しました。</p>
+
+<p>その後、<code>version dragon</code>のarm向けのクロスコンパイルが出来たので、それに関して書きます。</p>
+
+<h1 id="さいしょに">さいしょに</h1>
+
+<p>基本的には前回の記事と同じ。ただ、<code>catapult.tools.nemgen</code>をビルドする時にエラーが出るので、その対処のみを抜き出して書きます。</p>
+
+<p>まずは、前回の記事に沿って<code>catapult.tools.nemgen</code>をビルドすると、どういったエラーが出るのかについて書いておきます。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">catapult-server.d/_build$  cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..
+catapult-server.d/_build$ make catapult.tools.nemgen -j3
+
+Scanning dependencies of target external
+Scanning dependencies of target catapult.state
+Scanning dependencies of target catapult.utils
+[  0%] Building C object external/CMakeFiles/external.dir/ref10/crypto_verify_32.c.o
+[  0%] Building C object external/CMakeFiles/external.dir/ref10/fe_0.c.o
+[  0%] Building C object external/CMakeFiles/external.dir/ref10/fe_1.c.o
+[  0%] Building C object external/CMakeFiles/external.dir/ref10/fe_add.c.o
+[  0%] Building C object external/CMakeFiles/external.dir/ref10/fe_cmov.c.o
+
+...
+
+[100%] Linking CXX static library ../../lib/libcatapult.tools.a
+[100%] Built target catapult.tools
+Scanning dependencies of target catapult.tools.nemgen
+[100%] Building CXX object tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/BlockGenerator.cpp.o
+[100%] Building CXX object tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/BlockSaver.cpp.o
+[100%] Building CXX object tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/NemesisConfiguration.cpp.o
+In file included from /home/mij/catapult-server.d/_build/inc/catapult/state/RootNamespace.h:22:0,
+                 from /home/mij/catapult-server.d/tools/nemgen/NemesisConfiguration.h:24,
+                 from /home/mij/catapult-server.d/tools/nemgen/BlockSaver.cpp:22:
+/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:36: error: &#39;NamespaceId&#39; was not declared in this scope
+   using Path = utils::CheckedArray&lt;NamespaceId, Namespace_Max_Depth&gt;;
+                                    ^~~~~~~~~~~
+/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:36: note: suggested alternative: &#39;Namespace&#39;
+   using Path = utils::CheckedArray&lt;NamespaceId, Namespace_Max_Depth&gt;;
+                                    ^~~~~~~~~~~
+                                    Namespace
+/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:49: error: &#39;Namespace_Max_Depth&#39; was not declared in this scope
+   using Path = utils::CheckedArray&lt;NamespaceId, Namespace_Max_Depth&gt;;
+                                                 ^~~~~~~~~~~~~~~~~~~
+/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:68: error: template argument 1 is invalid
+   using Path = utils::CheckedArray&lt;NamespaceId, Namespace_Max_Depth&gt;;
+                                                                    ^
+/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:68: error: template argument 2 is invalid
+/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:36:28: error: &#39;Path&#39; does not name a type
+
+(省略 : 果てしなく続くエラー文)
+
+/home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp:209:53: error: &#39;nonce&#39; was not declared in this scope
+    auto mosaicId = transactions.addMosaicDefinition(nonce, mosaicEntry.definition().properties());
+                                                     ^~~~~
+/home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp:209:53: note: suggested alternative: &#39;nice&#39;
+    auto mosaicId = transactions.addMosaicDefinition(nonce, mosaicEntry.definition().properties());
+                                                     ^~~~~
+                                                     nice
+/home/mij/catapult-server.d/tools/nemgen/NemesisConfiguration.cpp: At global scope:
+/home/mij/catapult-server.d/tools/nemgen/NemesisConfiguration.cpp:81:8: error: &#39;auto catapult::tools::nemgen::{anonymous}::CreateMosaicEntry(const catapult::utils::ConfigurationBag&amp;, const Key&amp;, const string&amp;, int)&#39; defined but not used [-Werror=unused-function]
+   auto CreateMosaicEntry(
+        ^~~~~~~~~~~~~~~~~
+cc1plus: all warnings being treated as errors
+tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/build.make:110: recipe for target &#39;tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/NemesisConfiguration.cpp.o&#39; failed
+make[3]: *** [tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/NemesisConfiguration.cpp.o] Error 1
+/home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp: At global scope:
+/home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp:54:15: error: &#39;std::__cxx11::string catapult::tools::nemgen::{anonymous}::GetChildName(const string&amp;)&#39; defined but not used [-Werror=unused-function]
+   std::string GetChildName(const std::string&amp; namespaceName) {
+               ^~~~~~~~~~~~
+cc1plus: all warnings being treated as errors
+tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/build.make:62: recipe for target &#39;tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/BlockGenerator.cpp.o&#39; failed
+make[3]: *** [tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/BlockGenerator.cpp.o] Error 1
+CMakeFiles/Makefile2:14165: recipe for target &#39;tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/all&#39; failed
+make[2]: *** [tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/all] Error 2
+CMakeFiles/Makefile2:14177: recipe for target &#39;tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/rule&#39; failed
+make[1]: *** [tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/rule] Error 2
+Makefile:2417: recipe for target &#39;catapult.tools.nemgen&#39; failed
+make: *** [catapult.tools.nemgen] Error 2</code></pre></div>
+<p>最下部付近を読んでいくと、どうやら<code>BlockGenerator.cpp.o</code>の生成に失敗している様子。<br />
+そして、例えば最上部付近を読んでみると、<code>'NamespaceId' was not declared in this scope</code>とエラー文にあるとおり、定義されているはずの宣言を見つけることが出来ていない。つまり、インクルード廻りのエラーだと考えられます。</p>
+
+<p>そして、結論から言うと、これに対処することで、ビルドが通るようになります。</p>
+
+<h1 id="環境">環境</h1>
+
+<h3 id="catapult">catapult</h3>
+
+<p>Dragon</p>
+
+<h3 id="コンパイルするos">コンパイルするOS</h3>
+
+<p>x86_64 GNU/Linux
+NAME=“Ubuntu”
+VERSION=“18.04.2 LTS (Bionic Beaver)”</p>
+
+<h1 id="対処">対処</h1>
+
+<p>理由は後回しにして、&rdquo;何をすべきか&rdquo;を書きます。</p>
+
+<p>対処自体は簡単で、<code>catapult-server.d/tools/CMakeLists.txt</code>の上部、<code>include_directories(. ${CMAKE_BINARY_DIR}/inc)</code>に<code>BEFORE</code>オプションを追加します。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr"># catapult-server.d/tools/CMakeLists.txt
+
+cmake_minimum_required(VERSION 3.2)
+
+# BEFOREを追加
+include_directories(BEFORE . ${CMAKE_BINARY_DIR}/inc)
+
+add_subdirectory(address)
+add_subdirectory(benchmark)
+add_subdirectory(health)
+add_subdirectory(nemgen)
+add_subdirectory(network)
+add_subdirectory(statusgen)
+add_subdirectory(tools)</code></pre></div>
+<p>これでビルドすれば通ります。</p>
+
+<h1 id="何をしているのか">何をしているのか</h1>
+
+<p><code>BEFORE</code>を追記することで、その場所でインクルードされるディレクトリの優先順位を上げています。</p>
+
+<h1 id="何故そんなことをする必要があるのか">何故そんなことをする必要があるのか</h1>
+
+<p>先に、少しビルド時の挙動について触れておきます。</p>
+
+<p><a href="https://github.com/nemtech/catapult-server/blob/master/BUILDING.md">https://github.com/nemtech/catapult-server/blob/master/BUILDING.md</a></p>
+
+<p>上記の<code>CATAPULT</code>の部分を見ると、<code>ninja -j4</code>を実行する前に<code>ninja publish</code>を実行しています。この操作は、pythonスクリプトを動かしているのですが、この操作によって、<code>_build</code>ディレクトリ内に<code>inc</code>ディレクトリが生成されます。</p>
+
+<p>この<code>inc</code>ディレクトリには、ビルドに必要なヘッダファイルが収められています。<br />
+そして、<code>対処</code>のパートで<code>BEFORE</code>を追記した部分を読むと、<code>include_directories(. ${CMAKE_BINARY_DIR}/inc)</code>とあるとおり、<code>ninja publish</code>によって生成した<code>inc</code>ディレクトリを参照するように指示していることがわかります。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ ninja publish
+$ ninja -j4</code></pre></div>
+<p>何故<code>src</code>内のヘッダファイルを直接参照しないのかと言うと、恐らく<code>plugins</code>や<code>extensions</code>などは<code>src</code>内のヘッダファイルをインクルードするが、それらが収まるディレクトリツリーの外に完全に出てしまっているので、直接ディレクトリをインクルードすると煩雑になる。そのため、一旦<code>inc</code>ディレクトリを生成してその中に<code>src</code>や<code>plubins</code>等で使うヘッダファイルを集約して、そこを参照するようにしているのだと考えられます。</p>
+
+<p>とにかく、ビルドするときには<code>inc</code>ディレクトリ内のヘッダファイルをインクルードしたいのです。</p>
+
+<p>そして今回、それが失敗しています。詳しい話は書くと長くなるので書きませんが、本来インクルードすべきではない別の場所を参照してしまっています。（下記図参照）</p>
+
+<p><picture>
+    
+    <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20190612_building_catapult_for_arm/draw1.png?raw=true">
+    <img src="https://github.com/mijinc0/blog/blob/image/forpost/20190612_building_catapult_for_arm/draw1.png?raw=true" alt="draw1" class="small-img smartfloat-left"/>
+</picture>
+<br clear="all"></p>
+
+<p>下記、Makefileに<code>warning</code>を追記してインクルードされているディレクトリを出力させてみた結果。</p>
+
+<h3 id="x86-64">x86_64</h3>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">/usr/bin/x86_64-linux-gnu-g++-7  $(CXX_DEFINES)
+                                 $(CXX_INCLUDES) -isystem boost-build-1.69.0/include
+                                                 -Icatapult-server/tools/.
+                                                 -Iatapult-server/_build/inc
+                                 $(CXX_FLAGS)
+                                 -o CMakeFiles/catapult.tools.nemgen.dir/BlockGenerator.cpp.o
+                                 -c catapult-server/tools/nemgen/BlockGenerator.cpp</code></pre></div>
+<p><code>x86_64</code>で普通にビルドしたときは、<code>BlockGenerator.cpp.o</code>をコンパイルするときには<code>boost-build-1.69.0/include</code>、<code>catapult-server/tools/.</code>、<code>catapult-server/_build/inc</code>がインクルードディレクトリとして指定されている。</p>
+
+<h3 id="arm64">arm64</h3>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">/usr/bin/aarch64-linux-gnu-g++-7  $(CXX_DEFINES)
+                                  $(CXX_INCLUDES) -isystem /home/mij/boost-build-1.69.0/include
+                                                  -Icatapult-server
+                                                  -Icatapult-server/src
+                                                  -Icatapult-server/plugins/txes/mosaic/src
+                                                  -Icatapult-server/tools/.
+                                                  -Icatapult-server/_build/inc
+                                  $(CXX_FLAGS)
+                                  -o CMakeFiles/catapult.tools.nemgen.dir/BlockGenerator.cpp.o
+                                  -c catapult-server.d/tools/nemgen/BlockGenerator.cpp</code></pre></div>
+<p><code>arm64</code>向けにクロスコンパイルしたときは、<code>catapult-server</code>と<code>catapult-server/src</code>と<code>catapult-server/plugins/txes/mosaic/src</code>が<code>catapult-server/_build/inc</code>よりも優先される位置でインクルードの指定を受けている。この為に本意でない場所のファイルをインクルードしてしまっていた。</p>
+
+<p>なぜそれらが<code>arm64</code>向けにビルドするときのみ残ってしまうのかが分からないが、理由が分かればもう少し良い修正方法がありそう。</p>
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" class="card-img" alt="catapult">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">x86_64 ubuntu上でcatapultをarm64用にビルドする(cow)</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2019-06-02 62:00">Jun 2, 2019</time></p>
+      <p>#nem2 </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

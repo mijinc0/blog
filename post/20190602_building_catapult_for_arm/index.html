@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>x86_64 ubuntu上でcatapultをarm64用にビルドする &middot; ByzantinePosts</title>
+  <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(cow) &middot; ByzantinePosts</title>
   <meta name="description" content="" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
@@ -16,7 +16,7 @@
   
   <style>
     body {
-      background: #ecedef url("https://github.com/mijinc0/blog-hugo/blob/image/general/background.png?raw=true") repeat;
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
     }
   </style>
 </head>
@@ -39,14 +39,14 @@
     <main class="content side-text-padding">
       <article class="post dropcase">
         <header class="post-header">
-        	<h1 class="post-title">x86_64 ubuntu上でcatapultをarm64用にビルドする</h1>
+        	<h1 class="post-title">x86_64 ubuntu上でcatapultをarm64用にビルドする(cow)</h1>
           <p class="post-date">Posted <time datetime="2019-06-02">Jun 2, 2019</time></p>
         </header>
         
         <picture class="post-figure">
             
-            <source srcset="https://github.com/mijinc0/blog-hugo/blob/image/featured/catapult.png?raw=true">
-          <img src="https://github.com/mijinc0/blog-hugo/blob/image/featured/catapult.png?raw=true" alt="catapult">
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" alt="catapult">
         </picture>
         
         
@@ -346,9 +346,9 @@ $ qemu-aarch64 -L /usr/aarch64-linux-gnu ./catapult.server</code></pre></div>
 
 <p>実際、catapult内で必要になるのは<code>_build</code>の中身のみなので、抜き出しても構いません。ただし、そのままだと設定ファイルがはいっていないので、その一つ下の<code>resources</code>の中身を、<code>_build</code>内の<code>resources</code>に移しておきましょう。</p>
 
-<p>ここで、<code>rocksdb.git</code>で、<code>librocksdb.so</code>と<code>librocksdb.so.5</code>がコピー出来ないことがあります（許可されない操作と出るはず）。</p>
-
-<p>この場合は、一旦無視して、<code>rocksdb.git</code>をRaspberryPiに移した後で、<code>librocksdb.so</code>と<code>librocksdb.so.5</code>をRaspberryPi上で作成します。</p>
+<p>ここで、<code>rocksdb.git</code>で、<code>librocksdb.so</code>と<code>librocksdb.so.5</code>がコピー出来ないことがあります（許可されない操作と出るはず）。
+20190602_building_catapult_for_arm
+この場合は、一旦無視して、<code>rocksdb.git</code>をRaspberryPiに移した後で、<code>librocksdb.so</code>と<code>librocksdb.so.5</code>をRaspberryPi上で作成します。</p>
 
 <p>これらはシンボリックリンクなので、<code>ln</code>コマンドで生成します。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr"># シンボリックリンクを作成
@@ -408,8 +408,8 @@ lrwxrwxrwx 1 XXX  XXX        20 Jun  2 08:32 librocksdb.so.5 -&gt; librocksdb.so
       <p class="card-img-overlay">Next Article</p>
       <picture>
         
-        <source srcset="https://github.com/mijinc0/blog-hugo/blob/image/featured/programing.png?raw=true">
-        <img src="https://github.com/mijinc0/blog-hugo/blob/image/featured/programing.png?raw=true" class="card-img" alt="programing">
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" class="card-img" alt="programing">
       </picture>
     </div>
     
@@ -424,7 +424,7 @@ lrwxrwxrwx 1 XXX  XXX        20 Jun  2 08:32 librocksdb.so.5 -&gt; librocksdb.so
 </a>
       
       <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
-  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog-hugo/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
   Home
 </a>
     </nav>

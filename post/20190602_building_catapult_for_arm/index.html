@@ -377,6 +377,8 @@ lrwxrwxrwx 1 XXX  XXX        20 Jun  2 08:32 librocksdb.so.5 -&gt; librocksdb.so
 
 # 確認(何も表示されなければok)
 /_build/bin$ ldd ./* | grep &#34;not found&#34;</code></pre></div>
+<p>あとは、<code>libgflags</code>が<code>not found</code>として残るはずです。これも入れましょう。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ sudo apt-get install libgflags-dev</code></pre></div>
 <p>これで、<code>not found</code>がなく、全ての必要なのライブラリにパスが通っていることが確認できれば、あとはcatapultの設定を行い、<code>catapult.server</code>で起動します。</p>
 
 <p>全ての機能については確認していませんが、ノードが起動します。</p>

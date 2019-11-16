@@ -4,31 +4,36 @@
   
   <url>
     <loc>https://mijinc0.github.io/blog/</loc>
-    <lastmod>2019-07-12T17:29:46+09:00</lastmod>
+    <lastmod>2019-11-16T12:58:42+09:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://mijinc0.github.io/blog/categories/</loc>
-    <lastmod>2019-07-12T17:29:46+09:00</lastmod>
+    <lastmod>2019-11-16T12:58:42+09:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://mijinc0.github.io/blog/post/</loc>
-    <lastmod>2019-07-12T17:29:46+09:00</lastmod>
+    <lastmod>2019-11-16T12:58:42+09:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://mijinc0.github.io/blog/categories/programing_tools/</loc>
+    <lastmod>2019-11-16T12:58:42+09:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://mijinc0.github.io/blog/post/20191116_mustache/</loc>
+    <lastmod>2019-11-16T12:58:42+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://mijinc0.github.io/blog/post/20190712_about_ldb/</loc>
     <lastmod>2019-07-12T17:29:46+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://mijinc0.github.io/blog/categories/programing_tools/</loc>
-    <lastmod>2019-07-12T17:29:46+09:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>

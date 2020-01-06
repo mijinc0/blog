@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Vueの非同期コンポーネント &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Vueの非同期コンポーネント</h1>
+          <p class="post-date">Posted <time datetime="2020-01-06">Jan 6, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" alt="programing">
+        </picture>
+        
+        
+
+<p>公式リファレンス:<br />
+<a href="https://jp.vuejs.org/v2/guide/components-dynamic-async.html">https://jp.vuejs.org/v2/guide/components-dynamic-async.html</a></p>
+
+<p>Vueでコンポーネントを作っていくと、単純に部品となるようなコンポーネントではあまり問題にならないが、
+部品をまとめるコンポーネントを作るときなどに、あまりにも規模が大きくなりすぎることがある。</p>
+
+<p>例えば、同じクラス(親)を継承した子供クラスのオブジェクトの内容を表示したいときなどでは、
+無策で書くとその時に必要のないコンポーネントまでクライアントにダウンロードさせることになってしまう。</p>
+
+<p><picture>
+    
+    <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20200106_vue_async_component/draw1.png?raw=true">
+    <img src="https://github.com/mijinc0/blog/blob/image/forpost/20200106_vue_async_component/draw1.png?raw=true" alt="draw1" class="small-img smartfloat-left"/>
+</picture>
+<br clear="all"></p>
+
+<p><br></p>
+
+<p><picture>
+    
+    <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20200106_vue_async_component/draw2.png?raw=true">
+    <img src="https://github.com/mijinc0/blog/blob/image/forpost/20200106_vue_async_component/draw2.png?raw=true" alt="draw1" class="small-img smartfloat-left"/>
+</picture>
+<br clear="all"></p>
+
+<p><br></p>
+
+<p>上記の図のように、「商品」を継承した子供クラスが3つあり、これを一つの画面にまとめて表示させたいとする。この時、
+共有部分は問題にならないが、各子供クラス特有の部分が問題に成る。</p>
+
+<p>例えば、「乗り物」クラスのオブジェクトの情報を表示したい時、本来であれば「乗り物」クラスの内容を表示するコンポーネントのみを
+クライアントはダウンロードすべきだ。しかし、普通にVueを描いていくと、本来必要のない「食べ物」や「本」用に用意したコンポーネントも
+クライアントにダウンロードすることを要求してしまう。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">&lt;</span>template<span style="font-weight:bold">&gt;</span>
+<span style="font-weight:bold">&lt;</span>div <span style="font-weight:bold">class</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;hello&#34;</span><span style="font-weight:bold">&gt;</span>
+  <span style="font-weight:bold">&lt;</span>components :<span style="color:#458;font-weight:bold">is</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;child&#34;</span><span style="font-weight:bold">&gt;&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/components&gt;</span>
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/div&gt;</span>
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/template&gt;</span>
+
+<span style="font-weight:bold">&lt;</span>script lang<span style="font-weight:bold">=</span><span style="color:#b84">&#34;ts&#34;</span><span style="font-weight:bold">&gt;</span>
+<span style="font-weight:bold">import</span> { Component, Prop, Vue } from <span style="color:#b84">&#39;vue-property-decorator&#39;</span>;
+
+<span style="font-weight:bold">import</span> Vehicle from <span style="color:#b84">&#39;./Vehicle.vue&#39;</span>;
+<span style="font-weight:bold">import</span> Food from <span style="color:#b84">&#39;./Food.vue&#39;</span>;
+<span style="font-weight:bold">import</span> Book from <span style="color:#b84">&#39;./Book.vue&#39;</span>;
+
+<span style="font-weight:bold">@Component</span>({
+  components<span style="font-weight:bold">:</span> {
+    Vehicle,
+    Food,
+    Book,
+  }
+})
+<span style="font-weight:bold">export</span> <span style="font-weight:bold">default</span> <span style="font-weight:bold">class</span> Page <span style="font-weight:bold">extends</span> Vue {
+  <span style="font-weight:bold">private</span> child: <span style="color:#458;font-weight:bold">object</span>;
+
+  <span style="font-weight:bold">public</span> created(){
+    ....
+  }
+}
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span></code></pre></div>
+<p>上記のように書いた場合、クライアントは最初に <code>Vehicle</code>, <code>Food</code>, <code>Book</code> の3つのコンポーネントを
+サーバーからダウンロードし、表示するべきコンポーネントのみを <code>child</code> に代入して表示させる。</p>
+
+<p>実際には、<code>Vehicle</code> を表示するだけの時に <code>Food</code> も <code>Book</code> も必要ない。必要があれば
+必要な時に必要な部分のみをサーバーに要求するほうが良い。</p>
+
+<p>これを、 <strong>非同期コンポーネント</strong> が解決してくれる。</p>
+
+<h2 id="非同期コンポーネントの基本">非同期コンポーネントの基本</h2>
+
+<p>コンポーネントを必要な時だけ、必要な分だけ要求することは一旦忘れて、まずは基本から。</p>
+
+<p>非同期コンポーネントは、子コンポーネントの指定に、そのコンポーネントを生成する関数(公式リファレンス内ではファクトリ関数と呼ばれている)
+を指定することで定義する。</p>
+
+<p>これは見たほうが早い。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">&lt;</span>script lang<span style="font-weight:bold">=</span><span style="color:#b84">&#34;ts&#34;</span><span style="font-weight:bold">&gt;</span>
+<span style="font-weight:bold">import</span> { Component, Prop, Vue } from <span style="color:#b84">&#39;vue-property-decorator&#39;</span>;
+
+<span style="font-weight:bold">@Component</span>({
+  components<span style="font-weight:bold">:</span> {
+    Vehicle<span style="font-weight:bold">:</span> () <span style="font-weight:bold">=&gt;</span> {<span style="color:#998;font-style:italic">/* ここにVheicleコンポーネントを生成するコードを書く */</span>}
+  }
+})
+<span style="font-weight:bold">export</span> <span style="font-weight:bold">default</span> <span style="font-weight:bold">class</span> Page <span style="font-weight:bold">extends</span> Vue {
+  <span style="font-weight:bold">private</span> child: <span style="color:#458;font-weight:bold">object</span>;
+
+  <span style="font-weight:bold">public</span> created(){
+    ....
+  }
+}
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span></code></pre></div>
+<p>上記のように、子コンポーネントである <code>Vheicle</code> を直接指定するのではなく、 <code>Vheicle</code> と名前を付けた
+<code>Vheicle</code> を生成する関数を親に渡す。</p>
+
+<p>親は、この関数を必要になったときにはじめて実行し、その場で子コンポーネントの生成を試みる。</p>
+
+<p>これが非同期コンポーネントの基本。子コンポーネントを生成するファクトリ関数の中身は、好きに書いて良い。例えば、</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">&lt;</span>script lang<span style="font-weight:bold">=</span><span style="color:#b84">&#34;ts&#34;</span><span style="font-weight:bold">&gt;</span>
+<span style="font-weight:bold">import</span> { Component, Prop, Vue } from <span style="color:#b84">&#39;vue-property-decorator&#39;</span>;
+
+<span style="font-weight:bold">import</span> Vehicle from <span style="color:#b84">&#39;./Vehicle.vue&#39;</span>;
+
+<span style="font-weight:bold">@Component</span>({
+  components<span style="font-weight:bold">:</span> {
+    Vehicle<span style="font-weight:bold">:</span> () <span style="font-weight:bold">=&gt;</span> {
+	  console.log(<span style="color:#b84">&#39;start creating Vcheicle!!!!&#39;</span>);
+      <span style="font-weight:bold">return</span> Vehicle;
+    }
+  }
+})
+<span style="font-weight:bold">export</span> <span style="font-weight:bold">default</span> <span style="font-weight:bold">class</span> Page <span style="font-weight:bold">extends</span> Vue {
+  <span style="font-weight:bold">private</span> child: <span style="color:#458;font-weight:bold">object</span>;
+
+  <span style="font-weight:bold">public</span> created(){
+    ....
+  }
+}
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span></code></pre></div>
+<p>と書いて、 <code>Vehicle</code> 生成時にコンソールに出力することも出来る。最終的に、目的のコンポーネントオブジェクトが返れば良い。</p>
+
+<h2 id="分割ダウンロード">分割ダウンロード</h2>
+
+<p>では、目的であるコンポーネントを必要な時だけ、必要な分だけ要求する部分について。</p>
+
+<p><strong>非同期コンポーネントの基本</strong> で書いたやり方では、最初に <code>import Vehicle from './Vehicle.vue';</code> を
+書いてしまったために、このコンポーネントを要求すると同時に <code>Vechicle</code> をサーバーに要求してしまう。(生成が非同期になっただけ)</p>
+
+<p>なので、 <code>import</code> の部分を関数の中に放り込んでやる。こうすれば、親コンポーネントは必要になった時にはじめて子コンポーネントを
+生成するファクトリ関数を呼び出し、そのなかにある <code>import</code> によって初めてサーバーに必要なコンポーネントを要求するようになる。</p>
+
+<p>typescript(javascript)には、静的なimportの他に、動的なimportが用意されており、コード内にimportを埋め込む際にはこちらを使う。</p>
+
+<p>よって、以下のようになる。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">&lt;</span>script lang<span style="font-weight:bold">=</span><span style="color:#b84">&#34;ts&#34;</span><span style="font-weight:bold">&gt;</span>
+<span style="font-weight:bold">import</span> { Component, Prop, Vue } from <span style="color:#b84">&#39;vue-property-decorator&#39;</span>;
+
+<span style="font-weight:bold">@Component</span>({
+  components<span style="font-weight:bold">:</span> {
+    Vehicle<span style="font-weight:bold">:</span> () <span style="font-weight:bold">=&gt;</span> (<span style="font-weight:bold">import</span>(<span style="color:#b84">&#39;./Vehicle.vue&#39;</span>))
+  }
+})
+<span style="font-weight:bold">export</span> <span style="font-weight:bold">default</span> <span style="font-weight:bold">class</span> Page <span style="font-weight:bold">extends</span> Vue {
+  <span style="font-weight:bold">private</span> child: <span style="color:#458;font-weight:bold">object</span>;
+
+  <span style="font-weight:bold">public</span> created(){
+    ....
+  }
+}
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span></code></pre></div>
+<p>これで、 <code>Vechicle</code> が必要な時にクライアントがサーバーに要求するようになった。</p>
+
+<h2 id="おまけ-循環参照にも使われる">おまけ: 循環参照にも使われる</h2>
+
+<p><a href="https://jp.vuejs.org/v2/guide/components-edge-cases.html#%E5%BE%AA%E7%92%B0%E5%8F%82%E7%85%A7">https://jp.vuejs.org/v2/guide/components-edge-cases.html#%E5%BE%AA%E7%92%B0%E5%8F%82%E7%85%A7</a></p>
+
+<p>非同期コンポーネントは循環参照したいときにも使われる。</p>
+
+<p>循環参照とは、</p>
+
+<ol>
+<li>コンポーネントAがコンポーネントBを子コンポーネントとする</li>
+<li>コンポーネントBがコンポーネントAを子コンポーネントとする</li>
+</ol>
+
+<p>の2つが同時に存在している状態だ。</p>
+
+<p>普通に書いたのでは、Vueは循環参照を勝手に解釈して解決してくれない。そこで、非同期コンポーネントを利用して、
+使用時に解決できるようにこちらがVueに教えてあげないといけない。</p>
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20200105_vue_dynamic_component/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" class="card-img" alt="programing">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Vueの動的コンポーネント(typescript)</h2>
+    <p class="card-text">Vueの動的コンポーネント</p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-01-05 15:00">Jan 5, 2020</time></p>
+      <p>#vue </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

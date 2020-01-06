@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Vueの動的コンポーネント(typescript) &middot; ByzantinePosts</title>
+  <meta name="description" content="Vueの動的コンポーネント" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Vueの動的コンポーネント(typescript)</h1>
+          <p class="post-date">Posted <time datetime="2020-01-05">Jan 5, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" alt="programing">
+        </picture>
+        
+        
+
+<p>Vue.jsの動的コンポーネントについて。</p>
+
+<p>公式リファレンス:<br />
+<a href="https://jp.vuejs.org/v2/guide/components-dynamic-async.html">https://jp.vuejs.org/v2/guide/components-dynamic-async.html</a></p>
+
+<h1 id="動的コンポーネント">動的コンポーネント</h1>
+
+<p>例えば、ボタンを3つ設置し、そのボタン操作によって表示するコンポーネント(子供)を変化させたい、などの場合、
+動的なコンポーネントが欲しくなる。</p>
+
+<p>動的なコンポーネントは <code>&lt;components&gt;</code> を使って表現する。このタグと置き換わる子供のコンポーネントの指定は、
+<code>v-bind:is (:is)</code> で指定することが出来、ここには子供のコンポーネント(オブジェクト)を与える。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">&lt;</span>template<span style="font-weight:bold">&gt;</span>
+<span style="font-weight:bold">&lt;</span>div <span style="font-weight:bold">class</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;hello&#34;</span><span style="font-weight:bold">&gt;</span>
+  <span style="font-weight:bold">&lt;</span>components :<span style="color:#458;font-weight:bold">is</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;childComponent&#34;</span><span style="font-weight:bold">&gt;&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/components&gt;</span>
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/div&gt;</span>
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/template&gt;</span>
+
+<span style="font-weight:bold">&lt;</span>script lang<span style="font-weight:bold">=</span><span style="color:#b84">&#34;ts&#34;</span><span style="font-weight:bold">&gt;</span>
+<span style="font-weight:bold">import</span> { Component, Prop, Vue } from <span style="color:#b84">&#39;vue-property-decorator&#39;</span>;
+
+<span style="font-weight:bold">import</span> Child from <span style="color:#b84">&#39;./Child.vue&#39;</span>;
+
+<span style="font-weight:bold">@Component</span>({
+  components<span style="font-weight:bold">:</span> {
+    Child
+  },
+})
+<span style="font-weight:bold">export</span> <span style="font-weight:bold">default</span> <span style="font-weight:bold">class</span> HelloWorld <span style="font-weight:bold">extends</span> Vue {
+  <span style="font-weight:bold">private</span> childComponent: <span style="color:#458;font-weight:bold">object</span> <span style="font-weight:bold">=</span> Child;
+}
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span></code></pre></div>
+<p>上記の場合、 <code>&lt;components&gt;</code> が <code>&lt;child&gt;</code> に置き換わると考えれば良い。</p>
+
+<p>あとはお好みで、 <code>childComponent</code> の値を変化させるイベントを仕込めば良い。</p>
+
+<h3 id="一度生成した子コンポーネントをキャッシュに保存したい">一度生成した子コンポーネントをキャッシュに保存したい</h3>
+
+<p>下記のようなコンポーネントがあったとする。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">&lt;</span>template<span style="font-weight:bold">&gt;</span>
+<span style="font-weight:bold">&lt;</span>div <span style="font-weight:bold">class</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;hello&#34;</span><span style="font-weight:bold">&gt;</span>
+  <span style="font-weight:bold">&lt;</span>button <span style="font-weight:bold">@click</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;clickBtn(1)&#34;</span><span style="font-weight:bold">&gt;</span>button1<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/button&gt;&lt;br&gt;</span>
+  <span style="font-weight:bold">&lt;</span>button <span style="font-weight:bold">@click</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;clickBtn(2)&#34;</span><span style="font-weight:bold">&gt;</span>button2<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/button&gt;&lt;br&gt;</span>
+  <span style="font-weight:bold">&lt;</span>components :<span style="color:#458;font-weight:bold">is</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;childComponent&#34;</span><span style="font-weight:bold">&gt;&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/components&gt;</span>
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/div&gt;</span>
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/template&gt;</span>
+
+<span style="font-weight:bold">&lt;</span>script lang<span style="font-weight:bold">=</span><span style="color:#b84">&#34;ts&#34;</span><span style="font-weight:bold">&gt;</span>
+<span style="font-weight:bold">import</span> { Component, Prop, Vue } from <span style="color:#b84">&#39;vue-property-decorator&#39;</span>;
+
+<span style="font-weight:bold">import</span> ChildA from <span style="color:#b84">&#39;./ChildA.vue&#39;</span>;
+<span style="font-weight:bold">import</span> ChildB from <span style="color:#b84">&#39;./ChildB.vue&#39;</span>;
+
+<span style="font-weight:bold">@Component</span>({
+  components<span style="font-weight:bold">:</span> {
+    ChildA,
+    ChildB,
+  }
+})
+<span style="font-weight:bold">export</span> <span style="font-weight:bold">default</span> <span style="font-weight:bold">class</span> HelloWorld <span style="font-weight:bold">extends</span> Vue {
+  <span style="font-weight:bold">private</span> childComponent: <span style="color:#458;font-weight:bold">object</span> <span style="font-weight:bold">=</span> ChildA;
+
+  <span style="font-weight:bold">private</span> clickBtn(componentNumber: <span style="color:#458;font-weight:bold">number</span>)<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+    <span style="font-weight:bold">switch</span> (componentNumber) {
+      <span style="font-weight:bold">case</span> 1 :
+        <span style="color:#458;font-weight:bold">this.childComponent</span> <span style="font-weight:bold">=</span> ChildA;
+        <span style="font-weight:bold">break</span>;
+      <span style="font-weight:bold">case</span> 2 :
+        <span style="color:#458;font-weight:bold">this.childComponent</span> <span style="font-weight:bold">=</span> ChildB;
+        <span style="font-weight:bold">break</span>;
+    }
+  }
+}
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span></code></pre></div>
+<p>上記のコンポーネントにはボタンが2つ設置刺されており、上のボタンを押すと <code>ChildA</code> が、下のボタンを押すと <code>ChildB</code> が
+<code>childComponent</code> フィールドに格納され、それが <code>&lt;components&gt;</code> に与えられて子コンポーネントを表示する。(ボタンを押すと切り替わる)</p>
+
+<p>上記の場合、</p>
+
+<ol>
+<li>ボタンを押す</li>
+<li>子コンポーネント(オブジェクト)を生成する</li>
+<li><code>childComponent</code> にオブジェクトを代入</li>
+<li><code>childComponent</code> の変化により表示を更新</li>
+</ol>
+
+<p>という手順を繰り返す。</p>
+
+<p>特に問題なさそうだが、2つのボタンを交互に押した時、</p>
+
+<ol>
+<li>ボタンBを押す</li>
+<li>ChildBオブジェクトが生成される</li>
+<li><code>childComponent</code> にオブジェクトが代入される</li>
+<li>ボタンAを押す</li>
+<li>ChildAオブジェクトが生成される</li>
+<li><code>childComponent</code> にオブジェクトが代入される</li>
+<li>ボタンBを押す</li>
+<li>ChildBオブジェクトが生成される</li>
+<li><code>childComponent</code> にオブジェクトが代入される</li>
+</ol>
+
+<p>&hellip;</p>
+
+<p>という繰り返しが行われる。せっかく、一度 <code>ChildB</code> を生成したのに、そこからさらに <code>ChildA</code> に切り替わると
+<code>ChildB</code> は破棄される。</p>
+
+<p>これだともったいないので、一度作った子コンポーネントはキャッシュして持っておきたい。
+そんな時に使えるのが <code>&lt;keep-alive&gt;</code> である。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#000080">template</span>&gt;
+&lt;<span style="color:#000080">div</span> <span style="color:#008080">class</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;hello&#34;</span>&gt;
+  &lt;<span style="color:#000080">button</span> <span style="color:#a61717;background-color:#e3d2d2">@</span><span style="color:#008080">click</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;clickBtn(1)&#34;</span>&gt;button1&lt;/<span style="color:#000080">button</span>&gt;&lt;<span style="color:#000080">br</span>&gt;
+  &lt;<span style="color:#000080">button</span> <span style="color:#a61717;background-color:#e3d2d2">@</span><span style="color:#008080">click</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;clickBtn(2)&#34;</span>&gt;button2&lt;/<span style="color:#000080">button</span>&gt;&lt;<span style="color:#000080">br</span>&gt;
+  &lt;<span style="color:#000080">keep-alive</span>&gt;
+    &lt;<span style="color:#000080">components</span> <span style="color:#008080">:is</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;childComponent&#34;</span>&gt;&lt;/<span style="color:#000080">components</span>&gt;
+  &lt;/<span style="color:#000080">keep-alive</span>&gt;
+&lt;/<span style="color:#000080">div</span>&gt;
+&lt;/<span style="color:#000080">template</span>&gt;</code></pre></div>
+<p>これで、一度生成した子コンポーネントはキャッシュに保存され、その手順は、</p>
+
+<ol>
+<li>ボタンBを押す</li>
+<li>ChildBオブジェクトが生成される</li>
+<li><code>childComponent</code> にオブジェクトが代入される</li>
+<li>ボタンAを押す</li>
+<li>ChildAオブジェクトがキャッシュから取り出される</li>
+<li><code>childComponent</code> にオブジェクトが代入される</li>
+<li>ボタンBを押す</li>
+<li>ChildBオブジェクトがキャッシュから取り出される</li>
+<li><code>childComponent</code> にオブジェクトが代入される</li>
+</ol>
+
+<p>となる。これなら、子コンポーネントの切り替え前をそのまま保持させておくことも出来る。</p>
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20191116_mustache/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" class="card-img" alt="programing">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">テンプレートエンジンmustacheを使ってみる</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2019-11-16 1116:00">Nov 16, 2019</time></p>
+      <p>#programing_tools </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

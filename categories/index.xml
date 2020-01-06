@@ -5,11 +5,18 @@
     <description>Recent content in Categories on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Sat, 16 Nov 2019 12:58:42 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 05 Jan 2020 22:27:10 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>vue</title>
+      <link>https://mijinc0.github.io/blog/categories/vue/</link>
+      <pubDate>Sun, 05 Jan 2020 22:27:10 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/categories/vue/</guid>
+      <description></description>
+    </item><item>
       <title>programing_tools</title>
       <link>https://mijinc0.github.io/blog/categories/programing_tools/</link>
       <pubDate>Sat, 16 Nov 2019 12:58:42 +0900</pubDate>

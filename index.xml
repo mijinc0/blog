@@ -5,11 +5,25 @@
     <description>Recent content on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Tue, 11 Aug 2020 10:56:00 +0900</lastBuildDate>
+    <lastBuildDate>Sat, 15 Aug 2020 10:35:20 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Webの技術でローカルアプリが作れるElectron</title>
+      <link>https://mijinc0.github.io/blog/post/20200815_gettig_start_electron/</link>
+      <pubDate>Sat, 15 Aug 2020 10:35:20 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20200815_gettig_start_electron/</guid>
+      <description></description>
+    </item><item>
+      <title>Webの技術でローカルアプリが作れるNW.js</title>
+      <link>https://mijinc0.github.io/blog/post/20200815_gettig_start_nwjs/</link>
+      <pubDate>Sat, 15 Aug 2020 10:05:13 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20200815_gettig_start_nwjs/</guid>
+      <description></description>
+    </item><item>
       <title>フラグメントシェーダーとGLSLの基礎</title>
       <link>https://mijinc0.github.io/blog/post/20200811_about_shader/</link>
       <pubDate>Tue, 11 Aug 2020 10:56:00 +0900</pubDate>
@@ -64,20 +78,6 @@
       <pubDate>Thu, 30 May 2019 18:51:11 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20190530_cpp_library/</guid>
-      <description></description>
-    </item><item>
-      <title>C&#43;&#43;のコードをARM用にコンパイルする</title>
-      <link>https://mijinc0.github.io/blog/post/20190530_cpp_arm_cross_compile/</link>
-      <pubDate>Thu, 30 May 2019 09:51:22 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20190530_cpp_arm_cross_compile/</guid>
-      <description></description>
-    </item><item>
-      <title>catapult cache</title>
-      <link>https://mijinc0.github.io/blog/post/20190508_catapult_cache/</link>
-      <pubDate>Wed, 08 May 2019 18:58:30 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20190508_catapult_cache/</guid>
       <description></description>
     </item>
   </channel>

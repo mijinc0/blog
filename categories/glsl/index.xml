@@ -1,0 +1,21 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>glsl - ByzantinePosts</title>
+    <link>https://mijinc0.github.io/blog/categories/glsl/</link>
+    <description>Recent content in glsl on ByzantinePosts</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Tue, 11 Aug 2020 10:56:00 +0900</lastBuildDate>
+    
+        <atom:link href="https://mijinc0.github.io/blog/categories/glsl/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>フラグメントシェーダーとGLSLの基礎</title>
+      <link>https://mijinc0.github.io/blog/post/20200811_about_shader/</link>
+      <pubDate>Tue, 11 Aug 2020 10:56:00 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20200811_about_shader/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

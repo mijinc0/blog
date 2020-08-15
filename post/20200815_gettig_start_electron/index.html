@@ -62,8 +62,7 @@
 <pre><code>[]project-root
 ├ []src
 │ ├ main.js
-│ ├ index.html
-│ └ package.json
+│ └ index.html
 └ package.json
 </code></pre>
 
@@ -139,7 +138,7 @@ app.on(<span style="color:#b84">&#39;activate&#39;</span>, () =&gt; {
 
 <ol>
 <li>レンダープロセスがボタンのクリックなどのイベントを検知する</li>
-<li>イベントがローカルファイルの参照や操作が必要とする場合、ipcによりイベントをメインプロセスに伝える</li>
+<li>イベントがローカルファイルの参照や操作を必要とする場合、ipcによりイベントをメインプロセスに伝える</li>
 <li>イベントをメインプロセスで処理し、結果をレンダープロセスに送る</li>
 <li>メインプロセスから受け取った結果を、レンダープロセスが画面の表示に反映する</li>
 </ol>
@@ -188,9 +187,9 @@ app.on(<span style="color:#b84">&#39;activate&#39;</span>, () =&gt; {
 <p>としておいて、コンパイル時に<code>-p</code>オプションでそれぞれの設定ファイルを指定。一回でできればよいが、出来なさそうなので、2回(レンダラープロセス用とメインプロセス用)コンパイルすることになる。</p>
 
 <p>あとは、主にコンテキストの違いで書き方に違いが出るのはモジュール廻りなので、気をつけて書く。
-ここで、紛らわしいのが、デフォルトの状態だとレンダラープロセスでも<code>require</code>が使えてしまうということだ。本来、<code>require</code>は<code>CommonJS</code>,つまりブラウザ環境上では使えないが、electronではブラウザ環境上でもNode.jsの機能が使えてしまうので(なので厳密にはレンダラープロセスはブラウザコンテキストを超越している)、混ざってしまいがち。</p>
+ここで、紛らわしいのが、デフォルトの状態だとレンダラープロセスでも<code>require</code>が使えてしまうということだ。本来、<code>require</code>は<code>CommonJS</code>,つまりブラウザ環境上では使えないが、electronではブラウザ環境上でもNode.jsの機能が使えてしまうのでCommonJSのrequireがレンダラープロセス上を走るソース内に混ざっていても動く。</p>
 
-<p>ただし、ブラウザコンテキスト上でNode.jsの機能が使えてしまうと、XSS(クロスサイトスクリプティング)の危険があるので、禁止したほうが無難(後述する)</p>
+<p>これだとそのうち混乱してしまうし、ブラウザコンテキスト上でNode.jsの機能が使えてしまうのは、XSS(クロスサイトスクリプティング)脆弱性が出た時に攻撃者がレンダラープロセスを経由して全てのNodeJSが提供する機能を利用出来てしまう危険があるので、禁止したほうが無難(後述する)</p>
 
 <h2 id="node-jsの-global-にプロパティを追加する方法">Node.jsの<code>global</code>にプロパティを追加する方法</h2>
 
@@ -200,15 +199,16 @@ app.on(<span style="color:#b84">&#39;activate&#39;</span>, () =&gt; {
 
 <p>ここで実行されるものは、Node.jsの機能が全て使える状態で実行される。そして、<code>preload</code>中に<code>global(Node.jsのグローバルオブジェクト)</code>に追加されたプロパティは、ブラウザコンテキスト上の<code>window</code>からも参照できるようになる。</p>
 
-<p>これで何が嬉しいのかと言うと、XSS対策のためにレンダラープロセスでNode.jsを禁止したのは良いが、そのままでは<code>electron</code>モジュールも使えなくなってしまう問題を解決できる。</p>
+<p>これで何が嬉しいのかと言うと、XSSを意識してレンダラープロセスでNode.jsの機能を使用することを禁止したのは良いが、そのままでは<code>electron</code>モジュールも使えなくなってしまう問題を解決できる。</p>
 
-<p>XSS対策のためにレンダラープロセスでNode.jsを禁止するには、<code>BrowserWindow</code>オブジェクト生成時に<code>nodeIntegration</code>を<code>false</code>にすれば良い。これで、レンダラープロセスプロセス上で<code>require</code>などのNode.jsの機能が禁止される。Node.jsの機能が禁止されるということは、ブラウザコンテキストからローカルファイルなどの深いところに手が届かなく成るので、安心、というわけだ。</p>
+<p>レンダラープロセスでNode.jsを禁止するには、<code>BrowserWindow</code>オブジェクト生成時に<code>nodeIntegration</code>を<code>false</code>にすれば良い。これで、レンダラープロセスプロセス上で<code>require</code>などのNode.jsの機能が禁止される。Node.jsの機能が禁止されるということは、ブラウザコンテキストからローカルファイルなどの深いところに手が届かなくなるので、すこし安心、というわけだ。</p>
 
 <p>しかし、<code>require</code>が使えないということは、<code>electron</code>モジュールも使えないということだ。<code>electron</code>モジュールが使えないということは、<code>electron</code>モジュールの中にある<code>ipcRenderer</code>が使えなくなり、レンダラープロセスとメインプロセス間のコミュニケーション手段が無くなってしまう。</p>
 
-<p>これだと困るので、最低限必要なNode.jsモジュールだけは許可したい。この時に、<code>preload</code>が使える。</p>
+<p>レンダラープロセスのみで完結するアプリであれば問題ないが、ファイルの操作を必要とするアプリケーションの場合これだと困るので、最低限必要なNode.jsモジュールだけは許可したい。この時に、<code>preload</code>が使える。</p>
 
-<p><code>preload</code>時にはNode.jsの仕様が禁止されないことは既に書いた。また、<code>preload</code>時に<code>global</code>に追加したプロパティはその後、レンダラープロセスの<code>window</code>から参照できることも書いた。つまり、<code>preload</code>時に<code>require</code>で必要最低限のモジュールをロードし、<code>global</code>に入れておけば、それだけはNode.jsが禁止されたレンダラープロセス上でも使用可能になるということだ。</p>
+<p><code>preload</code>時にはNode.jsの仕様が禁止されないことは既に書いた。また、<code>preload</code>時に<code>global</code>に追加したプロパティはその後、レンダラープロセスの<code>window</code>から参照できることも書いた。つまり、<code>preload</code>時に<code>require</code>で必要最低限のモジュールをロードし、<code>global</code>に入れておけば、それだけはNode.jsが禁止されたレンダラープロセス上でも使用可能になるということだ。
+(なので、XSSを意識して禁止したのであれば何を許可するのかは慎重に考えなくてはいけない。せっかく禁止したのにglobalに何でもかんでも入れていては、結局NodeJSの機能を禁止した意味が無くなってしまう。)</p>
 
 <p><code>main_main.ts</code></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts">  <span style="font-weight:bold">const</span> win <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> BrowserWindow({

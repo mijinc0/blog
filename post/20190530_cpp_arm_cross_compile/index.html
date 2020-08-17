@@ -4,6 +4,14 @@
   <meta charset="utf-8" />
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  >
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/post/20190530_cpp_arm_cross_compile/" />
+  <meta property="og:title" content="C&#43;&#43;のコードをARM用にコンパイルする" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" />
+
   <title>C&#43;&#43;のコードをARM用にコンパイルする &middot; ByzantinePosts</title>
   <meta name="description" content="" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
@@ -88,6 +96,19 @@
 <p>cmakeに下記の行を追加してコンパイラを指定する。直接書き込みたくなければ、CMakeのツールチェイン機能を使って指定することも出来る。その際は、<code>cmake</code>コマンドに<code>-DCMAKE_TOOLCHAIN_FILE=&lt;ツールチェイン用のcmakeファイル&gt;</code>オプションを渡してあげる。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cmake" data-lang="cmake"><span style="color:#999">set</span>(<span style="color:#b84">CMAKE_SYSTEM_NAME</span> <span style="color:#b84">Linux</span>)<span style="color:#a61717;background-color:#e3d2d2">
 </span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">set</span>(<span style="color:#b84">CMAKE_C_COMPILER</span> <span style="color:#b84">/usr/bin/arm-linux-gnueabihf-g++</span>)</code></pre></div>
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20190530_cpp_arm_cross_compile%2f&text=C%2b%2b%e3%81%ae%e3%82%b3%e3%83%bc%e3%83%89%e3%82%92ARM%e7%94%a8%e3%81%ab%e3%82%b3%e3%83%b3%e3%83%91%e3%82%a4%e3%83%ab%e3%81%99%e3%82%8b" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
       </article>
       
     </main>

@@ -4,6 +4,14 @@
   <meta charset="utf-8" />
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  >
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/post/20190612_building_catapult_for_arm/" />
+  <meta property="og:title" content="x86_64 ubuntu上でcatapultをarm64用にビルドする(dragon)" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" />
+
   <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(dragon) &middot; ByzantinePosts</title>
   <meta name="description" content="" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
@@ -227,6 +235,19 @@ $ ninja -j4</code></pre></div>
 <p><code>arm64</code>向けにクロスコンパイルしたときは、<code>catapult-server</code>と<code>catapult-server/src</code>と<code>catapult-server/plugins/txes/mosaic/src</code>が<code>catapult-server/_build/inc</code>よりも優先される位置でインクルードの指定を受けている。この為に本意でない場所のファイルをインクルードしてしまっていた。</p>
 
 <p>なぜそれらが<code>arm64</code>向けにビルドするときのみ残ってしまうのかが分からないが、理由が分かればもう少し良い修正方法がありそう。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20190612_building_catapult_for_arm%2f&text=x86_64%20ubuntu%e4%b8%8a%e3%81%a7catapult%e3%82%92arm64%e7%94%a8%e3%81%ab%e3%83%93%e3%83%ab%e3%83%89%e3%81%99%e3%82%8b%28dragon%29" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
 
       </article>
       

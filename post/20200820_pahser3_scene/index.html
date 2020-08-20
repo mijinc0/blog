@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/post/20200820_pahser3_scene/" />
+  <meta property="og:title" content="Phaser3 シーン管理" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
+
+  <title>Phaser3 シーン管理 &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Phaser3 シーン管理</h1>
+          <p class="post-date">Posted <time datetime="2020-08-20">Aug 20, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
+        </picture>
+        
+        
+
+<h1 id="phaser3-シーン管理">Phaser3 シーン管理</h1>
+
+<p><strong>前回の記事</strong><br />
+<a href="https://mijinc0.github.io/blog/post/20200820_phaser3_about/">https://mijinc0.github.io/blog/post/20200820_phaser3_about/</a></p>
+
+<p>Phaser3のシーン管理について。<br />
+※ typesriptで書くことを前提にしています</p>
+
+<h2 id="基本">基本</h2>
+
+<p>Phaserのシーンを扱う時、チュートリアルに従って書くと<code>Scene</code>を継承したクラスを自分で用意することになると思う。</p>
+
+<p><code>Scene</code>クラスには<code>init</code>,<code>preload</code>,<code>create</code>,<code>update</code>を用意し、シーンが開始して終了するまで、それぞれのフェーズで必要な処理をそこに書いていく。</p>
+
+<ul>
+<li><code>init</code> : 主にpreload前にやっておきたい初期化処理を書く</li>
+<li><code>preload</code> : 主にアセット(スプライトや音楽など)を読込む処理を書く</li>
+<li><code>create</code> : シーンにタイルマップやスプライトを配置する処理を書く(シーンを作るメインはここ)</li>
+<li><code>update</code> : 1フレーム毎に実行される処理を書く</li>
+</ul>
+
+<p>上記は公式のチュートリアルでも説明されていたはずなので上記で簡単におさらい。</p>
+
+<p><code>preload</code>は<code>preload</code>中に<code>LoaderPlugin</code>を使ったアセットのロード処理が全て完了したら、次の<code>create</code>が呼び出されるようになっている。また、シーンに描写したいスプライトなどを配置する処理を書くのは主に<code>create</code>になるが、<code>preload</code>中にオブジェクトを配置しても描写はされる。これは、簡単なローディングシーンを実装するときに使える。</p>
+
+<h2 id="シーンの開始について">シーンの開始について</h2>
+
+<p><code>SceneManager</code>の<code>add</code>関数によって追加されたシーンを開始する方法はいくつかある。</p>
+
+<ul>
+<li><code>SceneManager</code>の<code>start</code>関数</li>
+<li><code>SceneManager</code>の<code>run</code>関数</li>
+<li><code>ScenePlugin</code>の<code>start</code>関数</li>
+<li><code>ScenePlugin</code>の<code>run</code>関数</li>
+<li><code>ScenePlugin</code>の<code>launch</code>関数</li>
+<li>(<code>ScenePlugin</code>の<code>restart</code>関数)</li>
+</ul>
+
+<p><code>SceneManager</code>は<code>Game</code>クラス内で<code>this.scene</code>をするとアクセス出来、<code>ScenePlugin</code>は<code>Scene</code>クラス内で<code>this.scene</code>をするとアクセス出来る。似たような操作感で似たような関数を使うことになる部分が&rdquo;ややこしい&rdquo;ポイント。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">import</span> <span style="font-weight:bold">*</span> <span style="font-weight:bold">as</span> Phaser from <span style="color:#b84">&#39;phaser&#39;</span>;
+
+<span style="font-weight:bold">export</span> <span style="font-weight:bold">class</span> CustomGame <span style="font-weight:bold">extends</span> Phaser.Game {
+
+  <span style="font-weight:bold">constructor</span>() {
+    <span style="font-weight:bold">const</span> config: <span style="color:#458;font-weight:bold">Phaser.Types.Core.GameConfig</span> <span style="font-weight:bold">=</span> {
+      <span style="color:#998;font-style:italic">// 色々書く
+</span><span style="color:#998;font-style:italic"></span>    };
+
+    <span style="font-weight:bold">super</span>(config);
+
+    <span style="color:#998;font-style:italic">// SceneManager
+</span><span style="color:#998;font-style:italic"></span>    <span style="font-weight:bold">this</span>.scene;
+  }
+}</code></pre></div><div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">import</span> <span style="font-weight:bold">*</span> <span style="font-weight:bold">as</span> Phaser from <span style="color:#b84">&#39;phaser&#39;</span>;
+
+<span style="font-weight:bold">export</span> <span style="font-weight:bold">class</span> CustomScene <span style="font-weight:bold">extends</span> Phaser.Scene {
+  init(data: <span style="color:#458;font-weight:bold">any</span>)<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+    <span style="color:#998;font-style:italic">// ScenePlugin
+</span><span style="color:#998;font-style:italic"></span>    <span style="font-weight:bold">this</span>.scene;
+  }
+}</code></pre></div>
+<p>それぞれ簡単に見ていく。</p>
+
+<h3 id="scenemanager-start">SceneManager.start</h3>
+
+<p>これがSceneManagerでシーンを開始する時の基礎的な関数。</p>
+
+<h3 id="scenemanager-run">SceneManager.run</h3>
+
+<p>run関数は指定されたシーンの状態によって挙動を変える。</p>
+
+<ul>
+<li>pause状態    : resume関数を呼ぶ</li>
+<li>sleep状態    : wake関数を呼ぶ</li>
+<li>完全な停止状態 : start関数を呼ぶ</li>
+</ul>
+
+<p>全く動いていないシーンに対しては<code>run</code>でも<code>start</code>でも、結局のとろこ<code>run</code>関数内で<code>start</code>を呼ぶので同じことをしている。</p>
+
+<h3 id="sceneplugin-start">ScenePlugin.start</h3>
+
+<p>現在のシーン (ScenePluginはSceneクラス内で<code>scene</code>プロパティにアクセスすることを思い出して欲しい) を停止して、新たに指定したシーンを開始する。</p>
+
+<h3 id="sceneplugin-run">ScenePlugin.run</h3>
+
+<p>SceneManagerのrunを呼ぶのと同じ。</p>
+
+<h3 id="sceneplugin-launch">ScenePlugin.launch</h3>
+
+<p>SceneManagerのstartを呼ぶのと同じ。だが、<code>ScenePlugin.start</code>が現在のシーンを停止して、新しいシーンをstartさせるのに対し、こちらは新たしいシーンをstartさせるだけであることに注目してほしい。</p>
+
+<p>関数の説明に &ldquo;Launch the given Scene and run it in parallel with this one.&rdquo; とあるのはそのため。</p>
+
+<h3 id="sceneの開始まとめ">Sceneの開始まとめ</h3>
+
+<p>使い分けとしては以下のようにまとめる。</p>
+
+<ol>
+<li>Gameクラス内において、シーンを開始するだけであれば<code>start</code>を使う</li>
+<li>Gameクラス内において、シーンの状態によって新規開始、再開、などを分けたければ<code>run</code>を使う</li>
+<li>Sceneクラス内に置いて、現在のシーンを停止して新しいシーンを新規開始したければ<code>start</code>を使う</li>
+<li>Sceneクラス内に置いて、現在のシーンをそのままに新しいシーンをその状態によって新規開始、再開、などを分けて開始したければ<code>run</code>を使う</li>
+<li>Sceneクラス内に置いて、現在のシーンをそのままに新規開始したければ<code>run</code>を使う</li>
+</ol>
+
+<h2 id="マルチシーン">マルチシーン</h2>
+
+<p>Phaser3では並行して複数のシーンを動かすことが出来る。</p>
+
+<p>&ldquo;並行して&rdquo; とあるが、非同期で動いているわけではない。一つのフレーム(一回のupdateループ)内で複数のシーンが同時にupdateされるという意味である。動かす順番は、<code>SceneManager.add</code>によって追加した順に動く。(後から変えることも出来る)</p>
+
+<p>この順番は大事で、<code>SceneManager.add</code>で追加された順に描写される、つまり、後から追加されたシーンの描写は重なった時に手前に描写されるということを意味する。</p>
+
+<p>例えば、画面を真っ暗にした状態でメッセージだけ表示したいときのことを考えてみる。勿論一つのシーン内で<code>depth(z-index)</code>を調整してメッセージのみを表示することは可能だ。だが、とても面倒くさいと思わないか。また、雨のエフェクトを画面に追加するときのことを考えてほしい。
+雨のエフェクトはほしいが、メッセージが見づらくなるのは嫌だとなると、一つのシーンでそれを調整するのは面倒ではないか。</p>
+
+<p>これらを解決する方法として、複数のシーンを立てておいてメッセージなどのUIは手前のシーンに描写、キャラクターなどが存在するシーンと分けるという手段がある。これなら、それらを<code>depth</code>の調整をせずに達成することが出来る。メッセージボックス等のUIを必ず手前のシーンに描写すると決めてしまえば、ゲーム本体のシーンがフェードアウトして真っ暗になってもメッセージボックスは表示できるし、雨のエフェクトがかかっていてもメッセージボックスには影響を与えない。</p>
+
+<h2 id="さいごに">さいごに</h2>
+
+<p>マルチシーンの話は最初私が知らなくて、あとからPhaserの記事を漁っている時に知ったために&rdquo;最初から知っていれば&rdquo;と思った代表である。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20200820_pahser3_scene%2f&text=Phaser3%20%e3%82%b7%e3%83%bc%e3%83%b3%e7%ae%a1%e7%90%86" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20200820_phaser3_about/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" class="card-img" alt="phaser">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Html5ゲームフレームワーク Phaser3</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-08-20 820:00">Aug 20, 2020</time></p>
+      <p>#game_dev </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

@@ -5,11 +5,18 @@
     <description>Recent content in Posts on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Thu, 20 Aug 2020 10:50:35 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 20 Aug 2020 14:58:25 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Phaser3 シーン管理</title>
+      <link>https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</link>
+      <pubDate>Thu, 20 Aug 2020 14:58:25 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</guid>
+      <description></description>
+    </item><item>
       <title>Html5ゲームフレームワーク Phaser3</title>
       <link>https://mijinc0.github.io/blog/post/20200820_phaser3_about/</link>
       <pubDate>Thu, 20 Aug 2020 10:50:35 +0900</pubDate>
@@ -71,13 +78,6 @@
       <pubDate>Fri, 12 Jul 2019 17:29:46 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20190712_about_ldb/</guid>
-      <description></description>
-    </item><item>
-      <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(dragon)</title>
-      <link>https://mijinc0.github.io/blog/post/20190612_building_catapult_for_arm/</link>
-      <pubDate>Wed, 12 Jun 2019 13:29:56 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20190612_building_catapult_for_arm/</guid>
       <description></description>
     </item>
   </channel>

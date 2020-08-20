@@ -5,11 +5,18 @@
     <description>Recent content on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Sun, 16 Aug 2020 09:23:51 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 20 Aug 2020 10:50:35 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Html5ゲームフレームワーク Phaser3</title>
+      <link>https://mijinc0.github.io/blog/post/20200820_phaser3_about/</link>
+      <pubDate>Thu, 20 Aug 2020 10:50:35 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20200820_phaser3_about/</guid>
+      <description></description>
+    </item><item>
       <title>Electronプロジェクトのビルド</title>
       <link>https://mijinc0.github.io/blog/post/20200816_electron_builder/</link>
       <pubDate>Sun, 16 Aug 2020 09:23:51 +0900</pubDate>
@@ -71,13 +78,6 @@
       <pubDate>Wed, 12 Jun 2019 13:29:56 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20190612_building_catapult_for_arm/</guid>
-      <description></description>
-    </item><item>
-      <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(cow)</title>
-      <link>https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/</link>
-      <pubDate>Sun, 02 Jun 2019 10:59:20 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/</guid>
       <description></description>
     </item>
   </channel>

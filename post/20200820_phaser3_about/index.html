@@ -67,7 +67,7 @@
 
 <p><a href="https://phaser.io/">https://phaser.io/</a></p>
 
-<p>###　リファレンス</p>
+<h3 id="リファレンス">リファレンス</h3>
 
 <p><a href="https://photonstorm.github.io/phaser3-docs/index.html">https://photonstorm.github.io/phaser3-docs/index.html</a></p>
 
@@ -75,19 +75,15 @@
 
 <p><a href="http://www.photonstorm.com/">http://www.photonstorm.com/</a></p>
 
-<p>#　概要</p>
+<h1 id="概要">概要</h1>
 
 <p>HTML5から新たに追加された要素である<code>&lt;canvas&gt;</code>は、指定した範囲に図形を書いたりイメージを表示したりすることが出来る機能を持つ。</p>
 
 <p>こういった機能が出れば <strong>よし、これでゲームを作ろう！</strong> となるのが大宇宙の原則であり、その流れの中で生まれたのが <strong>Phaser</strong> である。</p>
 
-<p>Phaserはhtml5でゲームを作るためのjavascriptライブラリ、フレームワークである。メジャーバージョンアップが進んでこれを書いている時点での最新が<code>Phaser3</code>。</p>
+<p>Phaserはhtml5でゲームを作るためのjavascriptライブラリ、フレームワークである。メジャーバージョンアップが進んでこれを書いている時点での最新が<code>Phaser3</code>。型定義ファイルも付いているのでtypescriptでも書ける。</p>
 
-<p>型定義ファイルも付いているのでtypescriptでも書ける。</p>
-
-<p>「ゲームを作ろう」となって最初に候補に入るゲームエンジンは<code>UE4</code>や<code>Unity</code>、もう少し調べると<code>Cocos2d</code>も見つかると思う。</p>
-
-<p>私はこれらは一切触ったことが無いので比較は出来ないが、一般的な話として<code>Phaser3</code>を使うメリットとしては</p>
+<p>「ゲームを作ろう」となって最初に候補に入るゲームエンジンは<code>UE4</code>や<code>Unity</code>、もう少し調べると<code>Cocos2d</code>も見つかると思う。  私はこれらは一切触ったことが無いので比較は出来ないが、一般的な話として<code>Phaser3</code>を使うメリットとしては</p>
 
 <ul>
 <li>ブラウザという恐らく一般の人が使っているであろうデバイスに必ず入っているプログラムの上で動く、つまりクロスプラットホーム開発が出来る</li>
@@ -100,9 +96,9 @@
 
 <p>開発サイトやチュートリアルは英語だが、Google翻訳先生の力を借りれば読めるので個人的に底は気にしなくても良いかなと思う。</p>
 
-<p>個人的な意見ですが、Phaserは一番面倒な描写廻り、シーン管理、アセットのロード機能など、根本的な機能をライブラリに任せることが出来ながらも、ツクールのように何でもは揃っていないため、程よく自分で色々用意しないといけないという性質から、 <strong>ゲームを作ろうと思い立ったらフレームワークから作ってしまいそうになる人</strong> に最適かなと思っています。</p>
+<p>個人的な意見ですが、Phaserは一番面倒な描写廻り、シーン管理、アセットのロード機能など、根本的な機能をライブラリに任せることが出来ながらも、ツクールのように何でもは揃っていないため、程よく自分で色々用意しないといけないという性質から、 <strong>&ldquo;ゲームを作ろうと思い立ったらフレームワークから作ってしまいそうになる人&rdquo;</strong> に最適かなと思っています。</p>
 
-<p>開発欲求を満たしつつ、フレームワークから作る(永遠に作り終わらない)ことを避けることが出来ます。</p>
+<p>適度に開発欲求を満たしつつ、フレームワークから作る(永遠に作り終わらない)ことを避けることが出来ます。</p>
 
 <h1 id="gettingstarted">GettingStarted</h1>
 
@@ -115,9 +111,24 @@
 
 <p>親切なのでこれ以上説明することがない。</p>
 
+<h1 id="作ったもの">作ったもの</h1>
+
+<p><img src="https://github.com/mijinc0/escape_game/raw/master/ss/ss1.png" alt="ss" /></p>
+
+<p><a href="https://github.com/mijinc0/escape_game">https://github.com/mijinc0/escape_game</a></p>
+
+<ul>
+<li>プレイ人数 : 1人</li>
+<li>プレイ時間 : 5-20分</li>
+</ul>
+
+<p>アイテムを探してイベントが進行する、シンプルな脱出ゲームです。</p>
+
+<p>本当は王道のローグライクやターン制のRPGを作ってみたかったのですが、初めて作るのでもっと簡単なもの、それらから戦闘システムなどを抜き取ったゲーム、ということで脱出ゲームになりました。</p>
+
 <h1 id="開発における参考">開発における参考</h1>
 
-<h3 id="リファレンス">リファレンス</h3>
+<h3 id="リファレンス-1">リファレンス</h3>
 
 <p><a href="https://photonstorm.github.io/phaser3-docs/index.html">https://photonstorm.github.io/phaser3-docs/index.html</a></p>
 

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/post/20200820_phaser3_about/" />
+  <meta property="og:title" content="Html5ゲームフレームワーク Phaser3" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
+
+  <title>Html5ゲームフレームワーク Phaser3 &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Html5ゲームフレームワーク Phaser3</h1>
+          <p class="post-date">Posted <time datetime="2020-08-20">Aug 20, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
+        </picture>
+        
+        
+
+<h1 id="html5ゲームフレームワーク-phaser3">Html5ゲームフレームワーク Phaser3</h1>
+
+<p>html5用ゲームフレームワークの<code>Phaser</code>を使って簡単なゲームを作ったので、内容毎に記事を分けて知見をまとめる。これはその&rdquo;入り&rdquo;の記事。</p>
+
+<h3 id="公式サイト">公式サイト</h3>
+
+<p><a href="https://phaser.io/">https://phaser.io/</a></p>
+
+<p>###　リファレンス</p>
+
+<p><a href="https://photonstorm.github.io/phaser3-docs/index.html">https://photonstorm.github.io/phaser3-docs/index.html</a></p>
+
+<h3 id="開発元サイト">開発元サイト</h3>
+
+<p><a href="http://www.photonstorm.com/">http://www.photonstorm.com/</a></p>
+
+<p>#　概要</p>
+
+<p>HTML5から新たに追加された要素である<code>&lt;canvas&gt;</code>は、指定した範囲に図形を書いたりイメージを表示したりすることが出来る機能を持つ。</p>
+
+<p>こういった機能が出れば <strong>よし、これでゲームを作ろう！</strong> となるのが大宇宙の原則であり、その流れの中で生まれたのが <strong>Phaser</strong> である。</p>
+
+<p>Phaserはhtml5でゲームを作るためのjavascriptライブラリ、フレームワークである。メジャーバージョンアップが進んでこれを書いている時点での最新が<code>Phaser3</code>。</p>
+
+<p>型定義ファイルも付いているのでtypescriptでも書ける。</p>
+
+<p>「ゲームを作ろう」となって最初に候補に入るゲームエンジンは<code>UE4</code>や<code>Unity</code>、もう少し調べると<code>Cocos2d</code>も見つかると思う。</p>
+
+<p>私はこれらは一切触ったことが無いので比較は出来ないが、一般的な話として<code>Phaser3</code>を使うメリットとしては</p>
+
+<ul>
+<li>ブラウザという恐らく一般の人が使っているであろうデバイスに必ず入っているプログラムの上で動く、つまりクロスプラットホーム開発が出来る</li>
+<li>js_tsを使うのでWebアプリなどの開発経験があれば知識を流用できる</li>
+<li>仰々しい(=便利な)総合開発環境を入れなくても、ライブラリ一つで開発が出来る</li>
+<li>ツクールなどの開発環境にリスペクトが持てるようになる</li>
+</ul>
+
+<p>あたりになるかと思う。</p>
+
+<p>開発サイトやチュートリアルは英語だが、Google翻訳先生の力を借りれば読めるので個人的に底は気にしなくても良いかなと思う。</p>
+
+<p>個人的な意見ですが、Phaserは一番面倒な描写廻り、シーン管理、アセットのロード機能など、根本的な機能をライブラリに任せることが出来ながらも、ツクールのように何でもは揃っていないため、程よく自分で色々用意しないといけないという性質から、 <strong>ゲームを作ろうと思い立ったらフレームワークから作ってしまいそうになる人</strong> に最適かなと思っています。</p>
+
+<p>開発欲求を満たしつつ、フレームワークから作る(永遠に作り終わらない)ことを避けることが出来ます。</p>
+
+<h1 id="gettingstarted">GettingStarted</h1>
+
+<p>&ldquo;<code>javascript</code>とか<code>Node.js</code>とかよく分からない&rdquo;という人は先にProgate等でそちらの勉強をしたほうが良い。これが無いと、最初のコードを書くところは良いが、そこから少し逸脱した途端に何もわからなくなってむしろ辛い思いをすると思う。</p>
+
+<p>そうでない人は、公式サイトのGettingStartedが親切なのでGoogle先生の力を借りながらそれをやる。</p>
+
+<p><a href="https://phaser.io/tutorials/getting-started-phaser3">https://phaser.io/tutorials/getting-started-phaser3</a><br />
+<a href="http://phaser.io/tutorials/making-your-first-phaser-3-game/part1">http://phaser.io/tutorials/making-your-first-phaser-3-game/part1</a></p>
+
+<p>親切なのでこれ以上説明することがない。</p>
+
+<h1 id="開発における参考">開発における参考</h1>
+
+<h3 id="リファレンス">リファレンス</h3>
+
+<p><a href="https://photonstorm.github.io/phaser3-docs/index.html">https://photonstorm.github.io/phaser3-docs/index.html</a></p>
+
+<h3 id="開発者のnotes">開発者のnotes</h3>
+
+<p><a href="https://rexrainbow.github.io/phaser3-rex-notes/docs/site/">https://rexrainbow.github.io/phaser3-rex-notes/docs/site/</a></p>
+
+<h3 id="tilemapの作り方の記事">tilemapの作り方の記事</h3>
+
+<p><a href="https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6">https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6</a></p>
+
+<p>次の記事から、上記 &ldquo;開発者のnotes&rdquo; に書かれているような内容を、思い出せる範囲で書いていきます。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20200820_phaser3_about%2f&text=Html5%e3%82%b2%e3%83%bc%e3%83%a0%e3%83%95%e3%83%ac%e3%83%bc%e3%83%a0%e3%83%af%e3%83%bc%e3%82%af%20Phaser3" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20200816_electron_builder/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/js_ts.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/js_ts.png?raw=true" class="card-img" alt="js_ts">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Electronプロジェクトのビルド</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-08-16 816:00">Aug 16, 2020</time></p>
+      <p>#js_ts </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

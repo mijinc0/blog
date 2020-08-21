@@ -5,11 +5,18 @@
     <description>Recent content in Posts on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Fri, 21 Aug 2020 12:45:31 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 21 Aug 2020 14:01:23 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Phaser3 Loadingシーン</title>
+      <link>https://mijinc0.github.io/blog/post/20200821_phaser3_loading_scene/</link>
+      <pubDate>Fri, 21 Aug 2020 14:01:23 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20200821_phaser3_loading_scene/</guid>
+      <description></description>
+    </item><item>
       <title>Phaser3 カメラエフェクト</title>
       <link>https://mijinc0.github.io/blog/post/20200821_phaser3_cameraeffects/</link>
       <pubDate>Fri, 21 Aug 2020 12:45:31 +0900</pubDate>
@@ -71,13 +78,6 @@
       <pubDate>Sat, 15 Aug 2020 10:05:13 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20200815_gettig_start_nwjs/</guid>
-      <description></description>
-    </item><item>
-      <title>フラグメントシェーダーとGLSLの基礎</title>
-      <link>https://mijinc0.github.io/blog/post/20200811_about_shader/</link>
-      <pubDate>Tue, 11 Aug 2020 10:56:00 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20200811_about_shader/</guid>
       <description></description>
     </item>
   </channel>

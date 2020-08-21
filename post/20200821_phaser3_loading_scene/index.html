@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/post/20200821_phaser3_loading_scene/" />
+  <meta property="og:title" content="Phaser3 Loadingシーン" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
+
+  <title>Phaser3 Loadingシーン &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Phaser3 Loadingシーン</h1>
+          <p class="post-date">Posted <time datetime="2020-08-21">Aug 21, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
+        </picture>
+        
+        
+
+<h1 id="phaser3-loadingシーン">Phaser3 Loadingシーン</h1>
+
+<p><strong>前回の記事</strong><br />
+<a href="https://mijinc0.github.io/blog/post/20200821_phaser3_cameraeffects/">https://mijinc0.github.io/blog/post/20200821_phaser3_cameraeffects/</a></p>
+
+<h2 id="概要">概要</h2>
+
+<p><code>loading...</code>って出るシーン欲しくないですか。ほしいですよね。2Dでゲームを作っていると特にオーディオデータなんかは比較的サイズが大きくなりやすいし、もし小さいゲームなら最初にアセットを全部読み込んでしまってキャッシュに貯めておきたいですよね。その間画面が真っ暗のままだとプレイヤーを不安にさせるし、最近だとロード画面中にゲームのTIPS何かを表示するのに使っていたりしますよね。作りましょう。</p>
+
+<h2 id="簡単なloadingシーン">簡単なLoadingシーン</h2>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">import</span> <span style="font-weight:bold">*</span> <span style="font-weight:bold">as</span> Phaser from <span style="color:#b84">&#39;phaser&#39;</span>;
+
+<span style="font-weight:bold">export</span> <span style="font-weight:bold">class</span> Loading <span style="font-weight:bold">extends</span> Phaser.Scene {
+  
+  <span style="font-weight:bold">private</span> progressBar: <span style="color:#458;font-weight:bold">Phaser.GameObjects.Rectangle</span>;
+
+  preload()<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+    <span style="font-weight:bold">const</span> progressBar <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.add.rectangle(<span style="color:#099">16</span>, <span style="color:#099">160</span>, <span style="color:#099">0</span>, <span style="color:#099">8</span>, <span style="color:#099">0xffffff</span>);
+    <span style="font-weight:bold">this</span>.loadingText <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.add.text(<span style="color:#099">80</span>, <span style="color:#099">80</span>, <span style="color:#b84">&#39;loading...&#39;</span>, {});
+
+    <span style="color:#998;font-style:italic">// 進捗バーを更新するイベント
+</span><span style="color:#998;font-style:italic"></span>    <span style="font-weight:bold">this</span>.scene.load.on(<span style="color:#b84">&#39;progress&#39;</span>, <span style="font-weight:bold">this</span>._updateBar.bind(<span style="font-weight:bold">this</span>));
+    <span style="color:#998;font-style:italic">// 一つのファイルの読込が完了したときのイベント
+</span><span style="color:#998;font-style:italic"></span>    <span style="font-weight:bold">this</span>.scene.load.on(<span style="color:#b84">&#39;load&#39;</span>, <span style="font-weight:bold">this</span>._loadingSuccessful.bind(<span style="font-weight:bold">this</span>));
+    <span style="color:#998;font-style:italic">// 全てのファイルのロード処理が完了した時のイベント
+</span><span style="color:#998;font-style:italic"></span>    <span style="font-weight:bold">this</span>.scene.load.on(<span style="color:#b84">&#39;complete&#39;</span>, <span style="font-weight:bold">this</span>._complete.bind(<span style="font-weight:bold">this</span>));
+
+    <span style="color:#998;font-style:italic">// 以下、ロード処理
+</span><span style="color:#998;font-style:italic"></span>    <span style="font-weight:bold">this</span>.load.json(...args);
+    <span style="font-weight:bold">this</span>.load.spritesheet(...args);
+  }
+
+  <span style="font-weight:bold">private</span> _updateBar(percentage: <span style="color:#458;font-weight:bold">number</span>)<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+    <span style="font-weight:bold">const</span> maxWidth <span style="font-weight:bold">=</span> <span style="color:#099">400</span>;
+
+    <span style="font-weight:bold">this</span>.progressBar.width <span style="font-weight:bold">=</span> <span style="color:#099">400</span> <span style="font-weight:bold">*</span> percentage;
+  }
+
+  <span style="color:#998;font-style:italic">/**
+</span><span style="color:#998;font-style:italic">   * これはデバッグ用。何をロードしたのか後から確認できたほうが良い。
+</span><span style="color:#998;font-style:italic">   */</span>
+  <span style="font-weight:bold">private</span> _loadingSuccessful(file: <span style="color:#458;font-weight:bold">any</span>)<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+    <span style="font-weight:bold">const</span> src <span style="font-weight:bold">=</span> file.src <span style="font-weight:bold">?</span> file.src <span style="font-weight:bold">:</span> <span style="color:#b84">&#39;unknown/path&#39;</span>;
+    <span style="font-weight:bold">const</span> key <span style="font-weight:bold">=</span> file.src <span style="font-weight:bold">?</span> file.key <span style="font-weight:bold">:</span> <span style="color:#b84">&#39;unknown_key&#39;</span>;
+    console.log(<span style="color:#b84">`load asset : </span><span style="color:#b84">${</span>key<span style="color:#b84">}</span><span style="color:#b84"> : </span><span style="color:#b84">${</span>src<span style="color:#b84">}</span><span style="color:#b84">`</span>);
+  }
+
+  <span style="font-weight:bold">private</span> _complete()<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+    console.log(<span style="color:#b84">&#39;loading complete&#39;</span>);
+
+    <span style="font-weight:bold">this</span>.cameras.main.fadeOut(<span style="color:#099">500</span>, <span style="color:#099">0</span>, <span style="color:#099">0</span>, <span style="color:#099">0</span>, (camera: <span style="color:#458;font-weight:bold">Phaser.Cameras.Scene2D.Camera</span>, progress: <span style="color:#458;font-weight:bold">number</span>) <span style="font-weight:bold">=&gt;</span> {
+      <span style="font-weight:bold">if</span> (progress <span style="font-weight:bold">===</span> <span style="color:#099">1</span>) {
+        <span style="font-weight:bold">this</span>.scene.start(<span style="color:#b84">&#39;nextScene&#39;</span>);
+      }
+    });
+  }
+}</code></pre></div>
+<p>特に説明することは無い。</p>
+
+<ol>
+<li><code>progress</code>イベントは進捗をパーセンテージ(100% = 1.0)で受け取れるので、進捗に応じて進捗バーを伸ばす</li>
+<li>ファイルがロード出来たらコンソールで確認できるようにする</li>
+<li>全てのロードが完了したら目的のシーンに移るようにイベントを仕込んでおく</li>
+</ol>
+
+<p>これだけ。Phaser3ではアセットのキャッシュは全てのシーンから参照可能なので、各シーンの<code>preload</code>にそれぞれで必要なアセットを毎回読み込まなくても、最初にローディングシーンを作ってそこで読み込んでしまえば良い。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20200821_phaser3_loading_scene%2f&text=Phaser3%20Loading%e3%82%b7%e3%83%bc%e3%83%b3" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20200821_phaser3_cameraeffects/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" class="card-img" alt="phaser">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Phaser3 カメラエフェクト</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-08-21 821:00">Aug 21, 2020</time></p>
+      <p>#game_dev </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/post/20200821_phaser3_cameraeffects/" />
+  <meta property="og:title" content="Phaser3 カメラエフェクト" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
+
+  <title>Phaser3 カメラエフェクト &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Phaser3 カメラエフェクト</h1>
+          <p class="post-date">Posted <time datetime="2020-08-21">Aug 21, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
+        </picture>
+        
+        
+
+<h1 id="phaser3-カメラエフェクト">Phaser3 カメラエフェクト</h1>
+
+<p><strong>前回の記事</strong></p>
+
+<p><a href="https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/">https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/</a></p>
+
+<h2 id="カメラエフェクトをかける方法">カメラエフェクトをかける方法</h2>
+
+<p>Phaser3ではカメラ用の標準的なエフェクトがいくつか用意されている。</p>
+
+<ul>
+<li>フェード(イン/アウト)</li>
+<li>フラッシュ</li>
+<li>揺らす</li>
+<li>パン</li>
+<li>ズーム</li>
+<li>回転</li>
+</ul>
+
+<p>逆に言うと、これら以外は基本的にない(はず)。</p>
+
+<p>例えば、画面全体をグレースケールにするだとか、色味の調整だとか、そういったものが無い。また、雨の演出を入れたいだとか、海中で画面が揺らぐ演出を入れたいだとか、色々とこだわりを出していくと足りないものが増えてくる。</p>
+
+<p>Phaser3でカメラにエフェクトをかけたいとき、主に2つの方法が考えられる</p>
+
+<ol>
+<li>カメラの描写範囲に追随するオブジェクトをシーンに追加する</li>
+<li>シェーダ―を使う</li>
+</ol>
+
+<h2 id="1-カメラの描写範囲に追随するオブジェクトをシーンに追加する">1. カメラの描写範囲に追随するオブジェクトをシーンに追加する</h2>
+
+<p>カメラの描写範囲に追随するオブジェクトをシーンに追加すれば、ゲームをプレイしている人にとっては画面全体にエフェクトがかかっているように見える。</p>
+
+<p>オブジェクトをカメラに追随させるには、<code>setScrollFactor</code>を使えば良い。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// this === Scene
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> camera <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.cameras.main;
+
+<span style="font-weight:bold">const</span> worldView <span style="font-weight:bold">=</span> camera.worldView;
+
+<span style="font-weight:bold">const</span> color <span style="font-weight:bold">=</span> <span style="color:#099">0x110833</span>;
+<span style="font-weight:bold">const</span> alpha <span style="font-weight:bold">=</span> <span style="color:#099">0.5</span>;
+
+<span style="font-weight:bold">const</span> rectangle <span style="font-weight:bold">=</span> scene.add.rectangle(
+  worldView.x,
+  worldView.y,
+  worldView.width,
+  worldView.height,
+  color,
+  alpha,
+);
+
+rectangle.setOrigin(<span style="color:#099">0</span>);
+rectangle.setScrollFactor(<span style="color:#099">1</span>);</code></pre></div>
+<p>上記の例だと、半透明のフィルターがカメラにかかっている状態になる。</p>
+
+<h3 id="注意-worldviewについて">注意: worldViewについて</h3>
+
+<p><code>camera.worldView</code>はその時カメラが描写している範囲を取得することが出来る便利なプロパティ。色々とお世話になることがあると思う。</p>
+
+<p>しかし、この<code>worldView</code>はシーンがupdateされる度に更新され、初期値は<code>{x: 0, y: 0, widht: 0, height: 0}</code>になっている。これがどういうことかというと、シーンの<code>create</code>関数内で<code>worldView</code>を取得すると、常に初期値が返ってきてしまうため、期待した動きをしないことがある。これを避けるには、<code>create</code>内ではその処理を行わないか、自分で描写されるであろう範囲を判断して値を扱わなくてはいけない。</p>
+
+<h2 id="2-シェーダ-を使う">2. シェーダ―を使う</h2>
+
+<p>シェーダー、特にフラグメントシェーダ―を使ってカメラにエフェクトをかける方法。これはレンダラーに<code>WebGL</code>を使っていときのみ有効な手段で、<code>canvas2D</code>を使っているときには出来ない。</p>
+
+<p>シェーダーの説明自体は他の記事で書いているのでそちらを参照してください。</p>
+
+<p><a href="https://mijinc0.github.io/blog/post/20200811_about_shader/">https://mijinc0.github.io/blog/post/20200811_about_shader/</a></p>
+
+<p>以下のようにして使う。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">const</span> fragShader <span style="font-weight:bold">=</span> <span style="color:#b84">`
+</span><span style="color:#b84">  GLSLシェーダーのコード
+</span><span style="color:#b84">`</span>;
+
+<span style="color:#998;font-style:italic">// this === Scene
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">var</span> config <span style="font-weight:bold">=</span> {
+    game: <span style="color:#458;font-weight:bold">this.game</span>,
+    renderer: <span style="color:#458;font-weight:bold">this.game.renderer</span>,
+    fragShader: <span style="color:#458;font-weight:bold">fragShader</span>
+};
+
+<span style="font-weight:bold">var</span> pipelineInstance <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline(config);
+
+<span style="color:#998;font-style:italic">// エフェクトの登録
+</span><span style="color:#998;font-style:italic"></span>scene.game.renderer.addPipeline(<span style="color:#b84">&#39;pipelineName&#39;</span>, pipelineInstance);
+
+<span style="color:#998;font-style:italic">// エフェクトをカメラにセット
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> camera <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.cameras.main;
+
+<span style="color:#998;font-style:italic">// どちらかの方法で良い
+</span><span style="color:#998;font-style:italic"></span>camera.setRenderToTexture(pipelineInstance); <span style="color:#998;font-style:italic">// インスタンスを直接渡す
+</span><span style="color:#998;font-style:italic"></span>camera.setRenderToTexture(<span style="color:#b84">&#39;pipelineName&#39;</span>); <span style="color:#a61717;background-color:#e3d2d2">// 登録時のキーで指定</span></code></pre></div>
+<p>上記の他に、<code>TextureTintPipeline</code>を継承したカスタムパイプラインクラスを用意して、そのインスタンスを使う方法もある。カスタムパイプラインクラスは、その中に、GLGL内の<code>uniform</code>変数をセットする関数などを用意することで、普通のオブジェクトの操作をしているような感覚でシェーダーの変数を操作できるようになるなどの利点がある。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20200821_phaser3_cameraeffects%2f&text=Phaser3%20%e3%82%ab%e3%83%a1%e3%83%a9%e3%82%a8%e3%83%95%e3%82%a7%e3%82%af%e3%83%88" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" class="card-img" alt="phaser">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Phaser3 タイルマップ</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-08-21 821:00">Aug 21, 2020</time></p>
+      <p>#game_dev </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

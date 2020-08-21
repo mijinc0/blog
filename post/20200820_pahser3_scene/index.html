@@ -159,9 +159,9 @@
 <ol>
 <li>Gameクラス内において、シーンを開始するだけであれば<code>start</code>を使う</li>
 <li>Gameクラス内において、シーンの状態によって新規開始、再開、などを分けたければ<code>run</code>を使う</li>
-<li>Sceneクラス内に置いて、現在のシーンを停止して新しいシーンを新規開始したければ<code>start</code>を使う</li>
-<li>Sceneクラス内に置いて、現在のシーンをそのままに新しいシーンをその状態によって新規開始、再開、などを分けて開始したければ<code>run</code>を使う</li>
-<li>Sceneクラス内に置いて、現在のシーンをそのままに新規開始したければ<code>run</code>を使う</li>
+<li>Sceneクラス内において、現在のシーンを停止して新しいシーンを新規開始したければ<code>start</code>を使う</li>
+<li>Sceneクラス内において、現在のシーンをそのままに新しいシーンをその状態によって新規開始、再開、などを分けて開始したければ<code>run</code>を使う</li>
+<li>Sceneクラス内において、現在のシーンをそのままに新規開始したければ<code>launch</code>を使う</li>
 </ol>
 
 <h2 id="マルチシーン">マルチシーン</h2>
@@ -177,9 +177,15 @@
 
 <p>これらを解決する方法として、複数のシーンを立てておいてメッセージなどのUIは手前のシーンに描写、キャラクターなどが存在するシーンと分けるという手段がある。これなら、それらを<code>depth</code>の調整をせずに達成することが出来る。メッセージボックス等のUIを必ず手前のシーンに描写すると決めてしまえば、ゲーム本体のシーンがフェードアウトして真っ暗になってもメッセージボックスは表示できるし、雨のエフェクトがかかっていてもメッセージボックスには影響を与えない。</p>
 
-<h2 id="さいごに">さいごに</h2>
+<h2 id="参考">参考</h2>
 
-<p>マルチシーンの話は最初私が知らなくて、あとからPhaserの記事を漁っている時に知ったために&rdquo;最初から知っていれば&rdquo;と思った代表である。</p>
+<p><a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/scene/SceneManager.js">https://github.com/photonstorm/phaser/blob/v3.22.0/src/scene/SceneManager.js</a></p>
+
+<p><a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/scene/ScenePlugin.js">https://github.com/photonstorm/phaser/blob/v3.22.0/src/scene/ScenePlugin.js</a></p>
+
+<p><a href="https://photonstorm.github.io/phaser3-docs/Phaser.Scenes.SceneManager.html">https://photonstorm.github.io/phaser3-docs/Phaser.Scenes.SceneManager.html</a></p>
+
+<p><a href="https://photonstorm.github.io/phaser3-docs/Phaser.Scenes.ScenePlugin.html">https://photonstorm.github.io/phaser3-docs/Phaser.Scenes.ScenePlugin.html</a></p>
 
         
         

@@ -61,6 +61,10 @@
 
 <h1 id="phaser3-遠近の表現-depth-z-index">Phaser3 遠近の表現 depth(z-index)</h1>
 
+<p><strong>前回の記事</strong></p>
+
+<p><a href="https://mijinc0.github.io/blog/post/20200820_pahser3_scene/">https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</a></p>
+
 <h2 id="基本とdisplaylist">基本とDisplayList</h2>
 
 <p>Phaser3で描写されるオブジェクトは基本、順番を決める(重なり順を決める)<code>depth</code>と呼ばれるプロパティを持つ(一般的には<code>z-index</code>などと呼ばれたりもする)。このプロパティを一切触らなかった場合、オブジェクトの描写は<code>Scene</code>クラス内で<code>this.add.XXX</code>した順番に描写される。つまり、後にシーンに追加されたオブジェクトが手前に描写される。</p>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/post/20200821_phaser3_audio/" />
+  <meta property="og:title" content="Phaser3 音を鳴らす" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
+
+  <title>Phaser3 音を鳴らす &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Phaser3 音を鳴らす</h1>
+          <p class="post-date">Posted <time datetime="2020-08-21">Aug 21, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
+        </picture>
+        
+        
+
+<h1 id="phaser3-音を鳴らす">Phaser3 音を鳴らす</h1>
+
+<p><strong>前回の記事</strong></p>
+
+<p><a href="https://mijinc0.github.io/blog/post/20200821_phaser3_depth/">https://mijinc0.github.io/blog/post/20200821_phaser3_depth/</a></p>
+
+<h1 id="基本">基本</h1>
+
+<p>Phaser3で音を鳴らすには<code>(Base|Web|Html5)SoundManager</code>を使うことになる。</p>
+
+<p>&hellip;なるのだが、Webブラウザで音を鳴らすには一つ工夫が必要になる。Chromeなどのブラウザでは、Webサイトにアクセスした途端に音が鳴ることをデフォルトで許可していないことがある。(Webサイトにアクセスした途端に音が鳴ったりすると嫌ですよね)<br />
+そのため、各ブラウザによってWebサイトで音を鳴らすための条件をクリアしないと音が鳴らせない。最も簡単で一般的な条件は &ldquo;ユーザーのアクションをトリガーにする&rdquo; というものである。簡単に言うと、<code>再生</code>ボタンを押したら音が鳴るような処理であれば、音を鳴らしても良いよとブラウザが判断するということ。(&ldquo;ブラウザの自動再生ポリシー&rdquo;で検索)</p>
+
+<p>Phaser3のチュートリアルを雛形にゲームを作り始めると、ページにアクセスした途端に<code>&lt;canvas&gt;</code>を描写し始める。これだと、音を鳴らすことが出来ない。回避するためには、ランチャーのようなベージをはさみ、<code>PlayGame (音が出ます)</code>などのボタンを押すことでゲームが立ち上がるようにスクリプトを組む必要がある。</p>
+
+<p>これで、ブラウザ内で起動するゲームの中で音を鳴らすことが出来るようになる。</p>
+
+<h1 id="3つのsoundmanager">3つのSoundManager</h1>
+
+<p><a href="https://photonstorm.github.io/phaser3-docs/Phaser.Sound.BaseSoundManager.html">https://photonstorm.github.io/phaser3-docs/Phaser.Sound.BaseSoundManager.html</a></p>
+
+<p>Phaser3には基盤となる<code>BaseSoundManager</code>を継承した3つのサウンドマネージャーがある</p>
+
+<ul>
+<li>WebAudioSoundManager</li>
+<li>HTML5AudioSoundManager</li>
+<li>NoAudioSoundManager</li>
+</ul>
+
+<p>そしてそれらが扱うサウンドオブジェクトとして、</p>
+
+<ul>
+<li>WebAudioSound</li>
+<li>HTML5AudioSound</li>
+<li>NoAudioSound</li>
+</ul>
+
+<p>がある。<code>WebAudioSound</code>と<code>HTML5AudioSound</code>は<code>BaseSound</code>を継承しているが、<code>NoAudioSound</code>は<code>BaseSound</code>を継承していない。</p>
+
+<p>javascriptを使っている時は余り気にならないかもしれないが、typescriptを使って書いている時はこのコンテキストの違いが少し面倒で、なぜかと言うと<code>BaseSound</code>クラスには<code>volume</code>プロパティが無く、<code>volume</code>プロパティは<code>WebAudioSound</code>クラスと<code>HTML5AudioSound</code>クラスに直接生えているため、再生開始時の音量設定は出来ても、再生中の音の調整はtypescriptの型として<code>BaseSound</code>なインスタンスを操作している為に(<code>volume</code>プロパティが型としてないので)音量調整が出来ない。これだとBGMをイベントの雰囲気作りで音量を下げたいなどの時に困る。</p>
+
+<p>勿論、<code>&lt;any&gt;</code>でキャストしてしまえば済む話と言ってしまえばそうだが、それを嫌う場合はサウンドオブジェクトが<code>WebAudioSound</code>または<code>HTML5AudioSound</code>であることを検査するカスタムのtypeguard関数を用意する必要がある。</p>
+
+<h1 id="音のフェード">音のフェード</h1>
+
+<p>Phaser3では標準的に音のフェード機能はない。tweenを使って自分で作る。上記でtypescriptで書いている時にサウンドオブジェクトの<code>volume</code>プロパティにアクセスする時は自家製のtypeguardが必要と書いたが、tweenを使うだけなら方の検査はすり抜けるので普通にtweenを使えば良い。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">const</span> soundConfig <span style="font-weight:bold">=</span> {
+  <span style="color:#998;font-style:italic">// 設定
+</span><span style="color:#998;font-style:italic"></span>}; 
+<span style="font-weight:bold">const</span> soundObject <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.scene.sound.add(<span style="color:#b84">&#39;bgm&#39;</span>, soundConfig);
+
+<span style="color:#998;font-style:italic">// fade in
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">this</span>.scene.add.tween({
+  targets: <span style="color:#458;font-weight:bold">soundObject</span>,
+  volume<span style="font-weight:bold">:</span> {from: <span style="color:#458;font-weight:bold">0</span>, to: <span style="color:#458;font-weight:bold">1</span>},
+  duration: <span style="color:#458;font-weight:bold">1000</span>,
+});
+
+sounObject.play();</code></pre></div>
+<h1 id="参考">参考</h1>
+
+<p><a href="https://rexrainbow.github.io/phaser3-rex-notes/docs/site/audio/">https://rexrainbow.github.io/phaser3-rex-notes/docs/site/audio/</a></p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20200821_phaser3_audio%2f&text=Phaser3%20%e9%9f%b3%e3%82%92%e9%b3%b4%e3%82%89%e3%81%99" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20200821_phaser3_depth/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" class="card-img" alt="phaser">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Phaser3 遠近の表現 depth(z-index)</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-08-21 821:00">Aug 21, 2020</time></p>
+      <p>#game_dev </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

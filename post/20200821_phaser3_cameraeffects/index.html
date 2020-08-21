@@ -61,9 +61,8 @@
 
 <h1 id="phaser3-カメラエフェクト">Phaser3 カメラエフェクト</h1>
 
-<p><strong>前回の記事</strong></p>
-
-<p><a href="https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/">https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/</a></p>
+<p><strong>前回の記事</strong><br />
+<a href="https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/">https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/</a></p>
 
 <h2 id="カメラエフェクトをかける方法">カメラエフェクトをかける方法</h2>
 
@@ -153,6 +152,14 @@ rectangle.setScrollFactor(<span style="color:#099">1</span>);</code></pre></div>
 </span><span style="color:#998;font-style:italic"></span>camera.setRenderToTexture(pipelineInstance); <span style="color:#998;font-style:italic">// インスタンスを直接渡す
 </span><span style="color:#998;font-style:italic"></span>camera.setRenderToTexture(<span style="color:#b84">&#39;pipelineName&#39;</span>); <span style="color:#a61717;background-color:#e3d2d2">// 登録時のキーで指定</span></code></pre></div>
 <p>上記の他に、<code>TextureTintPipeline</code>を継承したカスタムパイプラインクラスを用意して、そのインスタンスを使う方法もある。カスタムパイプラインクラスは、その中に、GLGL内の<code>uniform</code>変数をセットする関数などを用意することで、普通のオブジェクトの操作をしているような感覚でシェーダーの変数を操作できるようになるなどの利点がある。</p>
+
+<h2 id="参考">参考</h2>
+
+<p><strong>GLSLの勉強など</strong><br />
+<a href="https://wgld.org/d/webgl/">https://wgld.org/d/webgl/</a><br />
+<a href="https://qiita.com/doxas/items/b8221e92a2bfdc6fc211">https://qiita.com/doxas/items/b8221e92a2bfdc6fc211</a><br />
+<a href="https://qiita.com/doxas/items/5a7b6dedff4bc2ce1586">https://qiita.com/doxas/items/5a7b6dedff4bc2ce1586</a><br />
+<a href="https://thebookofshaders.com/">https://thebookofshaders.com/</a></p>
 
         
         

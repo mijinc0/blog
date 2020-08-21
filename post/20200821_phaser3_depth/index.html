@@ -61,9 +61,8 @@
 
 <h1 id="phaser3-遠近の表現-depth-z-index">Phaser3 遠近の表現 depth(z-index)</h1>
 
-<p><strong>前回の記事</strong></p>
-
-<p><a href="https://mijinc0.github.io/blog/post/20200820_pahser3_scene/">https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</a></p>
+<p><strong>前回の記事</strong><br />
+<a href="https://mijinc0.github.io/blog/post/20200820_pahser3_scene/">https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</a></p>
 
 <h2 id="基本とdisplaylist">基本とDisplayList</h2>
 
@@ -112,7 +111,7 @@
   ) {
     <span style="font-weight:bold">super</span>(scene, x, y, texture, frame);
 
-    <span style="font-weight:bold">this</span>._y <span style="font-weight:bold">=</span> y;
+    <span style="font-weight:bold">this</span>.y <span style="font-weight:bold">=</span> y;
   }
 
   get y()<span style="font-weight:bold">:</span> <span style="color:#458;font-weight:bold">number</span> {
@@ -142,8 +141,6 @@
   });
 }</code></pre></div>
 <p>こんな感じにすれば良い。</p>
-
-<p>なお、実装の方法として<code>depth</code>値のゲッターを使うと<code>y + height</code>値が返ってくるようにする方法と、<code>y</code>値のセッターを使うと<code>depth</code>にも値が入るようにする方法が考えられるが、オブジェクトの挙動に影響を与える範囲を減らす意味で後者が良いと思う。</p>
 
 <h2 id="タイルマップについて">タイルマップについて</h2>
 

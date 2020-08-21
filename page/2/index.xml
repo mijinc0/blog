@@ -5,11 +5,18 @@
     <description>Recent content on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Fri, 21 Aug 2020 10:47:38 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 21 Aug 2020 11:59:50 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Vueの動的コンポーネント(typescript)</title>
+      <link>https://mijinc0.github.io/blog/post/20200105_vue_dynamic_component/</link>
+      <pubDate>Sun, 05 Jan 2020 22:27:10 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20200105_vue_dynamic_component/</guid>
+      <description>Vueの動的コンポーネント</description>
+    </item><item>
       <title>テンプレートエンジンmustacheを使ってみる</title>
       <link>https://mijinc0.github.io/blog/post/20191116_mustache/</link>
       <pubDate>Sat, 16 Nov 2019 12:58:42 +0900</pubDate>
@@ -71,13 +78,6 @@
       <pubDate>Fri, 03 May 2019 18:31:09 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20190503_how_install_custom_rom/</guid>
-      <description></description>
-    </item><item>
-      <title>TypeScriptを学ぶ</title>
-      <link>https://mijinc0.github.io/blog/post/20190502_learn_typescript/</link>
-      <pubDate>Thu, 02 May 2019 19:00:18 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20190502_learn_typescript/</guid>
       <description></description>
     </item>
   </channel>

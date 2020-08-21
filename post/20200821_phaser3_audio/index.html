@@ -98,13 +98,13 @@
 
 <p>がある。<code>WebAudioSound</code>と<code>HTML5AudioSound</code>は<code>BaseSound</code>を継承しているが、<code>NoAudioSound</code>は<code>BaseSound</code>を継承していない。</p>
 
-<p>javascriptを使っている時は余り気にならないかもしれないが、typescriptを使って書いている時はこのコンテキストの違いが少し面倒で、なぜかと言うと<code>BaseSound</code>クラスには<code>volume</code>プロパティが無く、<code>volume</code>プロパティは<code>WebAudioSound</code>クラスと<code>HTML5AudioSound</code>クラスに直接生えているため、再生開始時の音量設定は出来ても、再生中の音の調整はtypescriptの型として<code>BaseSound</code>なインスタンスを操作している為に(<code>volume</code>プロパティが型としてないので)音量調整が出来ない。これだとBGMをイベントの雰囲気作りで音量を下げたいなどの時に困る。</p>
+<p>javascriptを使っている時は余り気にならないかもしれないが、typescriptを使って書いている時はこのコンテキストの違いが少し面倒で、なぜかと言うと<code>BaseSound</code>クラスには<code>volume</code>プロパティが無く、<code>volume</code>プロパティは<code>WebAudioSound</code>クラスと<code>HTML5AudioSound</code>クラスに直接生えているため、再生開始時の音量設定は出来ても、typescriptの型として<code>BaseSound</code>なインスタンスを操作している時は(<code>volume</code>プロパティが型としてないので)再生中の音の調整ができない。これだとBGMをイベントの雰囲気作りで音量を下げたいなどの時に困る。</p>
 
 <p>勿論、<code>&lt;any&gt;</code>でキャストしてしまえば済む話と言ってしまえばそうだが、それを嫌う場合はサウンドオブジェクトが<code>WebAudioSound</code>または<code>HTML5AudioSound</code>であることを検査するカスタムのtypeguard関数を用意する必要がある。</p>
 
 <h1 id="音のフェード">音のフェード</h1>
 
-<p>Phaser3では標準的に音のフェード機能はない。tweenを使って自分で作る。上記でtypescriptで書いている時にサウンドオブジェクトの<code>volume</code>プロパティにアクセスする時は自家製のtypeguardが必要と書いたが、tweenを使うだけなら方の検査はすり抜けるので普通にtweenを使えば良い。</p>
+<p>Phaser3では標準的に音のフェード機能はない。tweenを使って自分で作る。上記でtypescriptで書いている時にサウンドオブジェクトの<code>volume</code>プロパティにアクセスする時は自家製のtypeguardが必要と書いたが、tweenを使うだけなら型の検査はすり抜けるので普通にtweenを使えば良い。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">const</span> soundConfig <span style="font-weight:bold">=</span> {
   <span style="color:#998;font-style:italic">// 設定
 </span><span style="color:#998;font-style:italic"></span>}; 

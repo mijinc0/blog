@@ -5,11 +5,18 @@
     <description>Recent content on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Thu, 20 Aug 2020 14:58:25 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 21 Aug 2020 09:07:30 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Phaser3 遠近の表現 depth(z-index)</title>
+      <link>https://mijinc0.github.io/blog/post/20200821_phaser3_depth/</link>
+      <pubDate>Fri, 21 Aug 2020 09:07:30 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20200821_phaser3_depth/</guid>
+      <description></description>
+    </item><item>
       <title>Phaser3 シーン管理</title>
       <link>https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</link>
       <pubDate>Thu, 20 Aug 2020 14:58:25 +0900</pubDate>
@@ -71,13 +78,6 @@
       <pubDate>Sat, 16 Nov 2019 12:58:42 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20191116_mustache/</guid>
-      <description></description>
-    </item><item>
-      <title>RocksDBのCli(Cui)ツールのldbを使う</title>
-      <link>https://mijinc0.github.io/blog/post/20190712_about_ldb/</link>
-      <pubDate>Fri, 12 Jul 2019 17:29:46 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20190712_about_ldb/</guid>
       <description></description>
     </item>
   </channel>

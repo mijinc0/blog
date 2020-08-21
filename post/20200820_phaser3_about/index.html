@@ -9,10 +9,10 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@mincoshi" />
   <meta property="og:url" content="https://mijinc0.github.io/blog/post/20200820_phaser3_about/" />
-  <meta property="og:title" content="Html5ゲームフレームワーク Phaser3" />
+  <meta property="og:title" content="html5ゲームフレームワーク Phaser3" />
   <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
 
-  <title>Html5ゲームフレームワーク Phaser3 &middot; ByzantinePosts</title>
+  <title>html5ゲームフレームワーク Phaser3 &middot; ByzantinePosts</title>
   <meta name="description" content="" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
@@ -47,7 +47,7 @@
     <main class="content side-text-padding">
       <article class="post dropcase">
         <header class="post-header">
-        	<h1 class="post-title">Html5ゲームフレームワーク Phaser3</h1>
+        	<h1 class="post-title">html5ゲームフレームワーク Phaser3</h1>
           <p class="post-date">Posted <time datetime="2020-08-20">Aug 20, 2020</time></p>
         </header>
         
@@ -59,21 +59,35 @@
         
         
 
-<h1 id="html5ゲームフレームワーク-phaser3">Html5ゲームフレームワーク Phaser3</h1>
+<h1 id="html5ゲームフレームワーク-phaser3">html5ゲームフレームワーク Phaser3</h1>
 
 <p>html5用ゲームフレームワークの<code>Phaser</code>を使って簡単なゲームを作ったので、内容毎に記事を分けて知見をまとめる。これはその&rdquo;入り&rdquo;の記事。</p>
 
-<h3 id="公式サイト">公式サイト</h3>
+<p><strong>公式サイト</strong><br />
+<a href="https://phaser.io/">https://phaser.io/</a></p>
 
-<p><a href="https://phaser.io/">https://phaser.io/</a></p>
+<p><strong>リファレンス</strong><br />
+<a href="https://photonstorm.github.io/phaser3-docs/index.html">https://photonstorm.github.io/phaser3-docs/index.html</a></p>
 
-<h3 id="リファレンス">リファレンス</h3>
+<p><strong>開発元サイト</strong><br />
+<a href="http://www.photonstorm.com/">http://www.photonstorm.com/</a></p>
 
-<p><a href="https://photonstorm.github.io/phaser3-docs/index.html">https://photonstorm.github.io/phaser3-docs/index.html</a></p>
+<h3 id="記事一覧">記事一覧</h3>
 
-<h3 id="開発元サイト">開発元サイト</h3>
+<p>とりあえず思い出せる範囲でざっと書いたもの</p>
 
-<p><a href="http://www.photonstorm.com/">http://www.photonstorm.com/</a></p>
+<p><strong>1.シーン管理</strong><br />
+<a href="https://mijinc0.github.io/blog/post/20200820_pahser3_scene/">https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</a><br />
+<strong>2.遠近の表現 depth(z-index)</strong><br />
+<a href="https://mijinc0.github.io/blog/post/20200821_phaser3_depth/">https://mijinc0.github.io/blog/post/20200821_phaser3_depth/</a><br />
+<strong>3.音を鳴らす</strong><br />
+<a href="https://mijinc0.github.io/blog/post/20200821_phaser3_audio/">https://mijinc0.github.io/blog/post/20200821_phaser3_audio/</a><br />
+<strong>4.タイルマップ</strong><br />
+<a href="https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/">https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/</a><br />
+<strong>5.カメラエフェクト</strong><br />
+<a href="https://mijinc0.github.io/blog/post/20200821_phaser3_cameraeffects/">https://mijinc0.github.io/blog/post/20200821_phaser3_cameraeffects/</a><br />
+<strong>6.Loadingシーン</strong><br />
+<a href="https://mijinc0.github.io/blog/post/20200821_phaser3_loading_scene/">https://mijinc0.github.io/blog/post/20200821_phaser3_loading_scene/</a></p>
 
 <h1 id="概要">概要</h1>
 
@@ -128,7 +142,7 @@
 
 <h1 id="開発における参考">開発における参考</h1>
 
-<h3 id="リファレンス-1">リファレンス</h3>
+<h3 id="リファレンス">リファレンス</h3>
 
 <p><a href="https://photonstorm.github.io/phaser3-docs/index.html">https://photonstorm.github.io/phaser3-docs/index.html</a></p>
 
@@ -149,7 +163,7 @@
 <section class="section sns_parent" id="shareButtonsSection">
   <div class="container sns_section" id="shareButtonsContainer">
       <div class="sns_button twitter">
-        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20200820_phaser3_about%2f&text=Html5%e3%82%b2%e3%83%bc%e3%83%a0%e3%83%95%e3%83%ac%e3%83%bc%e3%83%a0%e3%83%af%e3%83%bc%e3%82%af%20Phaser3" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20200820_phaser3_about%2f&text=html5%e3%82%b2%e3%83%bc%e3%83%a0%e3%83%95%e3%83%ac%e3%83%bc%e3%83%a0%e3%83%af%e3%83%bc%e3%82%af%20Phaser3" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
       </div>
   </div>
 </section>

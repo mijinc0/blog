@@ -5,11 +5,18 @@
     <description>Recent content in Posts on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Fri, 21 Aug 2020 14:01:23 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 04 Sep 2020 11:57:14 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>catapult cache</title>
+      <link>https://mijinc0.github.io/blog/post/20190508_catapult_cache/</link>
+      <pubDate>Wed, 08 May 2019 18:58:30 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20190508_catapult_cache/</guid>
+      <description></description>
+    </item><item>
       <title>git pushで更新されるブログを作る</title>
       <link>https://mijinc0.github.io/blog/post/20190504_about_hugo/</link>
       <pubDate>Sat, 04 May 2019 14:20:41 +0900</pubDate>

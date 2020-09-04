@@ -5,11 +5,18 @@
     <description>Recent content on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Fri, 21 Aug 2020 14:01:23 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 04 Sep 2020 11:57:14 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Phaser3 アニメーション</title>
+      <link>https://mijinc0.github.io/blog/post/20200904_phaser3_animation/</link>
+      <pubDate>Fri, 04 Sep 2020 11:57:14 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20200904_phaser3_animation/</guid>
+      <description></description>
+    </item><item>
       <title>Phaser3 Loadingシーン</title>
       <link>https://mijinc0.github.io/blog/post/20200821_phaser3_loading_scene/</link>
       <pubDate>Fri, 21 Aug 2020 14:01:23 +0900</pubDate>
@@ -71,13 +78,6 @@
       <pubDate>Sat, 15 Aug 2020 10:35:20 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20200815_gettig_start_electron/</guid>
-      <description></description>
-    </item><item>
-      <title>Webの技術でローカルアプリが作れるNW.js</title>
-      <link>https://mijinc0.github.io/blog/post/20200815_gettig_start_nwjs/</link>
-      <pubDate>Sat, 15 Aug 2020 10:05:13 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20200815_gettig_start_nwjs/</guid>
       <description></description>
     </item>
   </channel>

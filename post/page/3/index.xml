@@ -5,11 +5,18 @@
     <description>Recent content in Posts on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Fri, 04 Sep 2020 11:57:14 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 20 Sep 2020 16:27:13 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>C&#43;&#43;のコードをARM用にコンパイルする</title>
+      <link>https://mijinc0.github.io/blog/post/20190530_cpp_arm_cross_compile/</link>
+      <pubDate>Thu, 30 May 2019 09:51:22 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20190530_cpp_arm_cross_compile/</guid>
+      <description></description>
+    </item><item>
       <title>catapult cache</title>
       <link>https://mijinc0.github.io/blog/post/20190508_catapult_cache/</link>
       <pubDate>Wed, 08 May 2019 18:58:30 +0900</pubDate>

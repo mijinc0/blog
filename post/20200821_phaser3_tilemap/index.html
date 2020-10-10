@@ -126,6 +126,90 @@ Phaser3ではTiledでタイルマップを作ることがある程度想定さ�
 
 <p>結論から言うと、上記のように生データを指定した時は常に<code>layerId</code>は<code>0</code>である。これは<code>Tilemap</code>クラスのインスタンスには複数のレイヤーデータを登録することが出来、その登録されたデータのインデックスを指定して生成するから。<code>Tilemap</code>クラスのインスタンスに複数のレイヤーが存在するのは、主にTiledからの出力データを元に<code>Tilemap</code>インスタンスを生成した時だと思って良い。</p>
 
+<h2 id="phaserの標準機能を使わずに自分でタイルマップを作る">Phaserの標準機能を使わずに自分でタイルマップを作る</h2>
+
+<p>用途によっては、Phaserのタイルマップを自分で作りたくなる時もあると思う。例えば、二次元の配列から<code>Phaser.Tilemaps.Tilemap</code>オブジェクトを生成したいが、複数のレイヤーをもたせ、なおかつそのオブジェクトをキャッシュに貯めておきたい場合など。</p>
+
+<p>以下のようにして作る。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// this === Phaser.Scene
+</span><span style="color:#998;font-style:italic"></span>
+<span style="color:#998;font-style:italic">// テクスチャはtextureManagerからキャッシュにアクセス出来るので、そこからタイルマップのイメージを取得
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> tilesetImage <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.textures.get(<span style="color:#b84">&#39;tilesetImage&#39;</span>);
+
+<span style="color:#998;font-style:italic">// タイルセットオブジェクトを作成し、イメージをセットする
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> tileset <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Phaser.Tilemaps.Tileset(<span style="color:#b84">&#39;testTileset&#39;</span>, <span style="color:#099">5</span>, <span style="color:#099">40</span>, <span style="color:#099">40</span>, <span style="color:#099">0</span>, <span style="color:#099">0</span>);
+tileset.setImage(tilesetImage);
+
+<span style="color:#998;font-style:italic">// レイヤーデータを作成する
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> layerDataA <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Phaser.Tilemaps.LayerData({
+  name<span style="font-weight:bold">:</span> <span style="color:#b84">&#39;testLayerA&#39;</span>,
+  tileWidth: <span style="color:#458;font-weight:bold">40</span>,
+  tileHeight: <span style="color:#458;font-weight:bold">40</span>,
+});
+
+<span style="color:#998;font-style:italic">// 必要があればここでtileオブジェクトにプロパティをセットすれば後から入れなくて良い
+</span><span style="color:#998;font-style:italic">// 自分でファクトリーを作るメリットでもある
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> tile <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Phaser.Tilemaps.Tile(layerData, <span style="color:#099">6</span>, <span style="color:#099">0</span>, <span style="color:#099">0</span>, <span style="color:#099">40</span>, <span style="color:#099">40</span>, <span style="color:#099">40</span> ,<span style="color:#099">40</span>);
+
+<span style="font-weight:bold">const</span> dataA <span style="font-weight:bold">=</span> [
+  [tile, tile, tile],
+  [tile, tile, tile],
+  [tile, tile, tile],
+];
+
+layerDataA.data <span style="font-weight:bold">=</span> dataA;
+layerDataA.width <span style="font-weight:bold">=</span> dataA[<span style="color:#099">0</span>].length;
+layerDataA.height <span style="font-weight:bold">=</span> dataA.length;
+
+<span style="color:#998;font-style:italic">// レイヤーデータを作成する(２つめ)
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> layerDataB <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Phaser.Tilemaps.LayerData({
+  name<span style="font-weight:bold">:</span> <span style="color:#b84">&#39;testLayerB&#39;</span>,
+  tileWidth: <span style="color:#458;font-weight:bold">40</span>,
+  tileHeight: <span style="color:#458;font-weight:bold">40</span>,
+});
+
+<span style="color:#998;font-style:italic">// 必要があればここでtileオブジェクトにプロパティをセットすれば後から入れなくて良い
+</span><span style="color:#998;font-style:italic">// 自分でファクトリーを作るメリットでもある
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> tile <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Phaser.Tilemaps.Tile(layerData, <span style="color:#099">6</span>, <span style="color:#099">0</span>, <span style="color:#099">0</span>, <span style="color:#099">40</span>, <span style="color:#099">40</span>, <span style="color:#099">40</span> ,<span style="color:#099">40</span>);
+
+<span style="font-weight:bold">const</span> dataB <span style="font-weight:bold">=</span> [
+  [tile, tile, tile],
+  [tile, tile, tile],
+  [tile, tile, tile],
+];
+
+layerDataB.data <span style="font-weight:bold">=</span> dataB;
+layerDataB.width <span style="font-weight:bold">=</span> dataB[<span style="color:#099">0</span>].length;
+layerDataB.height <span style="font-weight:bold">=</span> dataB.length;
+
+<span style="color:#998;font-style:italic">// マップデータオブジェクトを作る
+</span><span style="color:#998;font-style:italic">// ここで複数のレイヤーを登録しておけば、createStatic(Dynamic)Layerをする時に
+</span><span style="color:#998;font-style:italic">// 各レイヤーのnameを指定して描写されるレイヤーオブジェクトを生成できるようになる
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> mapdata <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Phaser.Tilemaps.MapData({
+  width: <span style="color:#458;font-weight:bold">3</span>,
+  height: <span style="color:#458;font-weight:bold">3</span>,
+  tileWidth: <span style="color:#458;font-weight:bold">40</span>,
+  tileHeight: <span style="color:#458;font-weight:bold">40</span>,
+  widthInPixels: <span style="color:#458;font-weight:bold">40</span> <span style="font-weight:bold">*</span> <span style="color:#099">3</span>,
+  heightInPixels: <span style="color:#458;font-weight:bold">40</span> <span style="font-weight:bold">*</span> <span style="color:#099">3</span>,
+  layers<span style="font-weight:bold">:</span> [layerDataA, layerDataB],
+});
+
+<span style="color:#998;font-style:italic">// これで完了
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> tilemap <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Phaser.Tilemaps.Tilemap(<span style="font-weight:bold">this</span>, mapdata);
+
+<span style="color:#998;font-style:italic">// レイヤーオブジェクトを生成する時は、レイヤー名を指定して生成できる
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> staticLayerA <span style="font-weight:bold">=</span> tilemap.createStaticLayer(<span style="color:#b84">&#39;testLayerA&#39;</span>, tileset);
+<span style="font-weight:bold">const</span> dynamicLayerB <span style="font-weight:bold">=</span> tilemap.createDynamicLayer(<span style="color:#b84">&#39;testLayerB&#39;</span>, tileset);
+
+<span style="color:#998;font-style:italic">// キャッシュに登録しておけば、以上の手順が必要になるのは最初の一回だけで、
+</span><span style="color:#998;font-style:italic">// 次からはグローバルにあるキャッシュから取り出してcreateStatic(Dynamic)Layerをするだけで良くなる
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">this</span>.cache.tilemap.add(<span style="color:#b84">&#39;myTilemap&#39;</span>, tilemap);
+
+<span style="color:#998;font-style:italic">// 二回目以降の生成はこれだけ。最初にタイルマップを作ってキャッシュしてしまえば楽(要メモリと相談)
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> cachedTilemapObject <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.cache.tilemap.get(<span style="color:#b84">&#39;myTilemap&#39;</span>);
+cachedTilemapObject.createStaticLayer(<span style="color:#b84">&#39;testLayerA&#39;</span>, tileset);
+cachedTilemapObject.createStaticLayer(<span style="color:#b84">&#39;testLayerB&#39;</span>, tileset);</code></pre></div>
 <h2 id="参考">参考</h2>
 
 <p><a href="https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6">https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6</a></p>

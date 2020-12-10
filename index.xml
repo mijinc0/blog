@@ -5,11 +5,18 @@
     <description>Recent content on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Fri, 02 Oct 2020 19:33:02 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 10 Dec 2020 13:22:00 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>symbol(catapult)におけるVRF(VerifiableRandomFunction)</title>
+      <link>https://mijinc0.github.io/blog/post/20201210_vrf_catapult/</link>
+      <pubDate>Thu, 10 Dec 2020 13:22:00 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20201210_vrf_catapult/</guid>
+      <description></description>
+    </item><item>
       <title>ランダムダンジョン生成</title>
       <link>https://mijinc0.github.io/blog/post/20201002_random_dungeon_generator/</link>
       <pubDate>Fri, 02 Oct 2020 19:33:02 +0900</pubDate>
@@ -71,13 +78,6 @@
       <pubDate>Thu, 20 Aug 2020 14:58:25 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</guid>
-      <description></description>
-    </item><item>
-      <title>html5ゲームフレームワーク Phaser3</title>
-      <link>https://mijinc0.github.io/blog/post/20200820_phaser3_about/</link>
-      <pubDate>Thu, 20 Aug 2020 10:50:35 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20200820_phaser3_about/</guid>
       <description></description>
     </item>
   </channel>

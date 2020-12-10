@@ -5,11 +5,18 @@
     <description>Recent content in Categories on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Fri, 02 Oct 2020 19:33:02 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 10 Dec 2020 13:22:00 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>nem2</title>
+      <link>https://mijinc0.github.io/blog/categories/nem2/</link>
+      <pubDate>Thu, 10 Dec 2020 13:22:00 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/categories/nem2/</guid>
+      <description></description>
+    </item><item>
       <title>game_dev</title>
       <link>https://mijinc0.github.io/blog/categories/game_dev/</link>
       <pubDate>Fri, 02 Oct 2020 19:33:02 +0900</pubDate>
@@ -43,13 +50,6 @@
       <pubDate>Sat, 16 Nov 2019 12:58:42 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/categories/programing_tools/</guid>
-      <description></description>
-    </item><item>
-      <title>nem2</title>
-      <link>https://mijinc0.github.io/blog/categories/nem2/</link>
-      <pubDate>Wed, 12 Jun 2019 13:29:56 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/categories/nem2/</guid>
       <description></description>
     </item><item>
       <title>android</title>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/post/20201210_vrf_catapult/" />
+  <meta property="og:title" content="symbol(catapult)におけるVRF(VerifiableRandomFunction)" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" />
+
+  <title>symbol(catapult)におけるVRF(VerifiableRandomFunction) &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">symbol(catapult)におけるVRF(VerifiableRandomFunction)</h1>
+          <p class="post-date">Posted <time datetime="2020-12-10">Dec 10, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" alt="catapult">
+        </picture>
+        
+        
+
+<h1 id="symbol-catapult-におけるvrf-verifiablerandomfunction">symbol(catapult)におけるVRF(VerifiableRandomFunction)</h1>
+
+<p>symbolではブロック生成(ハーベスティング)の際にアカウントの管理に使われるキーペアとは別のキーペアを生成し、それによってブロック生成する。</p>
+
+<p>symbolで新しく取り入れられたこのブロック生成の仕組みは、<strong>VRF (VerifiableRandomFunction)</strong> と呼ばれる仕組みを使っており、ブロック生成に使うキーペアを <strong>VRFキー</strong> と呼んでいたりする。</p>
+
+<p>VRFキーペアのうち、公開鍵は専用のトランザクション(<code>VrfKeyLinkTransaction</code>)によってネットワークに通知し、それが周知される、つまり、ブロックにトランザクションが取り込まれた後にはじめてブロック生成を開始することが出来るようになる(ブロック生成用のキーペアが有効になる)。</p>
+
+<p>何故こんなことをしているのか。それを説明するのがこの記事だが、結論から言うと <strong>自分が今ブロック生成できる状態にあるか否かを他人に知られないようにするため</strong> に行っている。他にも副次的にメリットはあるのかもしれないが、メインはここだと思っている。</p>
+
+<p>symbolにおいて、ブロック生成の成功不成功の判定にはブロックハッシュとは別の<code>generation hash</code>と呼ばれるハッシュ値が使われている。詳しいことは省略するがこの値をつかってくじ引きをするような仕組みになっている。</p>
+
+<p>ブロック生成にVRFが導入される前、<code>generation hash</code>は &ldquo;ハーベスターの公開鍵&rdquo; と &ldquo;一つ前のブロック高さのgeneration hash&rdquo; によって計算されていた。これらは両方ともに公開されいる情報である。これは、今まさにある特定のアカウントがブロックを生成しようとしている(することが出来る)状態にあるかどうかを他人が知ることが出来てしまうことを意味する。そしてこれは、今まさにある特定のアカウントがブロックを生成しようとしているところを邪魔する(例えばノードを攻撃して)攻撃を生み出すことを意味する。</p>
+
+<p>これを防ぐのがVRFのである。VRFでは、<strong>VRF秘密鍵と一つ前のgeneration hashによって次のブロックのgeneration hashを計算する。</strong> VRF秘密鍵は自分の手元に隠して持っておくものなので、他人が知ることは出来ない。つまり、他人は自分が今まさにブロックを生成しようとしているか、また出来る状態に有るかどうかが分からない。しかし、これだと各々が適当に都合の良い値でgeneration hashの生成を行ってしまう。これだと仕組みが破綻するので <strong>VRF秘密鍵と一つ前のgeneration hashによって生成されった次のブロックのgeneration hashは、周知されているVRF公開鍵と証明用の付属データによってVRF秘密鍵から生成されたハッシュ値であることが確認出来るようになっている。</strong></p>
+
+<p>VRFの仕組みはこれ。元の論文の最初の一文にそれが書かれている。</p>
+
+<blockquote>
+<p>A Verifiable Random Function (VRF) [MRV99] is the public-key version
+ of a keyed cryptographic hash.  Only the holder of the private VRF
+ key can compute the hash, but anyone with corresponding public key
+ can verify the correctness of the hash.</p>
+
+<p>VRFは、公開鍵をキーとする暗号学的ハッシュ関数である。VRF秘密鍵を持つ者のみがハッシュ値を計算することが出来る一方で、
+VRF公開鍵により誰でもそのハッシュ値が正当であることを(VRF公開鍵と関係する秘密鍵から生成されたハッシュ値であることを)検証することができる。
+<code>Verifiable Random Functions (VRFs) draft-irtf-cfrg-vrf-07 から引用</code></p>
+</blockquote>
+
+<p>詳しい仕組みはまだ理解していない(今の所する予定もない)が、ざっくりとした理解は以下の図の通り。</p>
+
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20201210_vrf_for_catapult/draw1.png?raw=true" alt="draw1" /></p>
+
+<p>これを、symbolのwhite paperのgeneration hash生成部分にあてはめてみると以下のようになる。
+(正当なVRFの手順に沿って正しい各値の生成を行った時、<code>VRF_hash(secret_key, input) = proof_to_hash(proof)</code> となり、こっちを使っているので必要のない部分は上記図から削除している)</p>
+
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20201210_vrf_for_catapult/draw2.png?raw=true" alt="draw2" /></p>
+
+<p>結論に戻るが、要は <strong>自分がブロックを生成しようとしている(または出来る状態にある)と、攻撃の対象と鳴ってしまう可能性があるので、こっそりブロックを生成できるようにしている</strong> ということである。</p>
+
+<h1 id="参考">参考</h1>
+
+<p><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vrf-07">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vrf-07</a><br />
+<a href="https://hazm.at/mox/security/vrf/ietf-draft4/index.html">https://hazm.at/mox/security/vrf/ietf-draft4/index.html</a><br />
+<a href="https://docs.symbolplatform.com/catapult-whitepaper/main.pdf">https://docs.symbolplatform.com/catapult-whitepaper/main.pdf</a></p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20201210_vrf_catapult%2f&text=symbol%28catapult%29%e3%81%ab%e3%81%8a%e3%81%91%e3%82%8bVRF%28VerifiableRandomFunction%29" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20201002_random_dungeon_generator/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" class="card-img" alt="phaser">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">ランダムダンジョン生成</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-10-02 102:00">Oct 2, 2020</time></p>
+      <p>#game_dev </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

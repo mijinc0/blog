@@ -84,15 +84,15 @@
  can verify the correctness of the hash.</p>
 
 <p>VRFは、公開鍵をキーとする暗号学的ハッシュ関数である。VRF秘密鍵を持つ者のみがハッシュ値を計算することが出来る一方で、
-VRF公開鍵により誰でもそのハッシュ値が正当であることを(VRF公開鍵と関係する秘密鍵から生成されたハッシュ値であることを)検証することができる。
+VRF公開鍵により誰でもそのハッシュ値が正当であることを(VRF公開鍵と関係する秘密鍵から生成されたハッシュ値であることを)検証することができる。<br />
 <code>Verifiable Random Functions (VRFs) draft-irtf-cfrg-vrf-07 から引用</code></p>
 </blockquote>
 
-<p>詳しい仕組みはまだ理解していない(今の所する予定もない)が、ざっくりとした理解は以下の図の通り。</p>
+<p>詳しい仕組みはまだ理解していない(今の所する予定もない)が、ざっくりとした理解は以下の図の通り。(見づらかったら画像だけ別ウィンドウで開いたりしてみてください)</p>
 
 <p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20201210_vrf_for_catapult/draw1.png?raw=true" alt="draw1" /></p>
 
-<p>これを、symbolのwhite paperのgeneration hash生成部分にあてはめてみると以下のようになる。
+<p>これを、symbolのwhite paperのgeneration hash生成部分にあてはめてみると以下のようになる。<br />
 (正当なVRFの手順に沿って正しい各値の生成を行った時、<code>VRF_hash(secret_key, input) = proof_to_hash(proof)</code> となり、こっちを使っているので必要のない部分は上記図から削除している)</p>
 
 <p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20201210_vrf_for_catapult/draw2.png?raw=true" alt="draw2" /></p>

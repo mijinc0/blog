@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/post/20210204_phaser3_scene_transition/" />
+  <meta property="og:title" content="Phaser3 SceneTransition(シーンの遷移)" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
+
+  <title>Phaser3 SceneTransition(シーンの遷移) &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Phaser3 SceneTransition(シーンの遷移)</h1>
+          <p class="post-date">Posted <time datetime="2021-02-04">Feb 4, 2021</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
+        </picture>
+        
+        
+
+<h1 id="phaser3-scenetransition-シーンの遷移">Phaser3 SceneTransition(シーンの遷移)</h1>
+
+<p>versiont: <code>3.52.0</code></p>
+
+<p>Phaser3のSceneにはシーンの遷移、つまりあるシーンから別のシーンに移り変わる(遷移)ときに利用できる <code>Transition</code> という機能が付いている。</p>
+
+<p>例えば村のマップからアイテムショップに入る時、現在プレイヤーが存在するマップ(村)を徐々に透明にし、次に侵入するマップ(アイテムショップ)の透明度を徐々に下げていくようにしてシーンが切り替わる演出を作りたいなどの時に使える(伝わるかな?)</p>
+
+<h1 id="transitionの使用方法">Transitionの使用方法</h1>
+
+<p>Transitionを使用してシーンの切り替えを行う時は <code>scene.start</code> を使わずに <code>scene.transition</code> を使用する。引数は <code>Phaser.Types.Scenes.SceneTransitionConfig</code> である。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">this</span>.scene.transition({
+  <span style="color:#998;font-style:italic">// 遷移先のシーン
+</span><span style="color:#998;font-style:italic"></span>  target<span style="font-weight:bold">:</span> <span style="color:#b84">&#39;gameOver&#39;</span>,
+  <span style="color:#998;font-style:italic">// 遷移先のシーンのinitの引数として渡したいデータ
+</span><span style="color:#998;font-style:italic"></span>  data<span style="font-weight:bold">:</span> {data: <span style="color:#458;font-weight:bold">100</span>},
+  <span style="color:#998;font-style:italic">// 遷移にかける時間
+</span><span style="color:#998;font-style:italic"></span>  duration: <span style="color:#458;font-weight:bold">2000</span>,
+  <span style="color:#998;font-style:italic">// 遷移中に毎フレーム繰り返す処理
+</span><span style="color:#998;font-style:italic"></span>  onUpdate<span style="font-weight:bold">:</span> (progress: <span style="color:#458;font-weight:bold">number</span>) <span style="font-weight:bold">=&gt;</span> {
+
+  },
+});</code></pre></div>
+<p>これを使う。最初は遷移中に遷移元のシーン、遷移先のシーンに何が起きているのかわからないと思うので、以下の処理をシーンのイベントに仕込んで観察してみることをおすすめする。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// 遷移元のシ遷移先ーン
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">class</span> From <span style="font-weight:bold">extends</span> Phaser.Scene {
+  init ()<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+    <span style="font-weight:bold">this</span>.events.on(Phaser.Scenes.Events.TRANSITION_INIT, () <span style="font-weight:bold">=&gt;</span> {
+      console.log(<span style="color:#b84">&#39;遷移元: transition init&#39;</span>);
+    });
+    <span style="font-weight:bold">this</span>.events.on(Phaser.Scenes.Events.TRANSITION_START, () <span style="font-weight:bold">=&gt;</span> {
+      console.log(<span style="color:#b84">&#39;遷移元: transition: transition start&#39;</span>);
+    });
+    <span style="font-weight:bold">this</span>.events.on(Phaser.Scenes.Events.TRANSITION_WAKE, () <span style="font-weight:bold">=&gt;</span> {
+      console.log(<span style="color:#b84">&#39;遷移元: transition: transition wake&#39;</span>);
+    });
+    <span style="font-weight:bold">this</span>.events.on(Phaser.Scenes.Events.TRANSITION_OUT, () <span style="font-weight:bold">=&gt;</span> {
+      console.log(<span style="color:#b84">&#39;遷移元: transition: transition out&#39;</span>);
+    });
+    <span style="font-weight:bold">this</span>.events.on(Phaser.Scenes.Events.TRANSITION_COMPLETE, () <span style="font-weight:bold">=&gt;</span> {
+      console.log(<span style="color:#b84">&#39;遷移元: transition: transition complete&#39;</span>);
+    });
+  }
+}
+
+<span style="color:#998;font-style:italic">// 遷移先のシーン
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">class</span> To <span style="font-weight:bold">extends</span> Phaser.Scene {
+  init ()<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+    <span style="font-weight:bold">this</span>.events.on(Phaser.Scenes.Events.TRANSITION_INIT, () <span style="font-weight:bold">=&gt;</span> {
+      console.log(<span style="color:#b84">&#39;遷移先: transition init&#39;</span>);
+    });
+    <span style="font-weight:bold">this</span>.events.on(Phaser.Scenes.Events.TRANSITION_START, () <span style="font-weight:bold">=&gt;</span> {
+      console.log(<span style="color:#b84">&#39;遷移先: transition: transition start&#39;</span>);
+    });
+    <span style="font-weight:bold">this</span>.events.on(Phaser.Scenes.Events.TRANSITION_WAKE, () <span style="font-weight:bold">=&gt;</span> {
+      console.log(<span style="color:#b84">&#39;遷移先: transition: transition wake&#39;</span>);
+    });
+    <span style="font-weight:bold">this</span>.events.on(Phaser.Scenes.Events.TRANSITION_OUT, () <span style="font-weight:bold">=&gt;</span> {
+      console.log(<span style="color:#b84">&#39;遷移先: transition: transition out&#39;</span>);
+    });
+    <span style="font-weight:bold">this</span>.events.on(Phaser.Scenes.Events.TRANSITION_COMPLETE, () <span style="font-weight:bold">=&gt;</span> {
+      console.log(<span style="color:#b84">&#39;遷移先: transition: transition complete&#39;</span>);
+    });
+  }
+}</code></pre></div>
+<p>あとは、両シーンの <code>init</code>, <code>create</code>, <code>update</code>, <code>shutdown</code> にも出力を入れてあげれば何が起きているか分かると思う。</p>
+
+<h1 id="遷移について">遷移について</h1>
+
+<p>先述の方法で自分でログの出力をみて自分で確認するほうが納得できると思うが、シーンの遷移は以下の図ようになっている。(あくまで一例)</p>
+
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20210204_phaser3_scene_transition/draw1.png?raw=true" alt="draw1" /></p>
+
+<p>要するに、遷移が開始すると <code>config.duration</code> で指定した時間は遷移元、遷移先の両シーンが立ち上がった状態になり、それぞれ必要なタイミングでTransition用のイベントが発火する、ということである。</p>
+
+<h1 id="transition使用時の注意">Transition使用時の注意</h1>
+
+<p>まず注意すべきなのは、イベントが発火する以外は両シーンが普通に動いている状態であることに注意しないといけない。例えば遷移が始まってから完了するまでの間、プレイヤーの入力を受け付けたくなければ、遷移元は <code>TRANSITION_OUT</code> に、遷移先は <code>TRANSITION_COMPLETE</code> に、入力の許可、拒否をするイベントを登録しないといけない。</p>
+
+<p>次に、ここまでで説明して分かるとおりTransitionは基本的にイベントの登録によって構築しないといけないが、このイベントはシーンのshutdown時にすべて消えるようになっている。そのため、毎回必要になるタイミング、またはシーンの <code>init</code> や <code>create</code> 呼び出し時にイベントを登録する必要がある。</p>
+
+<p>最後に、これは多分バグだと思うが、これを書いている時点で &ldquo;Transition終了のタイミングで遷移元のシーンがshutdownした後、一度だけupdateが呼び出される&rdquo; という挙動をする。shutdown状態のシーンがupdateされてしまうのでバグっぽいが、とりあえず直るまでは注意しておいてほしい。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2fpost%2f20210204_phaser3_scene_transition%2f&text=Phaser3%20SceneTransition%28%e3%82%b7%e3%83%bc%e3%83%b3%e3%81%ae%e9%81%b7%e7%a7%bb%29" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/post/20210204_phaser3_update_3x50x0/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" class="card-img" alt="phaser">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Phaser3 ver3.50.0 で色々と変わっていた</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2021-02-04 24:00">Feb 4, 2021</time></p>
+      <p>#game_dev </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

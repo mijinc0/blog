@@ -5,11 +5,18 @@
     <description>Recent content on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Thu, 10 Dec 2020 13:22:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 04 Feb 2021 11:59:41 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(dragon)</title>
+      <link>https://mijinc0.github.io/blog/post/20190612_building_catapult_for_arm/</link>
+      <pubDate>Wed, 12 Jun 2019 13:29:56 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20190612_building_catapult_for_arm/</guid>
+      <description></description>
+    </item><item>
       <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(cow)</title>
       <link>https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/</link>
       <pubDate>Sun, 02 Jun 2019 10:59:20 +0900</pubDate>

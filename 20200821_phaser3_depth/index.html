@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/20200821_phaser3_depth/" />
+  <meta property="og:title" content="Phaser3 遠近の表現 depth(z-index)" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
+
+  <title>Phaser3 遠近の表現 depth(z-index) &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Phaser3 遠近の表現 depth(z-index)</h1>
+          <p class="post-date">Posted <time datetime="2020-08-21">Aug 21, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
+        </picture>
+        
+        <h1 id="phaser3-遠近の表現-depthz-index">Phaser3 遠近の表現 depth(z-index)</h1>
+<p><strong>前回の記事</strong><br>
+<a href="https://mijinc0.github.io/blog/post/20200820_pahser3_scene/">https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</a></p>
+<h2 id="基本とdisplaylist">基本とDisplayList</h2>
+<p>Phaser3で描写されるオブジェクトは基本、順番を決める(重なり順を決める)<code>depth</code>と呼ばれるプロパティを持つ(一般的には<code>z-index</code>などと呼ばれたりもする)。このプロパティを一切触らなかった場合、オブジェクトの描写は<code>Scene</code>クラス内で<code>this.add.XXX</code>した順番に描写される。つまり、後にシーンに追加されたオブジェクトが手前に描写される。</p>
+<p>先に<code>Scene</code>クラス内で<code>this.add.XXX</code>したオブジェクトを後に追加したオブジェクトよりも手前に表示したければ、手前に表示したいオブジェクトの<code>depth</code>の値を後方に表示したいオブジェクトよりも大きな値に設定してあげることで達成できる。では実際のところ、<code>depth</code>の値を設定した時に何が起きているのかという話。</p>
+<p>実際に描写の順番を決めているのは<code>DisplayList</code>と呼ばれる配列構造を持つオブジェクトで、そのシーンに描写されるオブジェクトは全てこの配列の中に入っている。<code>depth</code>を設定すると<code>DisplayList</code>が<code>depth</code>の値順にソートされるように作られているので、<code>depth</code>値を設定すると描写順が変わるという仕組みになっている。</p>
+<p><strong>DisplayList</strong></p>
+<p><a href="https://github.com/photonstorm/phaser/blob/b46776a2c0a623bf2078b533cf29d02d24663fc0/src/gameobjects/DisplayList.js">https://github.com/photonstorm/phaser/blob/b46776a2c0a623bf2078b533cf29d02d24663fc0/src/gameobjects/DisplayList.js</a></p>
+<p><strong>Depth.depth</strong></p>
+<p><a href="https://github.com/photonstorm/phaser/blob/9bb3a4ba19e2b0c70ac95237b227c387dc742f56/src/gameobjects/components/Depth.js#L43">https://github.com/photonstorm/phaser/blob/9bb3a4ba19e2b0c70ac95237b227c387dc742f56/src/gameobjects/components/Depth.js#L43</a></p>
+<p>ちなみに、各オブジェクトのdepthをセットする度にDisplayListソートするのではなく、オブジェクトのdepthをセットすると &ldquo;このフレームでソートする&rdquo; というフラグが立ち、つぎの描写時にソートされるようになっているので、一つのフレーム内で何度depthの値を設定しても一回の描写で一度しかソートされない。</p>
+<p>DisplayListは各シーン毎に管理される。シーン管理の記事で複数シーンが稼働ている時はそれぞれのシーンの描写がされることを書いたが、DisplayListは各シーン毎に管理されているのであるシーン内のオブジェクトのdepthは他のシーンのオブジェクトのdepthに影響を与えない。例えば、先に描写されるシーンAのオブジェクト<code>ObjectA.depth = 100</code>と後に描写されるシーンBのオブジェクト<code>ObjectB.depth = 0</code>がある時、手前に表示されるのは後から描写されるシーン内にある<code>ObjectB</code>ということになる。</p>
+<h2 id="遠近の表現">遠近の表現</h2>
+<p><code>depth</code>の調整で2Dゲームの遠近を表現するのは&quot;おきまり&quot;の話。</p>
+<p>平面的なタイルマップの上を歩くオブジェクトは画面の上にあるオブジェクトはそれよりも下にあるオブジェクトよりも &ldquo;奥に&rdquo; あると思うのが普通だ。
+奥にあるということは、重なった時に後ろに隠れるということ。</p>
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20200821_phaser3_depth/draw1.png?raw=true" alt="draw1"></p>
+<p>キャラクターがマップ上を移動する場合、そのy座標の位置によってdepthが変化する(マップの上に行けば行くほどdepthが小さくなる)ようにすれば、自然な遠近が付いているように見える。より具体的に言えば、キャラクターの下部のy座標とdepthが連動するようにすれば良いということ。</p>
+<p>キャラクターの下部のy座標とdepthを連動させるには、いくつも方法があるが自然なのはy(座標)のセッターにdepth値も変更する処理を加える方法だと思う。処理を加えるにはそのゲームオブジェクトのクラスを継承したカスタムクラスを作るか、<code>Object.defineProperty</code>でその場にあるインスタンスを作り変えてしまうかになると思うが、正直好きな方で良いと思う。(ダックタイピングは用法用量を守って正しく使ってください)</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">import</span> <span style="font-weight:bold">*</span> <span style="font-weight:bold">as</span> Phaser from <span style="color:#b84">&#39;phaser&#39;</span>;
+
+<span style="color:#998;font-style:italic">// PhysicsにArcadeを使っている場合
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">export</span> <span style="font-weight:bold">class</span> CustomSprite <span style="font-weight:bold">extends</span> Phaser.Physics.Arcade.Sprite {
+  <span style="font-weight:bold">private</span> _y: <span style="color:#458;font-weight:bold">number</span>;
+
+  <span style="font-weight:bold">constructor</span>(
+    scene: <span style="color:#458;font-weight:bold">Phaser.Scene</span>,
+    x: <span style="color:#458;font-weight:bold">number</span>,
+    y: <span style="color:#458;font-weight:bold">number</span>,
+    texture: <span style="color:#458;font-weight:bold">string</span>,
+    frame?: <span style="color:#458;font-weight:bold">string</span> <span style="font-weight:bold">|</span> <span style="color:#458;font-weight:bold">number</span>,
+  ) {
+    <span style="font-weight:bold">super</span>(scene, x, y, texture, frame);
+
+    <span style="font-weight:bold">this</span>.y <span style="font-weight:bold">=</span> y;
+  }
+
+  get y()<span style="font-weight:bold">:</span> <span style="color:#458;font-weight:bold">number</span> {
+    <span style="font-weight:bold">return</span> _y;
+  }
+
+  set y(v: <span style="color:#458;font-weight:bold">number</span>) {
+    <span style="font-weight:bold">this</span>._y <span style="font-weight:bold">=</span> v;
+    <span style="font-weight:bold">this</span>.depth <span style="font-weight:bold">=</span> v <span style="font-weight:bold">+</span> <span style="font-weight:bold">this</span>.height;
+  }
+}
+</code></pre></div><p>こんな感じとか&hellip;</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">import</span> <span style="font-weight:bold">*</span> <span style="font-weight:bold">as</span> Phaser from <span style="color:#b84">&#39;phaser&#39;</span>;
+
+<span style="font-weight:bold">function</span> syncBottomAndDepth(sprite: <span style="color:#458;font-weight:bold">Phaser.Sprite</span>)<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+  <span style="font-weight:bold">let</span> _y <span style="font-weight:bold">=</span> sprite.y;
+
+  <span style="color:#999">Object</span>.defineProperty(sprite, <span style="color:#b84">&#39;y&#39;</span>, {
+    get<span style="font-weight:bold">:</span> () <span style="font-weight:bold">=&gt;</span> {
+      <span style="font-weight:bold">return</span> _y;
+    },
+    set<span style="font-weight:bold">:</span> (newY: <span style="color:#458;font-weight:bold">number</span>) <span style="font-weight:bold">=&gt;</span> {
+      _y <span style="font-weight:bold">=</span> newY;
+      <span style="font-weight:bold">const</span> bottom <span style="font-weight:bold">=</span> newY <span style="font-weight:bold">+</span> sprite.height;
+      sprite.depth <span style="font-weight:bold">=</span> bottom;
+    },
+  });
+}
+</code></pre></div><p>こんな感じにすれば良い。</p>
+<h2 id="タイルマップについて">タイルマップについて</h2>
+<p>タイルマップを扱っていると、<strong>このタイルはキャラクラーの上に表示したい、このタイルはキャラクターのしたに表示したい</strong> などの要求がでることもあると思う。結論から言うと、タイルマップの各タイルの<code>depth</code>を設定することは出来ない。それらが所属するレイヤーオブジェクトに<code>depth</code>を設定する。つまり、</p>
+<ul>
+<li>キャラクターの上に描写したいタイルマップレイヤー</li>
+<li>キャラクターの下に描写したいタイルマップレイヤー</li>
+</ul>
+<p>と分けて描写を操作する必要がある。もし、それ以上の要求が出る場合は、スプライトなどのオブジェクトとしてシーンに追加し、タイルマップとは別に管理する必要がある。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2f20200821_phaser3_depth%2f&text=Phaser3%20%e9%81%a0%e8%bf%91%e3%81%ae%e8%a1%a8%e7%8f%be%20depth%28z-index%29" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/20200820_pahser3_scene/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" class="card-img" alt="phaser">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Phaser3 シーン管理</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-08-20 820:00">Aug 20, 2020</time></p>
+      <p>#game_dev </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

@@ -5,79 +5,79 @@
     <description>Recent content on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Thu, 04 Feb 2021 18:24:49 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 25 Apr 2021 20:11:56 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Phaser3 タイルマップ</title>
+      <link>https://mijinc0.github.io/blog/20200821_phaser3_tilemap/</link>
+      <pubDate>Fri, 21 Aug 2020 11:59:50 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/20200821_phaser3_tilemap/</guid>
+      <description></description>
+    </item><item>
+      <title>Phaser3 音を鳴らす</title>
+      <link>https://mijinc0.github.io/blog/20200821_phaser3_audio/</link>
+      <pubDate>Fri, 21 Aug 2020 10:47:38 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/20200821_phaser3_audio/</guid>
+      <description></description>
+    </item><item>
       <title>Phaser3 遠近の表現 depth(z-index)</title>
-      <link>https://mijinc0.github.io/blog/post/20200821_phaser3_depth/</link>
+      <link>https://mijinc0.github.io/blog/20200821_phaser3_depth/</link>
       <pubDate>Fri, 21 Aug 2020 09:07:30 +0900</pubDate>
       
-      <guid>https://mijinc0.github.io/blog/post/20200821_phaser3_depth/</guid>
+      <guid>https://mijinc0.github.io/blog/20200821_phaser3_depth/</guid>
       <description></description>
     </item><item>
       <title>Phaser3 シーン管理</title>
-      <link>https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</link>
+      <link>https://mijinc0.github.io/blog/20200820_pahser3_scene/</link>
       <pubDate>Thu, 20 Aug 2020 14:58:25 +0900</pubDate>
       
-      <guid>https://mijinc0.github.io/blog/post/20200820_pahser3_scene/</guid>
+      <guid>https://mijinc0.github.io/blog/20200820_pahser3_scene/</guid>
       <description></description>
     </item><item>
       <title>html5ゲームフレームワーク Phaser3</title>
-      <link>https://mijinc0.github.io/blog/post/20200820_phaser3_about/</link>
+      <link>https://mijinc0.github.io/blog/20200820_phaser3_about/</link>
       <pubDate>Thu, 20 Aug 2020 10:50:35 +0900</pubDate>
       
-      <guid>https://mijinc0.github.io/blog/post/20200820_phaser3_about/</guid>
+      <guid>https://mijinc0.github.io/blog/20200820_phaser3_about/</guid>
       <description></description>
     </item><item>
       <title>Electronプロジェクトのビルド</title>
-      <link>https://mijinc0.github.io/blog/post/20200816_electron_builder/</link>
+      <link>https://mijinc0.github.io/blog/20200816_electron_builder/</link>
       <pubDate>Sun, 16 Aug 2020 09:23:51 +0900</pubDate>
       
-      <guid>https://mijinc0.github.io/blog/post/20200816_electron_builder/</guid>
+      <guid>https://mijinc0.github.io/blog/20200816_electron_builder/</guid>
       <description></description>
     </item><item>
       <title>Webの技術でローカルアプリが作れるElectron</title>
-      <link>https://mijinc0.github.io/blog/post/20200815_gettig_start_electron/</link>
+      <link>https://mijinc0.github.io/blog/20200815_gettig_start_electron/</link>
       <pubDate>Sat, 15 Aug 2020 10:35:20 +0900</pubDate>
       
-      <guid>https://mijinc0.github.io/blog/post/20200815_gettig_start_electron/</guid>
+      <guid>https://mijinc0.github.io/blog/20200815_gettig_start_electron/</guid>
       <description></description>
     </item><item>
       <title>Webの技術でローカルアプリが作れるNW.js</title>
-      <link>https://mijinc0.github.io/blog/post/20200815_gettig_start_nwjs/</link>
+      <link>https://mijinc0.github.io/blog/20200815_gettig_start_nwjs/</link>
       <pubDate>Sat, 15 Aug 2020 10:05:13 +0900</pubDate>
       
-      <guid>https://mijinc0.github.io/blog/post/20200815_gettig_start_nwjs/</guid>
+      <guid>https://mijinc0.github.io/blog/20200815_gettig_start_nwjs/</guid>
       <description></description>
     </item><item>
       <title>フラグメントシェーダーとGLSLの基礎</title>
-      <link>https://mijinc0.github.io/blog/post/20200811_about_shader/</link>
+      <link>https://mijinc0.github.io/blog/20200811_about_shader/</link>
       <pubDate>Tue, 11 Aug 2020 10:56:00 +0900</pubDate>
       
-      <guid>https://mijinc0.github.io/blog/post/20200811_about_shader/</guid>
+      <guid>https://mijinc0.github.io/blog/20200811_about_shader/</guid>
       <description></description>
     </item><item>
       <title>Vueの非同期コンポーネント</title>
-      <link>https://mijinc0.github.io/blog/post/20200106_vue_async_component/</link>
+      <link>https://mijinc0.github.io/blog/20200106_vue_async_component/</link>
       <pubDate>Mon, 06 Jan 2020 10:36:45 +0900</pubDate>
       
-      <guid>https://mijinc0.github.io/blog/post/20200106_vue_async_component/</guid>
-      <description></description>
-    </item><item>
-      <title>Vueの動的コンポーネント(typescript)</title>
-      <link>https://mijinc0.github.io/blog/post/20200105_vue_dynamic_component/</link>
-      <pubDate>Sun, 05 Jan 2020 22:27:10 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20200105_vue_dynamic_component/</guid>
-      <description>Vueの動的コンポーネント</description>
-    </item><item>
-      <title>テンプレートエンジンmustacheを使ってみる</title>
-      <link>https://mijinc0.github.io/blog/post/20191116_mustache/</link>
-      <pubDate>Sat, 16 Nov 2019 12:58:42 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20191116_mustache/</guid>
+      <guid>https://mijinc0.github.io/blog/20200106_vue_async_component/</guid>
       <description></description>
     </item>
   </channel>

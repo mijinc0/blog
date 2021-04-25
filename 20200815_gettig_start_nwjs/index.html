@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/20200815_gettig_start_nwjs/" />
+  <meta property="og:title" content="Webの技術でローカルアプリが作れるNW.js" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/js_ts.png?raw=true" />
+
+  <title>Webの技術でローカルアプリが作れるNW.js &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Webの技術でローカルアプリが作れるNW.js</h1>
+          <p class="post-date">Posted <time datetime="2020-08-15">Aug 15, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/js_ts.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/js_ts.png?raw=true" alt="js_ts">
+        </picture>
+        
+        <h1 id="webの技術でローカルアプリが作れるnwjs">Webの技術でローカルアプリが作れるNW.js</h1>
+<p><a href="https://nwjs.io/">https://nwjs.io/</a></p>
+<p><strong>NW.js (node-webkit js)</strong> は、<code>js</code>,<code>html</code>,<code>css</code>でローカル環境で動くデスクトップアプリケーションが作れるビルドツール（というのが正確なのかはわからない）。</p>
+<p>実際には、<code>Chromium</code> と <code>node.js</code> を使ってコードを動かす環境を使っている。</p>
+<p>jsは<code>node.js</code>やブラウザ環境(<code>es6</code> etc)などの環境により、結構仕様が変わってめんどくさいのはいつものこと。<code>nwjs</code>も例に漏れず、この違いを意識して書かないといけない。</p>
+<p>では、nwjsはどうなのかというと、nwjsではWeb用のコンテキストとノード用のコンテキストが並行して動く。Web用のコンテキストがWebで言うところのフロントエンドで、ノード用のコンテキストがバックエンドだと思うとイメージしやすい(実際は違うけど)。</p>
+<p>Webでフロントエンドとバックエンドがhttp(s)を利用して通信してアプリケーションが完成するように、NW.jsではそれぞれのコンテキストがプロセス間通信をすることによってアプリケーションが完成する。プロセス間通信はそれ用の仕組みが用意されておりデータを受け渡しすること自体は難しくないので安心して欲しい。</p>
+<p>コンテキストの話はこの後もう一度書く。</p>
+<h1 id="getting-start">Getting Start</h1>
+<p>ともあれ、軽く使ってみる。</p>
+<h2 id="1プロジェクトディレクトリを用意する">1.プロジェクトディレクトリを用意する</h2>
+<p>htmlファイルやcss、jsファイルは普通にウェブアプリを書くときと同じように書けば問題ない。何でも良いので簡単なプロジェクトを用意する。</p>
+<pre><code>[]project-root
+├ []src
+│ ├ []app
+│ │ └ main.js
+│ ├ []assets
+│ │ └ icon.png
+│ ├ []styles
+│ │ └ common.css
+│ ├ []views
+│ │ └ main.html
+│ └ package.json
+└ package.json
+</code></pre><p>紛らわしいのは、プロジェクトのルートにある<code>package.json</code>と<code>src</code>ディレクトリ内にある<code>package.json</code>だと思う。</p>
+<ul>
+<li><code>root/package.json</code> : npm用のpackage.json</li>
+<li><code>root/src/package.json</code> : nwjsが読み取る <strong>マニフェストファイル</strong> と呼ばれるファイル</li>
+</ul>
+<p>名前が同じだけで、npm用とnwjs用で、全く別物である。</p>
+<p>npmの<code>package.json</code>は、<code>npm init</code>で作れば良いし、nw用の<code>package.json</code>は、今はとりあえず空のファイルを作っておけば良い。あとで書く。</p>
+<h2 id="nwjs関連のパッケージをインストール">nwjs関連のパッケージをインストール</h2>
+<p>nwjsを使うには以下の2つのパッケージが必要になる。</p>
+<ul>
+<li>nw</li>
+<li>nw-builder</li>
+</ul>
+<p><code>nw</code>は、その場でさっとアプリを立ち上げて動作を確認できる開発用のコマンドで、<code>nw-builder</code>が本番用にビルドするためのコマンドである。</p>
+<pre><code>$ npm install --save-dev nw nw-builder
+</code></pre><p>(開発環境のみで必要なので<code>save-dev</code>オプション付けてるけど、実際はビルド済みパッケージのみが配布物に成ると思うので、どっちでも良いよ)</p>
+<p>インストールしたコマンドを実行できるように、スクリプトを登録しておこう。</p>
+<p><code>root/package.json</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#000080">&#34;name&#34;</span>: <span style="color:#b84">&#34;example&#34;</span>,
+  <span style="color:#000080">&#34;version&#34;</span>: <span style="color:#b84">&#34;1.0.0&#34;</span>,
+  <span style="color:#000080">&#34;description&#34;</span>: <span style="color:#b84">&#34;test project for my first nwjs app&#34;</span>,
+  <span style="color:#000080">&#34;devDependencies&#34;</span>: {
+    <span style="color:#000080">&#34;nw&#34;</span>: <span style="color:#b84">&#34;^0.44.3&#34;</span>,
+    <span style="color:#000080">&#34;nw-builder&#34;</span>: <span style="color:#b84">&#34;^3.1.2&#34;</span>
+  },
+  <span style="color:#000080">&#34;scripts&#34;</span>:{
+    <span style="color:#000080">&#34;dev&#34;</span>:<span style="color:#b84">&#34;nw src/&#34;</span>,
+    <span style="color:#000080">&#34;build&#34;</span>:<span style="color:#b84">&#34;nwbuild --platforms win32,win64,osx64,linux32,linux64 --buildDir dist/ src/&#34;</span>
+  }
+}
+</code></pre></div><h2 id="マニフェストファイルを書く">マニフェストファイルを書く</h2>
+<p><code>root/src/package.json</code>は、npm用の<code>root/package.json</code>とは違い、nwjs用のマニフェストファイル(ビルドツールに指示を与えるファイル)だ。次はコレを書いていく。</p>
+<p>とはいっても、やはり色々設定があってここで書ききることも、全ての機能を触りきることも出来ないので、最小限だけ書く。詳しく知りたい場合は下記のURL参照。</p>
+<p><a href="http://docs.nwjs.io/en/latest/References/Manifest%20Format/">http://docs.nwjs.io/en/latest/References/Manifest%20Format/</a></p>
+<p><code>root/src/package.json</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#000080">&#34;name&#34;</span>:<span style="color:#b84">&#34;example&#34;</span>,
+  <span style="color:#000080">&#34;version&#34;</span>: <span style="color:#b84">&#34;1.0.0&#34;</span>,
+  <span style="color:#000080">&#34;main&#34;</span>:<span style="color:#b84">&#34;views/main.html&#34;</span>,
+  <span style="color:#000080">&#34;window&#34;</span>:{
+    <span style="color:#000080">&#34;min_width&#34;</span>:<span style="color:#099">400</span>,
+    <span style="color:#000080">&#34;min_height&#34;</span>:<span style="color:#099">400</span>,
+    <span style="color:#000080">&#34;icon&#34;</span>:<span style="color:#b84">&#34;assets/icon.png&#34;</span>
+  }
+}
+</code></pre></div><p><code>name</code>と<code>version</code>は必須で、npm用の<code>package.json</code>の値に揃えておけば問題ないだろう。他は、だいたい項目名から推測できるような設定で、<code>main</code>はアプリが立ち上がって最初に開くファイル。<code>window</code>はアプリのウィンドウの設定ファイルだ。</p>
+<h2 id="nwで立ち上げ">nwで立ち上げ</h2>
+<p>本番環境のビルドは時間がかかって大変だし、無駄に成果物を排出するので、その場でさっと確認するときには<code>nw</code>コマンドを使う。このコマンドをさっと使えるように、スクリプトに既に登録していることを思い出してほしい。</p>
+<p>登録するスクリプトを打てばよいだけなので、プロジェクトルートで下記のコマンドを実行。</p>
+<pre><code>$ npm run dev
+</code></pre><p>新しいウィンドウが開き、アプリが立ち上がることが確認できる。</p>
+<h2 id="nwbuildでビルド">nwbuildでビルド</h2>
+<p>本番環境のビルド用のコマンドも、すでにスクリプトに登録済みなので、プロジェクトルートで下記コマンドを実行すればよいだけ。</p>
+<pre><code>$ npm run build
+</code></pre><p>実行すると、各プラットホームのビルド用にsdkをそれぞれダウンロードするので、全てのプラットホームをせんたくしている場合には結構時間がかかる。</p>
+<p>終わったら、<code>dist</code>ディレクトリが生成されている。linuxの場合、その中でプロジェクト名(拡張子なし)のファイルがあると思うので、それが実行ファイルになる。実行すると、アプリが開く。</p>
+<h1 id="所感">所感</h1>
+<p>似たようなプロジェクトとして<code>electron</code>がある。electronもWeb用のコンテキストとノード用のコンテキストを走らせることでローカルアプリを作る仕組みになっているが、NW.jsの方がコンテキストの仕分けが緩いなどの違いがある。</p>
+<p>マニフェストファイルを作るだけと簡単。構造がシンプルということは、流用も簡単ということだ。普通にwebアプリを作ったものをスタンドアロン化したい、スタンドアロンなんだけど機能をwebにも公開したいなどの場合は、これで十分かもしれない。</p>
+<h1 id="コンテキスト">コンテキスト</h1>
+<p>やはりコンテキストから逃げることは出来ない。</p>
+<p>nwjsでは、nodeのモジュールを利用することが出来る。しかし、実際にアプリがGUIとして動くときにはhtml5ベースのアプリとして起動する。つまり、nwjsには<code>Browser Context</code> と <code>Node Context</code> が存在している。</p>
+<p>ブラウザコンテキスト、ノードコンテキストの違いにより、例えばブラウザコンテキストでは<code>WebAPI</code>を含むコンテキストが利用が出来る。しかし、ノードコンテキストにあるような<code>__dirname</code>、<code>process</code>、<code>Buffer</code>などは使えない。逆に、ノードコンテキスト上で<code>document</code>や<code>window</code>などは使うことが出来ない。</p>
+<p>実際には、これらを意識して書かないといけない。また、必要であればnwjsが用意した<code>nw</code>オブジェクトを利用してブラウザコンテキストからノードコンテキスト(Nodeオブジェクト)にアクセスしないといけない。</p>
+<p>余談だが、複数のコンテキストによってアプリが動くのは、nwjsや先に少し触れたelectronなどに限ったことではない。
+例えば、<code>WebAPI</code>には<code>Web Worker API</code>とよばれる機能がある。これは、メインとは別のスレッドを走らせて、重たい処理などをそちらで非同期的に行ってもらい、メインのスレッドの処理が止まらないようにするための仕組みだ。<code>Web Worker</code>を使うと、新しいスレッドを生成し、この中でjsを走らせる。この時、新しいスレッドは<code>Web Worker Context</code>上で走る。つまり、ブラウザのメインスレッドとは別のコンテキスト上で走ることになり、Worker内からDOMを触るようなことは制限される。
+nwjsで2つのコンテキストが走るのも、これと同じ関係だと考えて良い。</p>
+<h2 id="どちらのコンテキストで実行されるのか">どちらのコンテキストで実行されるのか</h2>
+<p>2つのコンテキストを意識しないといけないのは分かったが、どちらのコンテキストで実行されるのかという話になる。</p>
+<h3 id="ブラウザコンテキスト">ブラウザコンテキスト</h3>
+<p>次の方法によって読み込まれたものはブラウザコンテキストとして実行される。</p>
+<ul>
+<li><code>&lt;script&gt;</code>により読み込まれたjsファイル</li>
+<li>JQuery</li>
+<li><code>$.getScript()</code>(JQueryのスクリプト読込用関数)</li>
+<li>その他、<code>RequireJS</code>の仕様など、従来のWebの方法で読み込まれたスクリプト又は直接埋め込まれたスクリプト</li>
+</ul>
+<p>htmlの<code>&lt;script&gt;</code>タグで読み込まれたjsファイル、さらにそこから要求されたjsファイルはWebコンテキストで走るのだと思えば良い。</p>
+<p>つまり普通にWebアプリを作る感覚で書けば、ファイルの保存などのローカルファイルの操作をしない部分ではブラウザコンテキスト上を走ると思って良い。</p>
+<h3 id="ノードコンテキスト">ノードコンテキスト</h3>
+<p>前述したが、普通にWebアプリを作る感覚で書けば、基本的にはブラウザコンテキスト上で走る。
+NW.jsは、指定されたものをノードコンテキスト上で走らせる。では、 <strong>指定されたもの</strong> とは何かと言うと、次の方法によって読み込まれたものはノードコンテキストとして実行される</p>
+<ul>
+<li><code>require()</code> によってロードされたNode.jsのモジュール</li>
+<li>マニフェストファイル内で指定されたスクリプト(<code>node-main</code>)</li>
+</ul>
+<p>ひとづずつ見ていく。</p>
+<h4 id="require-によってロードされたnodejsの外部モジュール"><code>require()</code> によってロードされたNode.jsの外部モジュール</h4>
+<p>NW.jsのブラウザコンテキスト上で走っているjsの中では、<code>require()</code>によりNode.jsの外部モジュール、つまり、一般的には<code>node_modules</code>の中に含まれているようなNode.jsモジュールを使用することが出来る。このモジュールは、<code>require()</code>元のブラウザコンテキスト上で走るのではなく、ノードコンテキスト上で実行される。例えば、以下のような場合&hellip;</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#998;font-style:italic">// これはブラウザコンテキスト上で走るjs
+</span><span style="color:#998;font-style:italic"></span>
+<span style="color:#998;font-style:italic">// requireによりnode_modules内のNode.jsモジュールを読み込める
+</span><span style="color:#998;font-style:italic">// 実際には、このモジュールの中身はノードコンテキスト上で実行されるので、モジュールを読み込んでいると言うよりは
+</span><span style="color:#998;font-style:italic">// 他コンテキスト上で走るモジュールを操作するための窓口を取得していると言ったほうが正しいのかもしれない。
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> module <span style="font-weight:bold">=</span> reuqire(<span style="color:#b84">&#39;some_module&#39;</span>);
+
+<span style="color:#998;font-style:italic">// moudle.someFunction()はノードコンテキストで走る
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> reurnVal <span style="font-weight:bold">=</span> moudle.someFunction();
+</code></pre></div><p>ブラウザコンテキスト上で<code>moudle.someFunction()</code>をしているが、この関数の中身はノードコンテキスト上で走っており、戻値がブラウザコンテキストに渡され、ブラウザコンテキスト上で扱うことができる。</p>
+<p>これを見て分かるとおり、NW.jsはブラウザコンテキスト上で走るファイル内で直接ノードコンテキストで走る処理を指示するような形で書ける。</p>
+<p>何も考えなければこの仕組みは便利なものに見えるかもしれないが、コンテキスト間では単なるデータしか送りあえないような厳密なコンテキストの仕分けよりも、むしろコンテキストを意識して書かないとそのうち訳がわからなくなりそうでもある。</p>
+<h4 id="マニフェストファイル内で指定されたスクリプトnode-main">マニフェストファイル内で指定されたスクリプト(<code>node-main</code>)</h4>
+<p>マニフェストファイル(<code>package.json</code>)で<code>node-main</code>として指定されたjsファイルは、ウィンドウが立ち上がる前にノードコンテキスト上で実行される。</p>
+<p><code>package.json(マニフェストファイル)</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#000080">&#34;name&#34;</span>:<span style="color:#b84">&#34;my_app&#34;</span>,
+  <span style="color:#000080">&#34;version&#34;</span>: <span style="color:#b84">&#34;1.0.0&#34;</span>,
+  <span style="color:#000080">&#34;main&#34;</span>:<span style="color:#b84">&#34;views/main.html&#34;</span>,
+  <span style="color:#000080">&#34;node-main&#34;</span>:<span style="color:#b84">&#34;node/main.js&#34;</span>,
+  <span style="color:#000080">&#34;window&#34;</span>:{
+    <span style="color:#000080">&#34;toolbar&#34;</span>: <span style="font-weight:bold">true</span>,
+    <span style="color:#000080">&#34;min_width&#34;</span>:<span style="color:#099">400</span>,
+    <span style="color:#000080">&#34;min_height&#34;</span>:<span style="color:#099">400</span>,
+    <span style="color:#000080">&#34;icon&#34;</span>:<span style="color:#b84">&#34;assets/icon.png&#34;</span>
+  }
+}
+</code></pre></div><h2 id="ブラウザコンテキストからノードコンテキストのオブジェクトやnwjs-apiにアクセスする">ブラウザコンテキストからノードコンテキストのオブジェクトやNW.js-APIにアクセスする</h2>
+<p>NW.jsで作られるのは、デスクトップアプリなので、基本的にはNode.js(つまりノードコンテキスト上で走らせるプログラム)でアプリを組み立てて、guiに絡む部分だけブラウザコンテキストが値を参照して表示する、というのが望ましい。</p>
+<p>それぞれのコンテキストは原則として独立している。つまり、 <strong>NW.jsが用意した特別な方法により</strong> 別コンテキストのオブジェクトを参照しなくてはならない。</p>
+<p>ブラウザコンテキストからノードコンテキストのオブジェクトにアクセスする方法は、以下のような方法がある。以下の方法は、全てブラウザコンテキスト上で行う操作になる。</p>
+<ul>
+<li><code>require()</code>によってNode.js外部モジュールを取り込む(説明済み)</li>
+<li><code>nw</code>のAPIを叩く</li>
+<li><code>nw.global</code>または単に<code>global</code>で、ノードコンテキストのグローバル変数にアクセスできる</li>
+<li><code>nw.process</code>または単に<code>process</code>で、ノードコンテキストの<code>process</code>にアクセスできる</li>
+<li>ブラウザコンテキスト上では使えないはずの<code>Buffer</code>が使える。これも、ノードコンテキストにアクセスしている。</li>
+</ul>
+<p>これらの方法を利用して、ロジックが走っているノードコンテキストから必要な値を参照し、guiアプリを組み立てる。</p>
+<h1 id="コンテキストが混ざってしまわないために">コンテキストが混ざってしまわないために</h1>
+<p>コンテキストの違いは書いたが、例えば全てのjsファイルを<code>src/js</code>のようなディレクトリに放り込んでしまうと、ブラウザコンテキスト上で走るjsファイルと、ノードコンテキスト上で走るjsファイルが混在してしまって厄介。</p>
+<p>きちんとルールを作って分離、管理する必要がある。</p>
+<h2 id="pattern1ブラウザコンテキストからrequireで読込実行する">Pattern1.ブラウザコンテキストからrequire()で読込実行する</h2>
+<p>個人的にはとりあえずこのパターンで良いと思う方法。</p>
+<p>１つめのパターンとしては、ブラウザコンテキストから<code>require</code>でノードコンテキストのエントリーポイントを取り込み、実行する方法だ。</p>
+<p>サンプルとしては、下記のようなプロジェクトになる。</p>
+<pre><code>[]project-root
+├ []src
+│ ├ []js-browser
+│ │ └ main.js
+│ ├ []js-node
+│ │ └ main.js
+│ ├ []assets
+│ │ └ icon.png
+│ ├ []styles
+│ │ └ common.css
+│ ├ []views
+│ │ └ main.html
+│ └ package.json
+└ package.json
+</code></pre><p><code>src/views/main.html</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#000080">html</span>&gt;
+  &lt;<span style="color:#000080">head</span>&gt;
+    &lt;<span style="color:#000080">meta</span> <span style="color:#008080">charset</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;utf-8&#34;</span>&gt;
+    &lt;<span style="color:#000080">title</span>&gt;my_app&lt;/<span style="color:#000080">title</span>&gt;
+    &lt;<span style="color:#000080">script</span> <span style="color:#008080">type</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;text/javascript&#34;</span> <span style="color:#008080">src</span><span style="font-weight:bold">=</span><span style="color:#b84">&#34;../js-browser/main.js&#34;</span>&gt;&lt;/<span style="color:#000080">script</span>&gt;
+  &lt;/<span style="color:#000080">head</span>&gt;
+  
+  &lt;<span style="color:#000080">body</span>&gt;
+    &lt;<span style="color:#000080">h1</span>&gt;my app&lt;/<span style="color:#000080">h1</span>&gt;
+  &lt;/<span style="color:#000080">body</span>&gt;
+&lt;/<span style="color:#000080">html</span>&gt;
+</code></pre></div><p><code>src/js-browser/main.js</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#998;font-style:italic">// htmlにとりこまれたあとに実行されるので、htmlからのパス
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> nodeContextEntry <span style="font-weight:bold">=</span> require(<span style="color:#b84">&#39;../js-node/main&#39;</span>);
+
+<span style="color:#998;font-style:italic">// 実行
+</span><span style="color:#998;font-style:italic"></span>nodeContextEntry();
+</code></pre></div><p><code>src/js-node/main.js</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#998;font-style:italic">// node.jsのモジュールにする
+</span><span style="color:#998;font-style:italic"></span>module.exports <span style="font-weight:bold">=</span> () =&gt; {
+  <span style="color:#998;font-style:italic">// ブラウザコンテキストからは__dirnameは使えないので、これが使えることにより確認する
+</span><span style="color:#998;font-style:italic"></span>  setInterval(() =&gt; {
+    console.log(<span style="color:#b84">`dirname : </span><span style="color:#b84">${</span>__dirname<span style="color:#b84">}</span><span style="color:#b84">`</span>);
+  }, <span style="color:#099">5000</span>);
+};
+</code></pre></div><p><code>package.json(マニフェストファイル)</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#000080">&#34;name&#34;</span>:<span style="color:#b84">&#34;my_app&#34;</span>,
+  <span style="color:#000080">&#34;version&#34;</span>: <span style="color:#b84">&#34;1.0.0&#34;</span>,
+  <span style="color:#000080">&#34;main&#34;</span>:<span style="color:#b84">&#34;views/main.html&#34;</span>,
+  <span style="color:#000080">&#34;window&#34;</span>:{
+    <span style="color:#000080">&#34;toolbar&#34;</span>: <span style="font-weight:bold">true</span>,
+    <span style="color:#000080">&#34;min_width&#34;</span>:<span style="color:#099">400</span>,
+    <span style="color:#000080">&#34;min_height&#34;</span>:<span style="color:#099">400</span>,
+    <span style="color:#000080">&#34;icon&#34;</span>:<span style="color:#b84">&#34;assets/icon.png&#34;</span>
+  }
+}
+</code></pre></div><p>上記のサンプルでは、</p>
+<ol>
+<li><code>main.html</code>が読み込まれる</li>
+<li><code>main.html</code>から、<code>js-browser/main.js</code>が読み込まれる(<code>js-browser/main.js</code>はブラウザコンテキスト上で走る)</li>
+<li><code>js-browser/main.js</code>からNode.jsのモジュールである<code>js-node/main.js</code>が読み込まれる</li>
+<li><code>js-browser/main.js</code>内で<code>js-node/main.js</code>が実行される(<code>js-node/main.js</code>が実行される)</li>
+</ol>
+<p>となる。</p>
+<h2 id="pattern2-main-nodeで実行する">Pattern2. main-nodeで実行する</h2>
+<p>マニフェストファイルで<code>main-node</code>によりノードコンテキスト上でjsを走らせる。guiが必要な値は、<code>global</code>でブラウザコンテキスト上から参照できるようにするなどする。</p>
+<h2 id="pattern3-全部外部モジュールにする">Pattern3. 全部外部モジュールにする</h2>
+<p>理屈は<code>Pattern1</code>と同じだが、node部分を全部外部モジュールに分離して<code>node_modules</code>の中に含まれるようにしてしまう。こうすると、ソースがもろに裸になるのを防げるらしい。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2f20200815_gettig_start_nwjs%2f&text=Web%e3%81%ae%e6%8a%80%e8%a1%93%e3%81%a7%e3%83%ad%e3%83%bc%e3%82%ab%e3%83%ab%e3%82%a2%e3%83%97%e3%83%aa%e3%81%8c%e4%bd%9c%e3%82%8c%e3%82%8bNW.js" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/20200811_about_shader/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/graphics.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/graphics.png?raw=true" class="card-img" alt="graphics">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">フラグメントシェーダーとGLSLの基礎</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-08-11 811:00">Aug 11, 2020</time></p>
+      <p>#glsl </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

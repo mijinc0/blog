@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/20190602_building_catapult_for_arm/" />
+  <meta property="og:title" content="x86_64 ubuntu上でcatapultをarm64用にビルドする(cow)" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" />
+
+  <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(cow) &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">x86_64 ubuntu上でcatapultをarm64用にビルドする(cow)</h1>
+          <p class="post-date">Posted <time datetime="2019-06-02">Jun 2, 2019</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" alt="catapult">
+        </picture>
+        
+        <p>2019.06.07<br>
+ノードが動くことは確認しましたが色々と上手く行かない部分が多いのでcatapultのバージョンを一旦cowに下げました。<br>
+Dragonはまた別で書きます。</p>
+<h1 id="さいしょに">さいしょに</h1>
+<p>ブロックチェーンのコアエンジンであるcatapultをRaspberryPiで動かしたい。</p>
+<p>しかし、RaspberryPi上でビルドしようとすると、とても時間がかかる。実際に一度やってみて、boostライブラリのビルドの段階であまりにも時間がかかるので諦めました。</p>
+<p>そこで、クロスコンパイルすれば良いじゃないかということでやってみた結果です。なお、これを書いたのは<code>2019.6.2</code>であり、間違い等あれば修正されていくと思います。</p>
+<p>なお、前提として</p>
+<ul>
+<li>peernodeが動けば良い</li>
+</ul>
+<p>と思って取り組んだため、<code>mongo</code>や<code>zeromq</code>は触っていません。（これらはapi-node用のエクステンションになるはずなので）</p>
+<h1 id="catapultのバージョン">catapultのバージョン</h1>
+<p><del>Dragon</del><br>
+Cow</p>
+<h1 id="コンパイルするpcos">コンパイルするPC(OS)</h1>
+<p>x86_64 GNU/Linux<br>
+NAME=&quot;Ubuntu&rdquo;<br>
+VERSION=&quot;18.04.2 LTS (Bionic Beaver)&rdquo;</p>
+<h1 id="raspberrypi">RaspberryPi</h1>
+<p>raspberry pi 3 model B<br>
+OS : ubuntu 18.04<br>
+<a href="https://wiki.ubuntu.com/ARM/RaspberryPi">https://wiki.ubuntu.com/ARM/RaspberryPi</a><br>
+(上記URLの<code>ubuntu-18.04.2-preinstalled-server-arm64+raspi3.img.xz</code>。hfではありません。)</p>
+<h1 id="手順の前に">手順の前に</h1>
+<p>基本的には下記の流れに沿います。</p>
+<p><a href="https://github.com/nemtech/catapult-server/blob/master/BUILDING.md">https://github.com/nemtech/catapult-server/blob/master/BUILDING.md</a></p>
+<p>以下、『<code>BUILDING.md</code>の通り』などと書いていれば、上記URLに書いてある手順と同じだと思ってください。</p>
+<h1 id="手順">手順</h1>
+<h2 id="クロスコンパイラのインストール">クロスコンパイラのインストール</h2>
+<pre><code class="language-no_attr" data-lang="no_attr">$ sudo apt install g++-aarch64-linux-gnu
+</code></pre><p>これで、クロスコンパイル用のツール群が<code>/usr/bin</code>に入ります。<br>
+<code>/usr/bin</code>の中を見てみると、<code>aarch64-linux-gnu-gcc</code>や<code>aarch64-linux-gnu-gcc-7</code>などを見つけることが出来るはずです。</p>
+<h2 id="toolchain">toolchain</h2>
+<p>cmakeコマンド時にコンパイラの指定を行うことも出来ますが、それだと大変になるのでツールチェイン用のファイルを作成します。</p>
+<p><code>toolchain.arm.cmake</code>という名前のファイルを作成し、このファイルの中にコンパイラやリンカ等の情報を書き込みます。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cmake" data-lang="cmake"><span style="color:#999">SET</span>(<span style="color:#b84">CMAKE_C_COMPILER</span> <span style="color:#b84">/usr/bin/aarch64-linux-gnu-gcc-7</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">SET</span>(<span style="color:#b84">CMAKE_CXX_COMPILER</span> <span style="color:#b84">/usr/bin/aarch64-linux-gnu-g++-7</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">SET</span>(<span style="color:#b84">CMAKE_LINKER</span> <span style="color:#b84">/usr/bin/aarch64-linux-gnu-ld.gold</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">SET</span>(<span style="color:#b84">CMAKE_NM</span> <span style="color:#b84">/usr/bin/aarch64-linux-gnu-nm</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">SET</span>(<span style="color:#b84">CMAKE_OBJCOPY</span> <span style="color:#b84">/usr/bin/aarch64-linux-gnu-objcopy</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">SET</span>(<span style="color:#b84">CMAKE_OBJDUMP</span> <span style="color:#b84">/usr/bin/aarch64-linux-gnu-objdump</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">SET</span>(<span style="color:#b84">CMAKE_RANLIB</span> <span style="color:#b84">/usr/bin/aarch64-linux-gnu-ranlib</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></div><h2 id="prerequisites">Prerequisites</h2>
+<p><code>BUILDING.md</code>に書いてあるとおりです。<code>g++</code>は既にクロスコンパイル用のものをインストール済みなのですが、別の場所で必要になるので抜かないでください。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">sudo apt install autoconf libtool cmake curl git xz-utils \
+　　　　　libatomic-ops-dev libunwind-dev g++ gdb libgflags-dev \
+　　　　　libsnappy-dev ninja-build python3 python3-ply
+</code></pre><h2 id="boost">Boost</h2>
+<pre><code class="language-no_attr" data-lang="no_attr">$ curl -o boost_1_69_0.tar.gz -SL https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.gz
+$ tar -xzf boost_1_69_0.tar.gz
+
+$ mkdir boost-build-1.69.0
+$ cd boost_1_69_0
+$ ./bootstrap.sh --prefix=${HOME}/boost-build-1.69.0
+</code></pre><p>ここまでは<code>BUILDING.md</code>と同じです。</p>
+<p>ここで、<code>boost_1_69_0</code>内になる<code>project-config.jam</code>の<code>12行目</code>を書き換えます。</p>
+<pre><code class="language-no_attr" data-lang="no_attr"># Boost.Build Configuration
+# Automatically generated by bootstrap.sh
+
+import option ;
+import feature ;
+
+# Compiler configuration. This definition will be used unless
+# you already have defined some toolsets in your user-config.jam
+# file.
+if ! gcc in [ feature.values &lt;toolset&gt; ]
+{
+    # ここを下記のように書き換える
+    using gcc : arm : aarch64-linux-gnu-g++ ;
+}
+
+project : default-build &lt;toolset&gt;gcc ;
+
+（以下略）
+</code></pre><p>以降は、<code>BUILDING.md</code>に書いてあるとおり、</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ ./b2 --prefix=${HOME}/boost-build-1.69.0 -j 4 stage release
+$ ./b2 install --prefix=${HOME}/boost-build-1.69.0
+</code></pre><p>これで、ビルドされたものが<code>boost-build-1.69.0</code>に入ります。</p>
+<h2 id="gtest">GTest</h2>
+<p>toolchainの指定を追加するだけです。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ git clone https://github.com/google/googletest.git googletest.git
+$ cd googletest.git
+$ git checkout release-1.8.0
+
+$ mkdir _build &amp;&amp; cd _build
+$ cmake -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON ..
+$ make
+$ sudo make install
+</code></pre><h2 id="google-benchmark">google benchmark</h2>
+<p>下記参照<br>
+<a href="https://github.com/google/benchmark/issues/351">https://github.com/google/benchmark/issues/351</a></p>
+<p><code>-DCMAKE_CROSSCOMPILING=1</code>これは必須。</p>
+<p><code>-DRUN_HAVE_STD_REGEX=0</code><br>
+<code>-DRUN_HAVE_POSIX_REGEX=0</code><br>
+<code>-DRUN_HAVE_GNU_POSIX_REGEX=0</code><br>
+<code>-DRUN_HAVE_STEADY_CLOCK=0</code></p>
+<p>これらは今回、全て指定したが、本来はいくつか指定すればよいだけかもしれない。<br>
+これに<code>toolchain.arm.cmake</code>の指定と<code>CMAKE_BUILD_TYPE=Release</code>、<code>BENCHMARK_ENABLE_GTEST_TESTS=OFF</code>を加えて、結果、cmake時のコマンドは下記のようになる。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ cmake -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake \
+        -DCMAKE_CROSSCOMPILING=1 \
+        -DRUN_HAVE_STD_REGEX=0 \
+        -DRUN_HAVE_POSIX_REGEX=0 \
+        -DRUN_HAVE_GNU_POSIX_REGEX=0 \
+        -DRUN_HAVE_STEADY_CLOCK=0 \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBENCHMARK_ENABLE_GTEST_TESTS=OFF \
+        ..
+</code></pre><pre><code class="language-no_attr" data-lang="no_attr">$ git clone https://github.com/google/benchmark.git google.benchmark.git
+$ git clone https: cd google.benchmark.git
+$ git checkout v1.4.1
+
+$ mkdir _build &amp;&amp; cd _build
+$ cmake -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake -DCMAKE_CROSSCOMPILING=1 -DRUN_HAVE_STD_REGEX=0 -DRUN_HAVE_POSIX_REGEX=0 -DRUN_HAVE_GNU_POSIX_REGEX=0 -DRUN_HAVE_STEADY_CLOCK=0 -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_ENABLE_GTEST_TESTS=OFF ..
+$ make
+$ sudo make install
+</code></pre><h3 id="mongo">Mongo</h3>
+<p>今回はpeer向けなので不要です。</p>
+<h3 id="zmq">ZMQ</h3>
+<p>今回はpeer向けなので不要です。</p>
+<h3 id="rocksdb">RocksDB</h3>
+<pre><code class="language-no_attr" data-lang="no_attr">$ git clone https://github.com/facebook/rocksdb.git rocksdb.git
+$ cd rocksdb.git
+$ git checkout -B &quot;5.18.fb&quot; &quot;origin/5.18.fb&quot;
+</code></pre><p>ここで、<code>rocksdb.git/CMakeLists.txt</code>の<code>211行目</code>を下記のように書き換えます。<br>
+(cmake時にオプションで変更することが出来る気がするけどやり方が分からない。)</p>
+<pre><code class="language-cmkae" data-lang="cmkae">（省略）
+else()
+  if(MSVC)
+    set(CMAKE_CXX_FLAGS &quot;${CMAKE_CXX_FLAGS} /arch:AVX2&quot;)
+  else()
+    if(NOT HAVE_POWER8)
+      # ここが211行目
+      # 元は set(CMAKE_CXX_FLAGS &quot;${CMAKE_CXX_FLAGS} -march=native&quot;)
+      set(CMAKE_CXX_FLAGS &quot;${CMAKE_CXX_FLAGS} -march=armv8-a&quot;)
+    endif()
+  endif()
+endif()
+(省略)
+</code></pre><p>要するに、<code>CMAKE_CXX_FLAGS</code>に<code>-march=armv8-a</code>、つまり、<code>g++</code>コマンドに<code>-march=armv8-a</code>オプションを渡してあげるために書き換える。この、<code>armv8-a</code>などは、rapsberryPiのバージョンによって変わることになります。</p>
+<p>これで、<code>BUILDING.md</code>に書いてあるとおりの操作に戻ります。<code>cmake</code>時にはツールチェインの指定を忘れずに。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ mkdir _build &amp;&amp; cd _build
+$ cmake -DCMAKE_BUILD_TYPE=Release -DWITH_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..
+$ make
+$ sudo make install
+</code></pre><h3 id="catapult">catapult</h3>
+<pre><code class="language-no_attr" data-lang="no_attr">git clone https://github.com/nemtech/catapult-server.git
+cd catapult-server
+</code></pre><p>ここで、<code>CMakeGlobalSettings.cmake</code>の<code>46行名</code>に<code>set(CMAKE_CXX_FLAGS &quot;${CMAKE_CXX_FLAGS} -pthread&quot;)</code>を追記します。下記のようになります。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">(略)
+
+endif()
+
+### set compiler settingsa
+
+# 追記
+set(CMAKE_CXX_FLAGS &quot;${CMAKE_CXX_FLAGS} -pthread&quot;)
+
+if(MSVC)
+        set(CMAKE_CXX_FLAGS &quot;${CMAKE_CXX_FLAGS} /W4 /WX /EHsc&quot;)
+        # in debug disable &quot;potentially uninitialized local variable&quot; (FP)
+        set(CMAKE_CXX_FLAGS_DEBUG &quot;${CMAKE_CXX_FLAGS_DEBUG} /MDd /D_SCL_SECURE_NO_WARNINGS /wd4701&quot;)
+        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO &quot;${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MD /Zi&quot;)
+        set(CMAKE_CXX_FLAGS_RELEASE &quot;${CMAKE_CXX_FLAGS_RELEASE} /MD&quot;)
+
+(略)
+</code></pre><p>さらに、<code>monogo</code>と<code>zeromq</code>はAPI用のエクステンションになるので、今回は不要なはずです。</p>
+<p>ということで、<code>catapult-server/extensions/CMakeLists.txt</code>の<code>mongo</code>と<code>zeromq</code>の部分をコメントアウトします。（もっとスマートな方法があるのかもしれない）</p>
+<p><code>catapult-server/extensions/CMakeLists.txt</code></p>
+<pre><code class="language-no_attr" data-lang="no_attr"># ファイルの最下部
+
+add_subdirectory(addressextraction)
+add_subdirectory(diagnostics)
+add_subdirectory(eventsource)
+add_subdirectory(filespooling)
+add_subdirectory(harvesting)
+add_subdirectory(hashcache)
+#add_subdirectory(mongo) コメントアウト
+add_subdirectory(networkheight)
+add_subdirectory(nodediscovery)
+add_subdirectory(packetserver)
+add_subdirectory(partialtransaction)
+add_subdirectory(pluginhandlers)
+add_subdirectory(sync)
+add_subdirectory(syncsource)
+add_subdirectory(timesync)
+add_subdirectory(transactionsink)
+add_subdirectory(unbondedpruning)
+#add_subdirectory(zeromq) コメントアウト
+</code></pre><p>これで下準備は完了です。例によって、<code>cmake</code>にツールチェインとして<code>toolchain.arm.cmake</code>を追加で指定します。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ mkdir _build &amp;&amp; cd _build
+$ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..
+$ make publish
+</code></pre><p>ここで出力されるログで、<code>CMAKE_CXX_FLAGS</code>の部分に<code>-pthread</code>があることを確認しましょう。<code>CMakeGlobalSettings.cmake</code>で追記した部分が反映されているはずです。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..
+
+-- CATAPULT_VERSION_DESCRIPTION: 95e0c6a [master]
+-- CMAKE_CXX_COMPILER_ID: GNU
+-- CMAKE_CXX_FLAGS:  -pthread -Wall -Wextra -Werror -Wstrict-aliasing=1 -fvisibility=hidden
+-- CMAKE_PREFIX_PATH:
+-- BOOST_ROOT:
+</code></pre><p>あとは、必要な部分をビルドしていくだけです。大量のテスト群もビルドしたくないので、必要な部分のみをビルドします。</p>
+<p><code>make</code>はターゲットを指定すると、本体とそれが依存するライブラリをビルドしてくれるので、それを利用して必要な部分のみをビルドします。</p>
+<p>※version cowに下げたことに併せてplugin群など書き換えています。</p>
+<p>server</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ make catapult.server -j4
+</code></pre><p>extension群。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ make extension.addressextraction  \
+       extension.diagnostics        \
+       extension.eventsource        \
+       extension.filechain          \
+       extension.harvesting         \
+       extension.hashcache          \
+       extension.networkheight      \
+       extension.nodediscovery      \
+       extension.packetserver       \
+       extension.partialtransaction \
+       extension.pluginhandlers     \
+       extension.sync               \
+       extension.syncsource         \
+       extension.timesync           \
+       extension.transactionsink    \
+       extension.unbondedpruning    \
+       -j4
+</code></pre><p>plugin群。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ make catapult.plugins.accountlink \
+       catapult.plugins.aggregate   \
+       catapult.plugins.hashcache   \
+       catapult.plugins.lockhash    \
+       catapult.plugins.locksecret  \
+       catapult.plugins.mosaic      \
+       catapult.plugins.multisig    \
+       catapult.plugins.namespace   \
+       catapult.plugins.property    \
+       catapult.plugins.signature   \
+       catapult.plugins.transfer    \
+       -j4
+</code></pre><h3 id="試運転">試運転</h3>
+<p>これで一通り入りました。あとは、設定をして動かしてみるだけです。</p>
+<p>とりあえずエミュレーターを使って試しに動かしてみたいときは下記のようにしてください。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ sudo apt install qemu-user-binfmt
+$ qemu-aarch64 -L /usr/aarch64-linux-gnu ./catapult.server
+</code></pre><h3 id="raspberrypi上で動かす">RaspberryPi上で動かす</h3>
+<p>必要になるのは<code>catapult-server</code>と<code>rocksdb.git</code>です。これらをRaspberryPiに移しましょう。</p>
+<p>実際、catapult内で必要になるのは<code>_build</code>の中身のみなので、抜き出しても構いません。ただし、そのままだと設定ファイルがはいっていないので、その一つ下の<code>resources</code>の中身を、<code>_build</code>内の<code>resources</code>に移しておきましょう。</p>
+<p>ここで、<code>rocksdb.git</code>で、<code>librocksdb.so</code>と<code>librocksdb.so.5</code>がコピー出来ないことがあります（許可されない操作と出るはず）。
+20190602_building_catapult_for_arm
+この場合は、一旦無視して、<code>rocksdb.git</code>をRaspberryPiに移した後で、<code>librocksdb.so</code>と<code>librocksdb.so.5</code>をRaspberryPi上で作成します。</p>
+<p>これらはシンボリックリンクなので、<code>ln</code>コマンドで生成します。</p>
+<pre><code class="language-no_attr" data-lang="no_attr"># シンボリックリンクを作成
+rocksdb.git/_build$ ln -s librocksdb.so.5.18.3 librocksdb.so.5
+rocksdb.git/_build$ ln -s librocksdb.so.5 librocksdb.so
+
+# 確認
+rocksdb.git/_build$ ls -l
+lrwxrwxrwx 1 XXX  XXX        15 Jun  2 08:32 librocksdb.so -&gt; librocksdb.so.5
+lrwxrwxrwx 1 XXX  XXX        20 Jun  2 08:32 librocksdb.so.5 -&gt; librocksdb.so.5.18.3
+-rwxrwxr-x 1 XXX  XXX   6974480 Jun  2 08:32 librocksdb.so.5.18.3
+</code></pre><p>USBメモリ等でRaspberryPiに<code>_build</code>をコピーできたら、まず最初に<code>ld</code>（ライブラリ等の探査コマンド）が必要な共有ライブラリを見つけられるように、パスを通します。</p>
+<p>まず最初に確認。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">/_build/bin$ ldd ./* | grep &quot;not found&quot;
+</code></pre><p>大量の<code>not found</code>が出ると思いますが、よく見てみると、<code>libboost_XXX</code>と<code>librocksdb.so.5</code>であることが分かると思います。</p>
+<p>では、パスを通します。パスを通すにはふたとおりの方法があり、環境変数<code>LD_LIBRARY_PATH</code>にパスを指定するか、<code>/etc/ld.so.conf</code>にパスを書き込むかのどちらかです。<br>
+(それらの違いは別で調べてください。)</p>
+<p>設定を反映させるには<code>ldconfig</code>で反映させます。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">/_build/bin/$ export LD_LIBRARYは_PATH=$LD_LIBRARY_PATH:&lt;_build/bin/boostのパス&gt;:&lt;rocksdb.git/_buildのパス&gt;
+
+# 適応
+/_build/bin/$ ldconfig
+
+# 確認(何も表示されなければok)
+/_build/bin$ ldd ./* | grep &quot;not found&quot;
+</code></pre><p>あとは、<code>libgflags</code>が<code>not found</code>として残るはずです。これも入れましょう。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ sudo apt-get install libgflags-dev
+</code></pre><p>これで、<code>not found</code>がなく、全ての必要なのライブラリにパスが通っていることが確認できれば、あとはcatapultの設定を行い、<code>catapult.server</code>で起動します。</p>
+<p>全ての機能については確認していませんが、ノードが起動します。</p>
+<h1 id="さいごに">さいごに</h1>
+<h3 id="わからないところ">わからないところ</h3>
+<ul>
+<li>Dragonは全体的にまだよく分からない。</li>
+<li>rocksdbは２１１行目を書き換えるパワープレイをしたが、あんなので良いのか</li>
+<li>catapultでなぜarm向けにコンパイルするときだけ-pthreadオプションが要るのか</li>
+</ul>
+<h3 id="所感">所感</h3>
+<p>ビルドの時間は圧倒的に短縮できますが、セルフビルドと同じぐらい大変でした。<br>
+また、どこかしらのバージョンが変われば途端にビルド出来なくなる気がしています。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2f20190602_building_catapult_for_arm%2f&text=x86_64%20ubuntu%e4%b8%8a%e3%81%a7catapult%e3%82%92arm64%e7%94%a8%e3%81%ab%e3%83%93%e3%83%ab%e3%83%89%e3%81%99%e3%82%8b%28cow%29" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/20190530_cpp_library/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" class="card-img" alt="programing">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">C&#43;&#43;の共有ライブラリの作成と利用</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2019-05-30 530:00">May 30, 2019</time></p>
+      <p></p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/20201002_random_dungeon_generator/" />
+  <meta property="og:title" content="ランダムダンジョン生成" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
+
+  <title>ランダムダンジョン生成 &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">ランダムダンジョン生成</h1>
+          <p class="post-date">Posted <time datetime="2020-10-02">Oct 2, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
+        </picture>
+        
+        <h1 id="ランダムダンジョン生成">ランダムダンジョン生成</h1>
+<p><strong>※ これはほぼ備忘録です。参考になるのかはわかりません。</strong></p>
+<p>ランダムダンジョン生成は男のロマン。</p>
+<h1 id="手順">手順</h1>
+<p>大まかな手順は以下の通り。</p>
+<ol>
+<li>空間をパーティションで仕切る</li>
+<li>各パーティションについて、必要なマージンを取って部屋になる空間を1つ配置</li>
+<li>各パーティションについて、自身と隣接しているパーティションの情報をまとめる(隣接しているパーティションと、接している領域の座標)</li>
+<li>&lsquo;3'の情報から、各部屋について、自身と直接通路で繋げることができる部屋を互いに把握させる</li>
+<li>&lsquo;3'の情報から、各部屋について、通路を繋げる時に必ず経由する地点を把握させる</li>
+<li>&lsquo;5'までの情報をもって、部屋同士を通路で繋げる</li>
+</ol>
+<p>順に見ていく。</p>
+<h2 id="1-空間をパーティションで仕切る">1. 空間をパーティションで仕切る</h2>
+<p>空間を複数のパーティションで仕切るのは、まずマップ全体を半分に(等分ではない)、さらに半分にされた領域を半分に&hellip;としていく。これをする際、最大分割深さを決めてランダムで分割していく。</p>
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20201002_random_dungeon_generator/draw1.png?raw=true" alt="draw1"></p>
+<p>この時、縦に分割するか横に分割するかもランダムで決めると、長細い領域が頻繁に出来てしまう(たまにそういう領域が出来るのは構わないが)。これを防ぐには、アスペクト比(短辺と長辺の比)を使ったりして縦長の領域はより水平に分割されやすくすれば良い。</p>
+<p>ちなみに、パーティションの最小値を、次に配置する部屋の最小値と必要なマージンが取れるように設定する必要がある。</p>
+<h2 id="2-各パーティションについて必要なマージンを取って部屋になる空間を1つ配置">2. 各パーティションについて、必要なマージンを取って部屋になる空間を1つ配置</h2>
+<p>次に各パーティションで分けられた領域の中に部屋を配置していく。</p>
+<p>部屋の幅、逆さの最小値をあらかじめ決めて、ランダムで部屋の大きさを決める。</p>
+<p>しかし、ここでも純粋なランダムにすると、長細い部屋が頻繁に出来てしまうので、以下のようなルールを設けることでこれを防ぐ。</p>
+<ol>
+<li>先にパーティションの短辺側の部屋の幅、または高さになる辺を決める。</li>
+<li>次に、正規分布に従ってアスペクト比を決める(平均 : 1, 分散: 適当) ※アスペクト比の平均1ということは正方形に近い形の部屋ができやすくなるということ</li>
+<li>アスペクト比に従って決まっていない方の部屋の辺の長さを決める。</li>
+</ol>
+<p>上記のルールで部屋の大きさを決めて、残った領域の中で部屋の位置をランダムで決める。ここは一様なランダムが良い。</p>
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20201002_random_dungeon_generator/draw2.png?raw=true" alt="draw2"></p>
+<h2 id="3-各パーティションについて自身と隣接しているパーティションの情報をまとめる">3. 各パーティションについて、自身と隣接しているパーティションの情報をまとめる</h2>
+<p>マップを作る手順としては部屋ができればあとはそれらの部屋を通路で繋げば終了なのだが、ランダムでペアを決めて通路で繋ぐとあまりにも規則性のないマップが出来上がってしまう。しかし期待しているのはある部屋から次の部屋に、さらに次の部屋に&hellip;と進んでいけるダンジョンマップだろう。そのための準備をこれからしていかないといけない。</p>
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20201002_random_dungeon_generator/draw3.png?raw=true" alt="draw3"></p>
+<p>要点としては、部屋と部屋を繋いだ通路の途中に別の部屋があったりするとマップの規則性がなくなってしまうということなので、ここでほしいのが <strong>この部屋の近隣にある部屋はどれとどれなのか</strong> という情報である。</p>
+<p>部屋の情報を使うと近隣の部屋を見つけるのが大変になるので、ここでその部屋が所属しているパーティションの位置情報から近隣の部屋を探す。各パーティションに1つ部屋があるのだから、その隣接しているパーティションに所属している部屋同士は近隣の部屋同士ということになる。</p>
+<p>パーティションが隣接しているかどうかは、それらのパーティションが占めているx,y座標上の領域について重なりをみれば分かる。大雑把に書けば以下のようにして分かる。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#998;font-style:italic">// それぞれの長さの合計と、それぞれの値の最大値、最小値から、重なっている領域の長さが分かる
+</span><span style="color:#998;font-style:italic"></span>getOverlapRange(startA: <span style="color:#458;font-weight:bold">number</span>, endA: <span style="color:#458;font-weight:bold">number</span>, startB: <span style="color:#458;font-weight:bold">number</span>, endB: <span style="color:#458;font-weight:bold">number</span>)<span style="font-weight:bold">:</span> <span style="color:#458;font-weight:bold">number</span> {
+  <span style="font-weight:bold">const</span> max <span style="font-weight:bold">=</span> <span style="color:#999">Math</span>.max(startA, startB, endA, endB);
+  <span style="font-weight:bold">const</span> min <span style="font-weight:bold">=</span> <span style="color:#999">Math</span>.min(startA, startB, endA, endB);
+  <span style="font-weight:bold">const</span> lenA <span style="font-weight:bold">=</span> <span style="color:#999">Math</span>.abs(endA <span style="font-weight:bold">-</span> startA);
+  <span style="font-weight:bold">const</span> lenB <span style="font-weight:bold">=</span> <span style="color:#999">Math</span>.abs(endB <span style="font-weight:bold">-</span> startB);
+  <span style="font-weight:bold">return</span> (lenA <span style="font-weight:bold">+</span> lenB) <span style="font-weight:bold">-</span> (max <span style="font-weight:bold">-</span> min);
+}
+
+isFacing(a: <span style="color:#458;font-weight:bold">Area</span>, b: <span style="color:#458;font-weight:bold">Area</span>)<span style="font-weight:bold">:</span> <span style="font-weight:bold">boolean</span> {
+  <span style="font-weight:bold">const</span> overlapRangeX <span style="font-weight:bold">=</span> getOverlapRange(a.left, a.right, b.left, b.right);
+  <span style="font-weight:bold">const</span> overlapRangeY <span style="font-weight:bold">=</span> getOverlapRange(a.top, a.bottom, b.top, b.bottom);
+
+  <span style="color:#998;font-style:italic">// yに重なっている領域があり、かつ、xの重なりが0であれば、左右に隣接する
+</span><span style="color:#998;font-style:italic"></span>  <span style="font-weight:bold">if</span> (overlapRangeY <span style="font-weight:bold">&gt;</span> <span style="color:#099">0</span> <span style="font-weight:bold">&amp;&amp;</span> overlapRangeX <span style="font-weight:bold">===</span> <span style="color:#099">0</span>) <span style="font-weight:bold">return</span> <span style="font-weight:bold">true</span>;
+  <span style="color:#998;font-style:italic">// xに重なっている領域があり、かつ、yの重なりが0であれば、上下に隣接する
+</span><span style="color:#998;font-style:italic"></span>  <span style="font-weight:bold">if</span> (overlapRangeX <span style="font-weight:bold">&gt;</span> <span style="color:#099">0</span> <span style="font-weight:bold">&amp;&amp;</span> overlapRangeY <span style="font-weight:bold">===</span> <span style="color:#099">0</span>) <span style="font-weight:bold">return</span> <span style="font-weight:bold">true</span>;
+
+  <span style="font-weight:bold">return</span> <span style="font-weight:bold">false</span>;
+}
+</code></pre></div><p>このパーティションが接触している領域は、後々使うので情報を部屋のペアとセットで取っておく。</p>
+<h2 id="4-各部屋について自身と直接通路で繋げることができる部屋を互いに把握させる">4. 各部屋について、自身と直接通路で繋げることができる部屋を互いに把握させる</h2>
+<p>上記でも書いたが、1つのパーティションにつき1つの部屋がある時、パーティション同士が隣接していれば部屋同士も近隣同士になるということである。これを部屋に把握させる。</p>
+<h2 id="5-各部屋について通路を繋げる時に必ず経由する地点を把握させる">5. 各部屋について、通路を繋げる時に必ず経由する地点を把握させる</h2>
+<p>近隣する部屋が分かれば、あとはそこに向かって通路を伸ばせば良いとなるが、ここで一つ問題が発生する。</p>
+<p>まず、ダンジョンの通路は斜めになってほしくない。最終的にマップに落とす時に描写が大変になるし、そもそもダンジョンのマップの通路は直角に進行すると相場で決まっている。そのため、スタート地点とゴール地点を結ぶ線が直角になるように後々ルートを補正することになるのだが、補正したがために関係のない部屋に侵入してしまう可能性があるのだ。</p>
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20201002_random_dungeon_generator/draw4.png?raw=true" alt="draw4"></p>
+<p>これを防ぐために、<strong>絶対他の部屋が存在しないルートを作るための</strong> 中継地点を作成する。この中継地点は、<code>3</code>で調べたパーティション同士が接している領域からランダムで決めれば良い。</p>
+<p>中継地点が決まったら、最後に部屋を通路で繋げる(先に書いておくとこれが大変)</p>
+<h2 id="6-部屋同士を通路で繋げる">6. 部屋同士を通路で繋げる</h2>
+<p>いよいよ部屋同士を通路で繋げる。おおまかな手順としては以下の通り。</p>
+<ol>
+<li>これから通路で繋ぐ部屋の中からランダムで位置を取る</li>
+<li>中継地点と合わせてスタートとゴールが決まったので、それが通路になる</li>
+<li>通路が水平、垂直のみで構成されるように、ルートを補正する地点を加える</li>
+</ol>
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20201002_random_dungeon_generator/draw5.png?raw=true" alt="draw5"></p>
+<p>通路が水平、垂直のみで構成されるようにルートを補正するには、各ポイント同士のx,yが交わるところを新たな中継地点として加えてやればよい。これには水平方向優先と、垂直方向優先の2通りのパターンがあるが、 <strong>ある場合を除いて</strong> ランダムで良い。(あとで説明する)</p>
+<p>これで通路がつながる。&hellip;のだが、これだけだといくつか問題が起きる。</p>
+<h3 id="問題1-2マスの通路が生まれる">問題1. 2マスの通路が生まれる</h3>
+<p>通路同士がくっついて幅2マスの通路が生まれることがある。これは個人的にはそこまで問題でない(特徴として許容できる)ので、今回は無視したが、気になるのであればパース時に埋めてしえば済むかもしれない。</p>
+<h3 id="問題2-通路が部屋の壁を破壊する">問題2. 通路が部屋の壁を破壊する</h3>
+<p>これは許容できない問題。補完された通路が部屋と間隔を開けずに通った場合、本来は1マスは確保しておきたい部屋の壁が通路によって破壊されることがたまに起きる。</p>
+<p>これを防ぐためには、ルートを補完する時に部屋のすぐ隣を中継地点としないようにすれば良い。</p>
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20201002_random_dungeon_generator/draw6.png?raw=true" alt="draw6"></p>
+<p>これら、書けば簡単にできそうだが、&ldquo;問題を避けるための中継地点を一つ増やせばOK!&rdquo; などと簡単に済む話ではない(すぐスパゲッティーになる)。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2f20201002_random_dungeon_generator%2f&text=%e3%83%a9%e3%83%b3%e3%83%80%e3%83%a0%e3%83%80%e3%83%b3%e3%82%b8%e3%83%a7%e3%83%b3%e7%94%9f%e6%88%90" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/20200920_phaser3_tilemap/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" class="card-img" alt="phaser">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Phaser3 タイルマップ アニメーション</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-09-20 920:00">Sep 20, 2020</time></p>
+      <p>#game_dev </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

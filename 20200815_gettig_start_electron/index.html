@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/20200815_gettig_start_electron/" />
+  <meta property="og:title" content="Webの技術でローカルアプリが作れるElectron" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/js_ts.png?raw=true" />
+
+  <title>Webの技術でローカルアプリが作れるElectron &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Webの技術でローカルアプリが作れるElectron</h1>
+          <p class="post-date">Posted <time datetime="2020-08-15">Aug 15, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/js_ts.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/js_ts.png?raw=true" alt="js_ts">
+        </picture>
+        
+        <h1 id="webの技術でローカルアプリが作れるelectron">Webの技術でローカルアプリが作れるElectron</h1>
+<p><code>NW.js</code>に続き、<code>Electron</code>も触ってみる。結論から言うと、こっちの方が情報量が多いという点で良い気がしている。機能的にはコンテキストの分離がNW.jsよりも <strong>カッチリ</strong> しているイメージ。</p>
+<h1 id="gettingstart">GettingStart</h1>
+<h2 id="1-プロジェクトの用意">1. プロジェクトの用意</h2>
+<pre><code>[]project-root
+├ []src
+│ ├ main.js
+│ └ index.html
+└ package.json
+</code></pre><p>Electronはnwjsと違い、マニフェストファイルのようなものは存在しない。Electronでは、<code>package.json(npm用のファイル)</code>で<code>main</code>に指定されているjsファイルを立ち上げ、その中で <strong>ウィンドウを表示する命令を書く</strong>。</p>
+<p><code>main.js</code>の中身は下記のようになる。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="font-weight:bold">const</span> { app, BrowserWindow } <span style="font-weight:bold">=</span> require(<span style="color:#b84">&#39;electron&#39;</span>)
+
+<span style="font-weight:bold">function</span> createWindow () {
+  <span style="color:#998;font-style:italic">// ブラウザウィンドウオブジェクトを生成
+</span><span style="color:#998;font-style:italic"></span>  <span style="font-weight:bold">const</span> win <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> BrowserWindow({
+    width<span style="font-weight:bold">:</span> <span style="color:#099">800</span>,
+    height<span style="font-weight:bold">:</span> <span style="color:#099">600</span>,
+    webPreferences<span style="font-weight:bold">:</span> {
+      nodeIntegration<span style="font-weight:bold">:</span> <span style="font-weight:bold">true</span>
+    }
+  })
+
+  <span style="color:#998;font-style:italic">// htmlファイルを読込
+</span><span style="color:#998;font-style:italic"></span>  win.loadFile(<span style="color:#b84">&#39;index.html&#39;</span>)
+
+  <span style="color:#998;font-style:italic">// DevToolsを開く
+</span><span style="color:#998;font-style:italic"></span>  win.webContents.openDevTools()
+}
+
+<span style="color:#998;font-style:italic">// appの準備が出来たら、ウィンドウを生成する
+</span><span style="color:#998;font-style:italic"></span>app.whenReady().then(createWindow)
+
+<span style="color:#998;font-style:italic">// Quit when all windows are closed.
+</span><span style="color:#998;font-style:italic"></span>app.on(<span style="color:#b84">&#39;window-all-closed&#39;</span>, () =&gt; {
+  <span style="color:#998;font-style:italic">// On macOS it is common for applications and their menu bar
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#998;font-style:italic">// to stay active until the user quits explicitly with Cmd + Q
+</span><span style="color:#998;font-style:italic"></span>  <span style="font-weight:bold">if</span> (process.platform <span style="font-weight:bold">!==</span> <span style="color:#b84">&#39;darwin&#39;</span>) {
+    app.quit()
+  }
+})
+
+app.on(<span style="color:#b84">&#39;activate&#39;</span>, () =&gt; {
+  <span style="color:#998;font-style:italic">// On macOS it&#39;s common to re-create a window in the app when the
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#998;font-style:italic">// dock icon is clicked and there are no other windows open.
+</span><span style="color:#998;font-style:italic"></span>  <span style="font-weight:bold">if</span> (BrowserWindow.getAllWindows().length <span style="font-weight:bold">===</span> <span style="color:#099">0</span>) {
+    createWindow()
+  }
+})
+</code></pre></div><h2 id="2npmパッケージをインストール">2.npmパッケージをインストール</h2>
+<pre><code>$ npm install --save-dev electron
+</code></pre><h2 id="3実行">3.実行</h2>
+<pre><code>$ electron .
+</code></pre><p>これだけで、<code>nw</code>コマンドと同様に、開発中のデモが立ち上がる。</p>
+<p>ビルドはまた今度。</p>
+<h1 id="メインプロセスとレンダープロセス">メインプロセスとレンダープロセス</h1>
+<p>nwjsで、ブラウザコンテキストとノードコンテキストが別のスレッドで走っていたのと似たようなもので、electronには<strong>メインプロセス</strong>と<strong>レンダープロセス</strong>がある。</p>
+<p>最初に立ち上がるのがメインプロセス。<code>package.json</code>の<code>main</code>を最初に実行するのがこのプロセスだ。このプロセスはNode.jsのコンテキストで走る。次に、メインプロセスからウィンドウが生成される。このウィンドウ上で走る(主にhtmlから<code>&lt;script&gt;</code>で読み込まれる)jsは、レンダープロセス上で走る。ここでのコンテキストはブラウザのコンテキストになる。</p>
+<p>レンダープロセスはメインプロセスから生み出され、メインプロセスはレンダープロセスをいくつも生み出すことが出来る。</p>
+<h2 id="プロセス間の通信">プロセス間の通信</h2>
+<p>となると、nwjsと同じく、プロセス間で通信をする手段が登場する。レンダープロセスがメインプロセスと通信をする手段のメインは<code>ipc(プロセス間通信)</code>を使った通信で、electronにはそれ用のAPIが用意されている。</p>
+<p>簡単なアプリケーションの場合、</p>
+<ol>
+<li>レンダープロセスがボタンのクリックなどのイベントを検知する</li>
+<li>イベントがローカルファイルの参照や操作を必要とする場合、ipcによりイベントをメインプロセスに伝える</li>
+<li>イベントをメインプロセスで処理し、結果をレンダープロセスに送る</li>
+<li>メインプロセスから受け取った結果を、レンダープロセスが画面の表示に反映する</li>
+</ol>
+<p>という具合に処理を進めていく。</p>
+<p>nwjsがブラウザコンテキスト上で<code>require</code>してノードコンテキスト上で走るモジュールを直接操作できるかのような形で書けたのに対し、<code>ipc</code>によってデータを送りあっていることをより意識した形で書くのがelectron、electronがカッチリしていてnwjsが緩いと書いたのはこのため。</p>
+<p>また、その他にも、<code>remote.require</code>という仕組みがある。これは、nwjsにおいて、ブラウザコンテキスト上で読み込まれたnode.js用のモジュールが、ノードコンテキスト上で処理をして結果をブラウザコンテキスト上で参照できるのと同じような仕組みで、レンダープロセスはオブジェクトの参照を得るが、オブジェクトの中身はメインプロセス上で走る。これを多用する場合、nwjs同様コンテキストの仕分けがゆるくなる。</p>
+<h1 id="typescript-との共存">typescript との共存</h1>
+<p>typescriptで書きたい。</p>
+<p>typescriptを導入する場合、いくつかキーとなるものが存在する。</p>
+<ul>
+<li>レンダラープロセス(BrowserContext)とメインプロセス(NodeContext)でコンテキストが違う(これはNW.jsも同じ)</li>
+<li>Node.jsの<code>global</code>にプロパティを追加する方法</li>
+</ul>
+<p>この辺りだろうか。</p>
+<h2 id="コンテキストが違う問題">コンテキストが違う問題</h2>
+<p>まず、レンダラープロセスとメインプロセスでコンテキストが違う問題。</p>
+<p>これは、<code>tsconfig.json</code>の書き分けによってクリアしていく。<code>tsconfig.json</code>には<code>extends</code>という設定を継承するための仕組みがある。</p>
+<p><code>tsconfig-base.json</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#a61717;background-color:#e3d2d2">ここに共通となる設定</span>
+}
+</code></pre></div><p><code>tsconfig-renderer.json</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#000080">&#34;extends&#34;</span>: <span style="color:#b84">&#34;./tsconfig-base.json&#34;</span>,
+  <span style="color:#000080">&#34;exclude&#34;</span>: [<span style="color:#b84">&#34;./src/main/&#34;</span>],
+  <span style="color:#a61717;background-color:#e3d2d2">その他設定</span>
+}
+</code></pre></div><p><code>tsconfig-main.json</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#000080">&#34;extends&#34;</span>: <span style="color:#b84">&#34;./tsconfig-base.json&#34;</span>,
+  <span style="color:#000080">&#34;exclude&#34;</span>: [<span style="color:#b84">&#34;./src/renderer/&#34;</span>],
+  <span style="color:#a61717;background-color:#e3d2d2">その他設定</span>
+}
+</code></pre></div><p>としておいて、コンパイル時に<code>-p</code>オプションでそれぞれの設定ファイルを指定。一回でできればよいが、出来なさそうなので、2回(レンダラープロセス用とメインプロセス用)コンパイルすることになる。</p>
+<p>あとは、主にコンテキストの違いで書き方に違いが出るのはモジュール廻りなので、気をつけて書く。
+ここで、紛らわしいのが、デフォルトの状態だとレンダラープロセスでも<code>require</code>が使えてしまうということだ。本来、<code>require</code>は<code>CommonJS</code>,つまりブラウザ環境上では使えないが、electronではブラウザ環境上でもNode.jsの機能が使えてしまうのでCommonJSのrequireがレンダラープロセス上を走るソース内に混ざっていても動く。</p>
+<p>これだとそのうち混乱してしまうし、ブラウザコンテキスト上でNode.jsの機能が使えてしまうのは、XSS(クロスサイトスクリプティング)脆弱性が出た時に攻撃者がレンダラープロセスを経由して全てのNodeJSが提供する機能を利用出来てしまう危険があるので、禁止したほうが無難(後述する)</p>
+<h2 id="nodejsのglobalにプロパティを追加する方法">Node.jsの<code>global</code>にプロパティを追加する方法</h2>
+<p>何故コレを習得する必要があるのか。そこから説明する。</p>
+<p>electronの<code>BrowserWindow</code>オブジェクトを生成する時、オプションに<code>preload</code>というものがある。ここには、ウィンドウが開く前に処理しておきたいものをまとめたjsファイルを指定する(<strong>必ずフルパスで指定すること</strong>)。指定されたjsファイルは、ウィンドウが開く前に実行される。</p>
+<p>ここで実行されるものは、Node.jsの機能が全て使える状態で実行される。そして、<code>preload</code>中に<code>global(Node.jsのグローバルオブジェクト)</code>に追加されたプロパティは、ブラウザコンテキスト上の<code>window</code>からも参照できるようになる。</p>
+<p>これで何が嬉しいのかと言うと、XSSを意識してレンダラープロセスでNode.jsの機能を使用することを禁止したのは良いが、そのままでは<code>electron</code>モジュールも使えなくなってしまう問題を解決できる。</p>
+<p>レンダラープロセスでNode.jsを禁止するには、<code>BrowserWindow</code>オブジェクト生成時に<code>nodeIntegration</code>を<code>false</code>にすれば良い。これで、レンダラープロセスプロセス上で<code>require</code>などのNode.jsの機能が禁止される。Node.jsの機能が禁止されるということは、ブラウザコンテキストからローカルファイルなどの深いところに手が届かなくなるので、すこし安心、というわけだ。</p>
+<p>しかし、<code>require</code>が使えないということは、<code>electron</code>モジュールも使えないということだ。<code>electron</code>モジュールが使えないということは、<code>electron</code>モジュールの中にある<code>ipcRenderer</code>が使えなくなり、レンダラープロセスとメインプロセス間のコミュニケーション手段が無くなってしまう。</p>
+<p>レンダラープロセスのみで完結するアプリであれば問題ないが、ファイルの操作を必要とするアプリケーションの場合これだと困るので、最低限必要なNode.jsモジュールだけは許可したい。この時に、<code>preload</code>が使える。</p>
+<p><code>preload</code>時にはNode.jsの仕様が禁止されないことは既に書いた。また、<code>preload</code>時に<code>global</code>に追加したプロパティはその後、レンダラープロセスの<code>window</code>から参照できることも書いた。つまり、<code>preload</code>時に<code>require</code>で必要最低限のモジュールをロードし、<code>global</code>に入れておけば、それだけはNode.jsが禁止されたレンダラープロセス上でも使用可能になるということだ。
+(なので、XSSを意識して禁止したのであれば何を許可するのかは慎重に考えなくてはいけない。せっかく禁止したのにglobalに何でもかんでも入れていては、結局NodeJSの機能を禁止した意味が無くなってしまう。)</p>
+<p><code>main_main.ts</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts">  <span style="font-weight:bold">const</span> win <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> BrowserWindow({
+    width: <span style="color:#458;font-weight:bold">800</span>,
+    height: <span style="color:#458;font-weight:bold">600</span>,
+    webPreferences<span style="font-weight:bold">:</span> {
+      nodeIntegration: <span style="color:#458;font-weight:bold">false</span>,
+      contextIsolation: <span style="color:#458;font-weight:bold">false</span>,
+      preload: <span style="color:#458;font-weight:bold">path.join</span>(__dirname, <span style="color:#b84">&#39;./preload.js&#39;</span>),
+    }
+  });
+</code></pre></div><p><code>renderer_preload.ts</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">const</span> electron <span style="font-weight:bold">=</span> require(<span style="color:#b84">&#39;electron&#39;</span>);
+
+(process <span style="font-weight:bold">as</span> NodeJS.EventEmitter).once(<span style="color:#b84">&#39;loaded&#39;</span>, () <span style="font-weight:bold">=&gt;</span> {
+  console.log(<span style="color:#b84">&#39;preload&#39;</span>);
+  global.electron <span style="font-weight:bold">=</span> electron;
+  global.process <span style="font-weight:bold">=</span> process;
+});
+</code></pre></div><p>こんな感じになる。<code>preload</code>にはコンパイル後のjsファイルを指定することになるのに注意。</p>
+<p>で、肝心の<code>global</code>だが、普通に入れると <strong>globalにelectronなんていうプロパティはありませんが?</strong> と言ってコンパイラに蹴られる。
+これをなんとかしないといけない。</p>
+<p>結論から言うと、型定義ファイルを書いて、プロジェクトに含める。型定義ファイルは下記のようになる。</p>
+<p><code>/src/types/global.d.ts</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">declare</span> namespace NodeJS {
+  <span style="font-weight:bold">interface</span> Global {
+    electron: <span style="color:#458;font-weight:bold">any</span>;
+  }
+}
+</code></pre></div><p>このファイルを、コンパイラがコンパイルする時に読み込むディレクトリに含めてあげれば、コンパイラが<code>global(type : NodeJS.Gloabl)</code>に<code>electron: any</code>があるぞと認識してくれる。読み込みのディレクトリに含めるには、例えば上記の場合<code>rootDir</code>が<code>./src/</code>になっていればその下にあるので自動で含まれるし、<code>include</code>でディレクトリを指定しても含まれうと思う(試してないけど)。</p>
+<h1 id="ローカルにあるファイルを選択する方法">ローカルにあるファイルを選択する方法</h1>
+<p>electronにおいて、ローカルにあるファイルを選択したいときには<code>dialog</code>を使う。(下記サンプルはts)
+これは、ローカル環境にアクセスするため、メインコンテキスト上で行うべき操作である。</p>
+<p><code>example.ts</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">import</span> <span style="font-weight:bold">*</span> <span style="font-weight:bold">as</span> electron from <span style="color:#b84">&#39;electron&#39;</span>;
+
+electron.dialog.showOpenDialog(targetWindow)
+  .then((result) <span style="font-weight:bold">=&gt;</span> { callback(result); });
+</code></pre></div><p>上記の例を使って説明をすると、<code>dialog</code>はファイルを選択する時に表示されるウィンドウで(&ldquo;おきまり&quot;のやつ)、これが表示されている間は親のウィンドウは操作を受け付けなくなるのが一般的(これをモーダルと呼ぶ)。<code>targetWindow</code>は、そのdialogを表示している間に操作を受け付けなくさせる親ウィンドウを指定する。また、<code>result</code>は<code>{canceled: boolean, filePaths: string[]}</code>のような形のデータで、キャンセルされたか、選択されたファイルのパスはどれか(複数選択可の場合は複数候補が返る)、を取得することが出来る。</p>
+<p>あとは、このファイルパスを使ってファイルを読み込めば良い。</p>
+<h1 id="electron--canvas2d-で画像を扱う">electron + canvas2d で画像を扱う</h1>
+<p>例えばcanvas2dとelectronを使ってペイントアプリを作成しているような時、ローカルファイルの画像を読み込んでcanvasに画像を表示する機能が必要になるだろう。</p>
+<p>いくつか方法がある。</p>
+<h2 id="1レンダラプロセス側で読込">1.レンダラプロセス側で読込</h2>
+<p>これが早い(実行速度的にも)。</p>
+<ol>
+<li>リクエストをレンダラプロセス側で検知し、メインプロセスにその旨をipcで送信</li>
+<li>メインプロセスはファイルオープンのイベントがトリガーされると、ダイアログを開き、ファイルパスを取得</li>
+<li>取得したファイルパスをレンダラプロセスにipcで送信</li>
+<li>レンダラープロセスがファイルパスを元に画像データを取得、表示</li>
+</ol>
+<p>レンダラープロセスが画像を表示する方法は下記のようになる。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#999">window</span>.electron.ipcRenderer.on(<span style="color:#b84">&#39;selectFile&#39;</span>, (event, path) <span style="font-weight:bold">=&gt;</span> {
+  <span style="color:#998;font-style:italic">// Imageオブジェクトを生成
+</span><span style="color:#998;font-style:italic"></span>  <span style="font-weight:bold">const</span> image <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Image();
+
+  <span style="color:#998;font-style:italic">// 先に、画像の読み込みが完了した時の処理を仕込んでおく
+</span><span style="color:#998;font-style:italic"></span>  image.addEventListener(<span style="color:#b84">&#39;load&#39;</span>, () <span style="font-weight:bold">=&gt;</span> {
+    ctx.drawImage(image, <span style="color:#099">0</span>, <span style="color:#099">0</span>);
+  }, <span style="font-weight:bold">false</span>);
+
+  <span style="color:#998;font-style:italic">// srcにファイルパスを代入すると、画像の読込を開始、
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#998;font-style:italic">// 成功すれば、`load`で仕込んでおいたコールバックが実行され、canvasに表示される
+</span><span style="color:#998;font-style:italic"></span>  image.src <span style="font-weight:bold">=</span> path;
+});
+</code></pre></div><h2 id="2メインプロセス側で読込">2.メインプロセス側で読込</h2>
+<p>これは、レンダラープロセスが表示関係に徹すると考えた時に、「メインプロセスで画像を読み込んでデータだけ送って貰えば良い」と考えることもあると思う。そういう時のパターン。しかし、先に結論を言うと、<strong>ImageDataオブジェクトの生成に時間がかかりすぎるので(体感で分かる程に)おすすめできない</strong></p>
+<ol>
+<li>リクエストをレンダラプロセス側で検知し、メインプロセスにその旨をipcで送信</li>
+<li>メインプロセスはファイルオープンのイベントがトリガーされると、ダイアログを開き、ファイルパスを取得</li>
+<li>取得したファイルパスを使って、メインプロセスがファイルを読込</li>
+<li>読み込んだ画像データをipcを使ってレンダラープロセスに送信</li>
+<li>レンダラープロセスが受け取ったデータを表示</li>
+</ol>
+<p>このとき、注意しないといけないことがある。</p>
+<p>それは、<strong>canvas2dで画像を表示するのに、ImageDataオブジェクトを生成しなくてはいけない</strong>ということ。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">const</span> buffer <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Uint8ClampedArray(uint8ArrayData);
+<span style="font-weight:bold">const</span> imageData <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> ImageData(buffer, w, h);
+</code></pre></div><p>このオブジェクトを生成するに当たって、<code>png</code>や<code>jpeg</code>などの圧縮された画像データをパースして、<code>width</code>,<code>height</code>,そして<code>生データ</code>を取得しなくてはいけない(つまり、ビットマップデータを取得)。</p>
+<p>しかし、Node.jsには標準でこれを扱えるライブラリがない。そこで、外部ライブラリを使う必要がある。</p>
+<p><code>Jimp</code>などの画像ライブラリによって圧縮された画像データからビットマップデータを抽出し、それらをレンダラープロセスに送信、レンダラープロセスは、そのデータを元に<code>ImageData</code>オブジェクトを生成して、canvasに表示する。</p>
+<p>しかし、最初にも述べた通り、この方法はあまりにも遅いのでオススメしない。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2f20200815_gettig_start_electron%2f&text=Web%e3%81%ae%e6%8a%80%e8%a1%93%e3%81%a7%e3%83%ad%e3%83%bc%e3%82%ab%e3%83%ab%e3%82%a2%e3%83%97%e3%83%aa%e3%81%8c%e4%bd%9c%e3%82%8c%e3%82%8bElectron" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/20200815_gettig_start_nwjs/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/js_ts.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/js_ts.png?raw=true" class="card-img" alt="js_ts">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Webの技術でローカルアプリが作れるNW.js</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-08-15 815:00">Aug 15, 2020</time></p>
+      <p>#js_ts </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

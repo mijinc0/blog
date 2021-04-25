@@ -1,0 +1,21 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ByzantinePosts</title>
+    <link>https://mijinc0.github.io/blog/</link>
+    <description>Recent content on ByzantinePosts</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja</language>
+    <lastBuildDate>Sun, 25 Apr 2021 20:11:56 +0900</lastBuildDate>
+    
+        <atom:link href="https://mijinc0.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>TypeScriptを学ぶ</title>
+      <link>https://mijinc0.github.io/blog/20190502_learn_typescript/</link>
+      <pubDate>Thu, 02 May 2019 19:00:18 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/20190502_learn_typescript/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

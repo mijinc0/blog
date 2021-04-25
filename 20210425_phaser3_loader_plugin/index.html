@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/20210425_phaser3_loader_plugin/" />
+  <meta property="og:title" content="Phaser3 Loaderプラグイン" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
+
+  <title>Phaser3 Loaderプラグイン &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Phaser3 Loaderプラグイン</h1>
+          <p class="post-date">Posted <time datetime="2021-04-25">Apr 25, 2021</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
+        </picture>
+        
+        <h1 id="phaser3-loaderプラグイン">Phaser3 Loaderプラグイン</h1>
+<p>version : <code>3.52.0</code></p>
+<p>Phaser3を使っていて、画像やサウンドなどのアセットを外部からロードするとき、Phaser3のチュートリアル通りにコードを書いていると、各シーンの <code>preload</code> 関数に、たとえば以下のように書いてアセットをロードすることになると思う。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// this === Phaser.Scene
+</span><span style="color:#998;font-style:italic"></span>preload()<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+  <span style="color:#998;font-style:italic">// loadはPhaser.Loader.LoaderPlugin
+</span><span style="color:#998;font-style:italic"></span>  <span style="font-weight:bold">this</span>.load.json(...args);
+  <span style="font-weight:bold">this</span>.load.spritesheet(...args);
+}
+</code></pre></div><p>通常はこれで良い。が、いろいろとやっていくとPhaser3のプリセットにないファイル形式のファイルを自分でロードしたくなることがある。例えば以下のような場合。</p>
+<blockquote>
+<p>多言語対応したが、全ての言語で同じフォントを使うわけにはいかないし、かといって
+全ての言語用のフォントを(必要ないものも含めて)全てロードしてしまうのも乱暴。
+出来れば、&ldquo;言語設定&rdquo; =&gt; &ldquo;loacleデータから必要なフォントを把握&rdquo; =&gt; &ldquo;必要なフォントを必要になったタイミングで外部からロードする&rdquo;
+というのができれば理想。</p>
+</blockquote>
+<p>もちろん、目的が同じでも様々な実装が可能なので上記の例だと無理にLoaderプラグインに独自のファイルタイプを追加する必要はないかもしれないが、それを使うのが&quot;スマートである&quot;場合があれば、やはりそうしたいところ。</p>
+<h2 id="phaser-loaderplugin周りのクラス">Phaser LoaderPlugin周りのクラス</h2>
+<p>カスタムクラスを作ってLoaderPluginの機能を拡張するのに必要になる、必要な部分だけ説明。
+おそらくこれだけ読んでも何が何だかわからないと思うので、この後に書く &ldquo;ファイルがロードされる処理の流れ&rdquo; の項と行ったり来たりしながら読む必要があると思う。</p>
+<h3 id="class-phaserloaderloaderplugin">class Phaser.Loader.LoaderPlugin</h3>
+<p>各シーンで <code>loader</code> にアクセスするとこの <code>LoaderPlugin</code> オブジェクトを操作することになる。このプラグインは、この後に説明する <code>Loader.File</code> クラスのオブジェクトを操作してどのファイルオブジェクトが通信しているのか、通信が完了してその後の処理(通信によって得た生データをPhaserオブジェクトに加工するステップや加工されたデータをキャッシュに登録するステップ)をすべきファイルオブジェクトはどれか、などを仕分けしてそれぞれに必要な処理を行う。</p>
+<p>このクラスのオブジェクト内には <strong>開始前</strong> , <strong>データ通信中</strong> , <strong>データ通信後</strong> のステップ用に3つのリストを持っている。それぞれ <code>list (開始前)</code> , <code>inflight (データ通信中)</code> , <code>queue (データ通信後)</code> である。LoaderPluginがFileオブジェクトをこの3つのリストに仕分けしてFileオブジェクトを管理していることはまず最初に覚えておく必要がある。</p>
+<h3 id="class-phaserloaderfile">class Phaser.Loader.File</h3>
+<p>実際に外部と通信する処理、通信して得た生データを加工する処理、加工してゲーム内で使えるようになったデータをキャッシュに登録する処理などの具体的な処理はこの <code>File</code> クラスに書かれている。</p>
+<p>その中で、LoaderPluginの関数をFileクラス内から叩いてLoaderPluginに各ステップの完了を知らせる必要があるので、このFileオブジェクトとLoaderPluginがどのように連携して一連のロード処理を行っているのか理解しないと、カスタムタイプのFileを扱うことは難しい。</p>
+<p>カスタムタイプのFileクラスを作るときには、原則としてこのクラスを継承して作ることになる。</p>
+<h3 id="class-phaserloaderfiletypemanager">class Phaser.Loader.FileTypeManager</h3>
+<p><code>scene.load.json</code> や <code>scene.load.spritesheet</code> などの関数をLoaderPluginオブジェクトに生やすのはこの <code>FileTypeManager</code> の仕事。それ以外は特に何もしていない。</p>
+<p>FileTypeManagerによってLoaderPluginに登録される関数は、その内部で必要なタイプのFileオブジェクトを生成してLoaderPluginの <code>addFile</code> 関数でLaderPluginに追加する処理が書かれていることを期待している。</p>
+<h2 id="ファイルがロードされる処理の流れ">ファイルがロードされる処理の流れ</h2>
+<p>まず最初に、あるシーンのpreload関数内で <code>scene.load.json(...args)</code> が呼び出されたとする。これをサンプルに処理の流れを追っていく。</p>
+<p>まず最初にシーンで <code>scene.load.json(...args)</code> が呼び出されると、<code>scene.load.json</code>関数は以下のような処理を行ってLoaderPluginにFileオブジェクトを生成して追加する。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">if</span> (<span style="color:#999">Array</span>.isArray(key)){
+  <span style="color:#998;font-style:italic">// 指定のkeyが配列だった場合はJSONFileオブジェクトを必要な分だけ生成して
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#998;font-style:italic">// addFileでLoaderPluginに追加する
+</span><span style="color:#998;font-style:italic"></span>  <span style="font-weight:bold">for</span> (<span style="font-weight:bold">var</span> i <span style="font-weight:bold">=</span> <span style="color:#099">0</span>; i <span style="font-weight:bold">&lt;</span> key.length; i<span style="font-weight:bold">++</span>){
+    loaderPlugin.addFile(<span style="font-weight:bold">new</span> JSONFile(<span style="color:#998;font-style:italic">/* 引数は省略 */</span>));
+  }
+} <span style="font-weight:bold">else</span> {
+  <span style="color:#998;font-style:italic">// 指定のkeyが単一キーだった場合はJSONFileオブジェクトを一つだけ生成して
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#998;font-style:italic">// addFileでLoaderPluginに追加する
+</span><span style="color:#998;font-style:italic"></span>  loaderPlugin.addFile(<span style="font-weight:bold">new</span> JSONFile(<span style="color:#998;font-style:italic">/* 引数は省略 */</span>));
+}
+</code></pre></div><p>LoaderPluginの <code>addFile</code> 関数によって追加された <code>File</code> オブジェクト(ここでは <code>JSONFile</code> オブジェクト)は、LoaderPlugin内の <code>list</code> と呼ばれるロード開始前のFileオブジェクトが入るリストに入れられる。</p>
+<p><code>addFile</code> 関数によって <code>laderPlugin.list</code> に入れられたFileオブジェクトは、次のフレームにLoaderPluginがupdateされることによって(checkLoadQueue関数を介して) load関数が呼ばれる。</p>
+<p>Fileオブジェクトのload関数には、各形式のファイルのデータを通信して得る処理が書かれていなければならない。<br>
+<code>Phaser.Loader.File</code> クラスのload関数にはXHRLoaderによって外部からデータをロードする処理が書かれているので、もしその機能で十分であればその機能をそのまま使えばよいが、もし、独自のファイルタイプのロードを必要とするのであれば、場合によってはこのload関数を継承したクラスでオーバーライドして必要な通信処理を書く必要がある。<br>
+また、この時Fileオブジェクトは LoaderPlugin内の <code>list</code> から <code>inflight</code> に移動する。</p>
+<p><code>file.load</code> によって通信が開始されて、それが終了した段階で、通信に成功すれば <code>file.onLoad</code> 関数が、失敗すれば <code>file.onError</code> が呼ばれる。それぞれ成功時、失敗時に必要な処理を行った後、Fileオブジェクトは通信の終了をLoaderPluginに知らせるために <code>loaderPlugin.nextFile</code> 関数を叩く。(この時、成功、失敗を引数で渡してLoaderPluginに知らせている)</p>
+<p><code>loaderPlugin.nextFile</code> によって通信が終了したことをLoaderPluginが知ると、<code>nextFile</code> 関数内部で <code>inflight</code> から <code>queue</code> に移される。この過程で、もし通信に成功していれば <code>file.onProcess</code> が呼ばれる。Fileオブジェクトはこの <code>onProcess</code> 関数が呼ばれると、次の <code>addToCache</code> に備えて <code>file.data</code> にキャッシュに追加するオブジェクトを用意する。</p>
+<p><code>loaderPlugin.nextFile</code> が呼ばれ、 <code>file.onProcess</code> によってキャッシュに登録するデータを準備したFileオブジェクトがLoaderPlugin内の <code>inflight</code> から <code>queue</code> に移されると、最後のステップに進む。</p>
+<p><code>loaderPlugin.queue</code> に移動したFileオブジェクトは、通信に成功していると <code>addToCache</code> によってデータをキャッシュに登録する。繰り返しになるが、キャッシュに登録されるデータは通常であれば <code>file.data</code> にセットされたデータである。これをキャッシュに登録すれば、一連のロード処理が終わり、Fileオブジェクトは <code>queue</code> からも削除され、破壊処理まで <code>_deleteQueue</code> で待機する。</p>
+<p>以上のことを簡単にまとめると、</p>
+<ol>
+<li>loaderPlugin.addFileによってFileオブジェクトがloaderPluginに追加される</li>
+<li>追加されたFileオブジェクトはfile.loadによって通信を開始する</li>
+<li>通信が終了したFileオブジェクトは自分でloaderPlugin.nextFile関数を叩いて成功、失敗後の処理を行う</li>
+<li>成功したFileオブジェクトはキャッシュに登録するデータをfile.onProcess関数内で生成する。生成されたオブジェクトは通常file.dataにセットしておく</li>
+<li>通信が終わり、データの加工処理(通信に成功した場合)も終了したFileオブジェクトは、file.addToCache関数でキャッシュへの登録処理を行う</li>
+<li>以上すべての処理が終わったら、Fileオブジェクトは削除リストに追加され、最後にまとめてdestroyされる</li>
+</ol>
+<p>という流れになっている。</p>
+<h2 id="で結局のところ独自ファイルのロード機能を作るにはどうすればよいのか">で、結局のところ独自ファイルのロード機能を作るにはどうすればよいのか</h2>
+<ol>
+<li>Phaser.Loader.Fileクラスを継承する</li>
+<li>load関数に通信開始処理を書く。この時、通信が終わったら <code>loaderPlugin.nextFile</code> 関数を叩く処理をいれること</li>
+<li>onProcess関数に通信したデータを元にキャッシュに登録するデータを生成する処理を書く。生成したデータはdataフィールドにセットしておけばデフォルトであればaddToCacheのタイミングでconfigで指定したキャッシュに指定したkeyで登録される</li>
+<li><code>scene.load.XXX</code> と書けるように、FileTypeManagerに関数を登録する。登録する関数が行うのは、Fileオブジェクトを生成してloaderPlugin.addFile関数でLoaderPluginにFileオブジェクトを追加する処理を書かないといけない</li>
+</ol>
+<p>である。</p>
+<p>以上。実際難しいので必要な部分はphaserの仕組みを無視したオレオレ実装をしてもよいと思うが、フレームワークの仕組みに沿ってスマートにやりたいなら挑戦する必要がある。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2f20210425_phaser3_loader_plugin%2f&text=Phaser3%20Loader%e3%83%97%e3%83%a9%e3%82%b0%e3%82%a4%e3%83%b3" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/20210204_phaser3_scene_transition/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" class="card-img" alt="phaser">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Phaser3 SceneTransition(シーンの遷移)</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2021-02-04 24:00">Feb 4, 2021</time></p>
+      <p>#game_dev </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

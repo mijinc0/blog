@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/20191116_mustache/" />
+  <meta property="og:title" content="テンプレートエンジンmustacheを使ってみる" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" />
+
+  <title>テンプレートエンジンmustacheを使ってみる &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">テンプレートエンジンmustacheを使ってみる</h1>
+          <p class="post-date">Posted <time datetime="2019-11-16">Nov 16, 2019</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" alt="programing">
+        </picture>
+        
+        <p>例えば、規則性のあるモデルとなるようなクラスのためのコードを沢山記述するのは大変。</p>
+<p>ある程度自動で生成したい。そこで、テンプレートエンジンの <code>mustache</code> を触ってみることにした。</p>
+<h2 id="mustache">mustache</h2>
+<p><strong>mustache(直訳:口ひげ)</strong> はテンプレートエンジンの一つ。テンプレートとなるファイルと、
+そこに差し込むデータを記述したファイル地を用意して、テンプレートエンジンにくぐらせることで、
+目的のファイルを出力してくれるプログラム。</p>
+<p><a href="http://mustache.github.io/">http://mustache.github.io/</a></p>
+<p>基本的な使い方を見たほうが早いので、下記に示す。例えば、typescriptのクラスをテンプレートとしたいとき、</p>
+<h3 id="1テンプレートを用意する">1.テンプレートを用意する</h3>
+<p><code>test.mustache</code></p>
+<pre><code>class {{className}} {
+	constructor(
+		public {{field}}
+	){}
+
+	{{#hasFunction}}
+	{{functionName}}(): void {
+		console.log('this instance has function');
+	}
+	{{/hasFunction}}
+}
+</code></pre><h3 id="2テンプレートに差し込むデータを用意する">2.テンプレートに差し込むデータを用意する</h3>
+<p><code>test.json</code></p>
+<pre><code>{
+  &quot;className&quot;: &quot;SomeClass&quot;,
+  &quot;field&quot;: &quot;someField&quot;,
+  &quot;hasFunction&quot;: true,
+  &quot;functionName&quot;: &quot;print&quot;
+}
+</code></pre><h3 id="3mustacheをインストールする">3.mustacheをインストールする</h3>
+<p>様々な実装が存在しているが、今回はjavascriptの実装を使う。
+<code>npm</code>でmustacheをインストールする。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ npm install mustache
+</code></pre><h3 id="4mustacheにテンプレートとデータを渡す">4.mustacheにテンプレートとデータを渡す</h3>
+<p>下記のコマンドを実行。<code>mustache</code>コマンドにテンプレートとデータを引数で指定し、
+コマンドの出力をファイルにリダイレクトすることで、目的のファイルを生成する。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ mustache ./test.json ./test.mustache &gt; ./SomeClass.ts
+</code></pre><p>コマンドを実行すると、カレントディレクトリに<code>SomeClass.ts</code>というファイルが生成される、
+その中身は下記のようになる。</p>
+<p><code>SomeClass.ts</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">class</span> SomeClass {
+	<span style="font-weight:bold">constructor</span>(
+		<span style="font-weight:bold">public</span> someField,
+	){}
+
+	print()<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+		console.log(<span style="color:#b84">&#39;this instance has function&#39;</span>);
+	}
+}
+</code></pre></div><p><code>{{}}</code>で囲まれた部分がデータ部を参考に置き換わっていること、<code>{{#key}}</code>が<code>key</code>に対応する部分を
+データ部から参照して、そこが<code>true</code>であれば<code>{{#key}} ~ {{/key}}</code>で囲まれている部分が
+出力されていることなどが確認できる。</p>
+<p>基本的なmustacheの使い方、出来ることはこんな感じ。<code>{{#key}} ~ {{/key}}</code>以外にも、他の命令もあるので、
+そこはリファレンスを見ながら書いていけば良い。</p>
+<h2 id="javascriptと組み合わせて使う">javascriptと組み合わせて使う</h2>
+<p><a href="https://github.com/janl/mustache.js">https://github.com/janl/mustache.js</a></p>
+<p>基本的には、前述した使い方で <strong>どの言語のソースコードでも生成できる</strong>。
+単に生成したい言語でテンプレートを書き、そこにデータを差し込めば良いだけなので。</p>
+<p>ここで書く <strong>typescriptと組み合わせて使う</strong> とは、前述の操作そのものをtypescriptで書くということ。</p>
+<p>勿論、以下に書くよりも単純な使い方をしたければ、</p>
+<ol>
+<li>好きな言語でデータ部を指定するjsonファイルを生成するプログラムを書く</li>
+<li>1で生成したjsonファイルと、テンプレートファイルをmustacheに渡す</li>
+</ol>
+<p>これでも別に構わないと思う。</p>
+<p>ただ、例えば対応する値を関数の戻り値にしたい場合などに、言語で制御できると便利。
+どういうことかというと、下記のようなことが出来るということ。</p>
+<p><code>mustache_test.js</code></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="font-weight:bold">const</span> Mustache <span style="font-weight:bold">=</span> require(<span style="color:#b84">&#39;mustache&#39;</span>);
+
+<span style="font-weight:bold">var</span> data <span style="font-weight:bold">=</span> {
+  name<span style="font-weight:bold">:</span> <span style="color:#b84">&#34;alice&#34;</span>,
+  calcAge<span style="font-weight:bold">:</span> <span style="font-weight:bold">function</span> () {
+    <span style="font-weight:bold">return</span> <span style="color:#999">Math</span>.floor( <span style="color:#999">Math</span>.random() <span style="font-weight:bold">*</span> (<span style="color:#099">10</span> <span style="font-weight:bold">+</span> <span style="color:#099">1</span>));
+  }
+};
+
+<span style="font-weight:bold">var</span> template <span style="font-weight:bold">=</span> <span style="color:#b84">&#34;my name is {{name}}, I&#39;m {{calcAge}} years old.&#34;</span>
+
+<span style="font-weight:bold">var</span> output <span style="font-weight:bold">=</span> Mustache.render(template, data);
+
+console.log(output);
+</code></pre></div><p>上記のコードをNode.jsで実行すると、下記のようになる。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ node ./mustache_test.js
+&gt; my name is alice, I'm 6 years old.
+</code></pre><p>上記の場合、<code>name</code>には静的に指定された<code>alice</code>が、<code>calcAge</code>は引数を持たない関数が実行され、
+その戻り値が(ここではランダムな10までの数字)割り当てられているのが分かる。</p>
+<p>他にも、<code>{{}}</code>のタグを別のタグにしたりも出来るようだが、あまり使わない機能だろう。
+他のテンプレートエンジンのソースを出力したいときなどに使えるのかもしれない。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2f20191116_mustache%2f&text=%e3%83%86%e3%83%b3%e3%83%97%e3%83%ac%e3%83%bc%e3%83%88%e3%82%a8%e3%83%b3%e3%82%b8%e3%83%b3mustache%e3%82%92%e4%bd%bf%e3%81%a3%e3%81%a6%e3%81%bf%e3%82%8b" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/20190712_about_ldb/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" class="card-img" alt="programing">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">RocksDBのCli(Cui)ツールのldbを使う</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2019-07-12 712:00">Jul 12, 2019</time></p>
+      <p>#programing_tools </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/20190508_catapult_cache/" />
+  <meta property="og:title" content="catapult cache" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" />
+
+  <title>catapult cache &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">catapult cache</h1>
+          <p class="post-date">Posted <time datetime="2019-05-08">May 8, 2019</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" alt="catapult">
+        </picture>
+        
+        <p>※ アイキャッチ画像のロゴは私が勝手に書いたものです。決められたロゴはこれを書いている時点ではありません</p>
+<p>catapultのキャッシュについて。</p>
+<p>キャッシュは、メモリー上にトランザクションやブロック、各アカウントの状態などが貯められる場所だと思えば良い。</p>
+<h1 id="catapultcache">CatapultCache</h1>
+<p>catapultのキャッシュは、下記図のようなイメージの構造になっている。</p>
+<p>実のところ、下記図は分かりやすくするために嘘をついていて、実際には<code>CatapultCache</code>が管理するのは<code>SubCachesPlugin</code>のベクターで、そこに各キャッシュをあてるために、<code>SubCachesPluginAdapter</code>を使って各キャッシュを<code>CatapultCache</code>にaddしている。</p>
+<p><picture>
+    
+    <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20190508_catapult_cache/draw1.png?raw=true">
+    <img src="https://github.com/mijinc0/blog/blob/image/forpost/20190508_catapult_cache/draw1.png?raw=true" alt="draw1" class="small-img smartfloat-left"/>
+</picture>
+<!-- raw HTML omitted --></p>
+<h1 id="subcaches">SubCaches</h1>
+<p>これを書いている時点でcatapult cacheに登録されているサブキャッシュは下記表の通り。</p>
+<table>
+<thead>
+<tr>
+<th>no</th>
+<th>name</th>
+<th>id</th>
+<th>supportMerkleRoot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>AccountStateCache</td>
+<td>0</td>
+<td>true</td>
+</tr>
+<tr>
+<td>2</td>
+<td>BlockDifficultyCache</td>
+<td>1</td>
+<td>false</td>
+</tr>
+<tr>
+<td>3</td>
+<td>HashCache</td>
+<td>2</td>
+<td>false</td>
+</tr>
+<tr>
+<td>4</td>
+<td>NamespaceCache</td>
+<td>3</td>
+<td>true</td>
+</tr>
+<tr>
+<td>5</td>
+<td>MosaicCache</td>
+<td>4</td>
+<td>true</td>
+</tr>
+<tr>
+<td>6</td>
+<td>MultisigCache</td>
+<td>5</td>
+<td>true</td>
+</tr>
+<tr>
+<td>7</td>
+<td>HashLockInfoCache</td>
+<td>6</td>
+<td>true</td>
+</tr>
+<tr>
+<td>8</td>
+<td>SecretLockInfoCache</td>
+<td>7</td>
+<td>true</td>
+</tr>
+<tr>
+<td>9</td>
+<td>PropertyCache</td>
+<td>8</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+<h1 id="statehash">StateHash</h1>
+<p><code>state hash</code>は、上記キャッシュのうち、<code>supportMerkleRoot</code>が<code>true</code>のものの状態を集計したハッシュ値になる。</p>
+<p>catapultではこの<code>state hash</code>をBlockHeaderに詰めて、peerとのキャッシュの状態の整合性を確認できるようになっている。
+つまり、生のトランザクションだけ送信し合うだけでなく、キャッシュの状態をハッシュ値としてやり取りする。これにより、状態が違う相手から送られてきたエンティティを判定して捨てることが出来る。</p>
+<p><code>state hash</code>はLogの設定が<code>Debug</code>の時に出力されるログから確認することが出来る。Logが<code>Debug</code>モードの時、下記のようがログが出力されているはず。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">2019-05-06 08:26:30.456527 0x00007f1eb4e2e700: &lt;debug&gt; (consumers::BlockChainProcessor.cpp@49) cache state hash (7 components) at height 10000
+peer-node-1_1   | 1085E6C3C7F759181FDD0CC28C091528F134F1F1471C985CDF523021E0FF1D74     // これがcacheStateHash
+peer-node-1_1   |  + 114B6BAEFE4BAF7558CE68E26DA8584E5A7B7A53B4889CB0C7B0E838298FA4E0  // これが1つめのSubCacheのMerkelRootHash
+peer-node-1_1   |  + 6CD069EE3347EEBDED158E48B99765BD9614789631883C117E28037B42D6C187  // これが2つめのSubCacheのMerkelRootHash
+peer-node-1_1   |  + 65D0CDEB6F8C29A9B164C64FFBC7AD97DF2BA407FE868E1BBC11983DBFF3FB5A  // これが3つめのSubCacheのMerkelRootHash
+peer-node-1_1   |  + 77943B010F0EFA3DEEB436E96D28841933E0710A91D236830DCD580676040CA1  // これが4つめのSubCacheのMerkelRootHash
+peer-node-1_1   |  + C2C2E584F0B5E0F865905FAC78815077D4065286EFAA80AF69563152A46D589D  // これが5つめのSubCacheのMerkelRootHash
+peer-node-1_1   |  + 0000000000000000000000000000000000000000000000000000000000000000  // これが6つめのSubCacheのMerkelRootHash
+peer-node-1_1   |  + 9003CAB7B09CF23431FAFB9768AB10D27097A49A0587F61D9D6CB4CE4BB91962  // これが7つめのSubCacheのMerkelRootHash
+</code></pre><p><code>state hash</code>の計算方法は、<code>StateHash = Hash256( 1番目のCacheのMerkleRootHash | 2番目のCacheのMerkleRootHash | 3番目のCacheのMerkleRootHash... )</code>であり、上記ログの場合だと、下記のようになる。（疑似コード）</p>
+<pre><code class="language-no_attr" data-lang="no_attr">strBuffer = 114B6BAEFE4BAF7558CE68E26DA8584E5A7B7A53B4889CB0C7B0E838298FA4E0 // ID 0
+          + 6CD069EE3347EEBDED158E48B99765BD9614789631883C117E28037B42D6C187 // ID 3
+          + 65D0CDEB6F8C29A9B164C64FFBC7AD97DF2BA407FE868E1BBC11983DBFF3FB5A // ID 4
+          + 77943B010F0EFA3DEEB436E96D28841933E0710A91D236830DCD580676040CA1 // ID 5
+          + C2C2E584F0B5E0F865905FAC78815077D4065286EFAA80AF69563152A46D589D // ID 6
+          + 0000000000000000000000000000000000000000000000000000000000000000 // ID 7
+          + 9003CAB7B09CF23431FAFB9768AB10D27097A49A0587F61D9D6CB4CE4BB91962 // ID 8
+
+byteBuffer = hex2byte( strBuffer )
+
+hash = Hash::Sha3::256.hexDigest( byteBuffer )
+
+hash == 1085E6C3C7F759181FDD0CC28C091528F134F1F1471C985CDF523021E0FF1D74 // true
+</code></pre><p>下記、<code>CatapultCache.cpp</code>内の<code>CollectSubCacheMerkleRoots関数</code>によって集計されるCacheのIDを出力させてみた結果。これにより、上記MerkleRootHashの順番は、IDによってソートされていることが分かる。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">2019-05-09 00:40:12.171045 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 0
+2019-05-09 00:40:12.171235 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 3
+2019-05-09 00:40:12.171543 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 4
+2019-05-09 00:40:12.171667 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 5
+2019-05-09 00:40:12.171757 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 6
+2019-05-09 00:40:12.171839 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 7
+2019-05-09 00:40:12.171950 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 8
+</code></pre><p>ちなみに、キャッシュが空の時のMerkleRootは<code>0000000000000000000000000000000000000000000000000000000000000000</code>になる。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2f20190508_catapult_cache%2f&text=catapult%20cache" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/20190504_about_hugo/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20190504_about_hugo/draw1.jpg?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/forpost/20190504_about_hugo/draw1.jpg?raw=true" class="card-img" alt="hugo logo">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">git pushで更新されるブログを作る</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2019-05-04 54:00">May 4, 2019</time></p>
+      <p></p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

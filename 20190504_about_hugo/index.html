@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/20190504_about_hugo/" />
+  <meta property="og:title" content="git pushで更新されるブログを作る" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/forpost/20190504_about_hugo/draw1.jpg?raw=true" />
+
+  <title>git pushで更新されるブログを作る &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">git pushで更新されるブログを作る</h1>
+          <p class="post-date">Posted <time datetime="2019-05-04">May 4, 2019</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20190504_about_hugo/draw1.jpg?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/forpost/20190504_about_hugo/draw1.jpg?raw=true" alt="hugo logo">
+        </picture>
+        
+        <h1 id="動機">動機</h1>
+<p>私は最近、何か学んだり調べたりした時のメモや備忘録、まとめなどは基本的にmarkdownで書いて残している。</p>
+<p>その多くは公開されないままローカルとLAN内にあるNASに保存されているが、時に公開しようかと思うことがある。この時、これをどうやって公開しようかという話になるが、markdownなのでそのままコピペで公開できるところが良い(Qiitaとか)。</p>
+<p>でも、コピペで本文を移すのはかっこ悪い。そしてメモはメモで手元に保存しておきたいと考えた時に、ローカル上にある文章とQiitaとの整合性を管理するのも面倒。それと別に、他のネガティブな理由もあって別の方法を探したいと思った。</p>
+<p>ここで、<code>hugo + GithubPages</code>という手段を知った。これなら、ローカルで、自分の好きなエディタで文章を書いて、そのまま<code>Git</code>で文章を管理、文章は<code>Github</code>に保存（ Githubに保存したくないものはブランチを分ければ良い ）、読みやすい形にして公開したければ<code>hugo</code>に静的サイトを生成してもらって、そのデータを<code>GithubPages</code>の設定がされたリポジトリにpushすることで公開&amp;更新が出来る。これは良さげ。</p>
+<p><picture>
+    
+    <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20190504_about_hugo/draw2.png?raw=true">
+    <img src="https://github.com/mijinc0/blog/blob/image/forpost/20190504_about_hugo/draw2.png?raw=true" alt="icon" class="small-img smartfloat-left"/>
+</picture>
+<!-- raw HTML omitted --></p>
+<p>(こんな感じになる)</p>
+<p>ここに書くのは、一通りやってみたのでその記録。つまりこのサイトを作るまでにやったことの記録。</p>
+<p>ここまでで、何の話をしているのかさっぱり分からない（細かい話は置いておくにしても、全体の流れが見えない）人は、以降を読んでも何の話か分からないかもしれない。</p>
+<h1 id="用語">用語</h1>
+<h2 id="hugo">hugo</h2>
+<p><a href="https://gohugo.io/">https://gohugo.io/</a></p>
+<p>静的サイトジェネレーター。 テーマをダウンロード、または大変そうだが自分で作って、そのデザインに沿うようなサイトを出力してくれる。本文はmarkdownで書けるのがとても良い。</p>
+<h2 id="githubpages">GithubPages</h2>
+<p><a href="https://pages.github.com/">https://pages.github.com/</a></p>
+<p>リポジトリにhtmlプロジェクトまたはmarkdownファイルを置くと、webページとして公開できるように &ldquo;よしなに&rdquo; してくれる(つまり、ホスティングしてくれる)。
+勿論、GithubPagesが &ldquo;よしなに&rdquo; 出来るように、一定のルールに従う必要はある。具体的に言えば、例えばhtmlを使うとすると、トップページを<code>index.html</code>という名前のファイルにすることなど。</p>
+<h1 id="実際にサイトを作るまで">実際にサイトを作るまで</h1>
+<h2 id="1-hugoをインストールする">1. hugoをインストールする</h2>
+<p><a href="https://gohugo.io/getting-started/installing/">https://gohugo.io/getting-started/installing/</a></p>
+<p>上記ページに従ってhugoをインストールしてみる。</p>
+<p>ここで注意。<code>apt</code>や<code>brew</code>などのパッケージ管理ソフトを使ってhugoをインストールすると、最新版からずいぶん古いバージョンがインストールされる可能性がある。このせいで、後述するhugoのテーマを選ぶ時に、バージョンが低すぎて好きなテーマが使えない等の事態が起きる。</p>
+<p>そのため、実際に自分のサイトを作るときには一旦それらを消して、下記ページから最新版のリリースをダウンロード、インストールする必要があるかもしれない。</p>
+<p><a href="https://github.com/gohugoio/hugo/releases">https://github.com/gohugoio/hugo/releases</a></p>
+<h2 id="2-githubpagesのチュートリアルをやってみる">2. GithubPagesのチュートリアルをやってみる</h2>
+<p><a href="https://pages.github.com/">https://pages.github.com/</a></p>
+<p>上記ページの中断あたりから始まるチュートリアルを実際にやってみる。Githubのアカウントを既に持っているのであれば、1時間もかからないと思う。その後、適当に色々触ってみると良い。</p>
+<h2 id="3-hugoのチュートリアルをやってみる">3. hugoのチュートリアルをやってみる</h2>
+<p><a href="https://gohugo.io/getting-started/quick-start/">https://gohugo.io/getting-started/quick-start/</a></p>
+<p>上記ページのチュートリアルをやってみる。試しなので、変にテーマを選んでみるのではなく、書いてあるとおりにやってみると良い。</p>
+<p>ここで、なんだか良くわからない、上手く行っているのかよくわからないという場合は、飛ばして次に進んでしまう。実際、少し不親切なチュートリアルだと思う（現時点で）。</p>
+<h2 id="4-examplesiteを利用して理解する">4. exampleSiteを利用して理解する</h2>
+<p>hugoの各テーマには、example用のデータが入れられていることが多い。これを展開して、hugoサーバーを起動してブラウザでアクセスしてみれば理解が早くなると思う。</p>
+<p>今回は、<code>CleanWhite</code>という名前のテーマを使う。理由は、最低必要バージョンが古いのと、作者が用意してくれた<code>QuickStart</code>がとても親切だから。</p>
+<p><a href="https://themes.gohugo.io/hugo-theme-cleanwhite/">https://themes.gohugo.io/hugo-theme-cleanwhite/</a></p>
+<p>上記ページに行き、ページ中段にある<code>QuickStart</code>をやってみる。<code>$ hugo server</code>までコマンドを打った後、ブラウザで<code>http://localhost:1313/</code>にアクセスすると、サンプルのページがブラウザに表示されるはず。これを触って反応を確認すれば動きがつかみやすい。</p>
+<h2 id="5-簡単なページを出力してgithubpagesでホスティングしてみる">5. 簡単なページを出力してGithubPagesでホスティングしてみる</h2>
+<p>実際に、自分で簡単なプロジェクトをhugoで出力し、それをGithubPagesでホスティングしてみる。テーマはここでは<code>hugo-cactus-theme</code>を使う。</p>
+<p>まず最初に、Githubでテスト用のリポジトリを生成しておく（生成しておくだけ）。</p>
+<pre><code>// 新しいプロジェクトの作成
+$ hugo new site test
+
+// プロジェクトのルートディレクトリに移動
+$ cd test
+
+// テーマを入れる
+$ cd themes
+
+$ git clone https://github.com/digitalcraftsman/hugo-cactus-theme.git
+
+$ cd ..
+
+$ /themes/hugo-cactus-theme/exampleSite にある config.toml をコピーして、ルートディレクトリにペースト(上書き)
+
+$ config.toml 上部の themesDir を &quot;./themes&quot; に書き換え
+
+// 新しい記事の作成
+$ hugo new post/initial.md
+
+$ content/post/ 内に生成された initial.md ファイルを適当に編集
+  このとき、mdファイル上部にある draft(下書き) を false　にしておく
+
+// ローカルにサーバーが立ち上がるので、ブラウザで http://localhost:1313/ にアクセス
+$ hugo server
+
+$ config.toml 最上部の baseurl を、GithubPagesのホストアドレスに変更する
+  分からなければ、 &quot;https://&lt;ユーザー名&gt;.github.io/&lt;リポジトリ名&gt;&quot; をとりあえず書いておく。
+
+// hugoプロジェクトを元に、ホスティングされるhtmlプロジェクトを出力する
+$ hugo
+</code></pre><p>上記で、hugoプロジェクトのルートディレクトリ上に<code>public</code>という名前のディレクトリが生成されたと思う。</p>
+<p>この<code>public</code>ディレクトリを、最初に生成したリポジトリにpushして、GithubPagesの設定を行えばホスティングされる（設定してから反映されるまでに少し時間がかかる場合がある）。</p>
+<p><code>public</code>ディレクトリの中身を確認すると、その中に<code>index.html</code>があることが確認できると思う。GithubPagesはリポジトリのルートにある<code>index.html</code>を認識してくれるので、出力された<code>public</code>ディレクトリをそのままpushするだけで良い。</p>
+<p>GithubPagesから与えられたURLを叩いて、サイトがホスティングされていることを確認できれば成功。以降は好きなテーマを使って好きに作れば良い。</p>
+<p>なお、テーマを適応するためのルールは、各テーマによって違うので、そのREADMEを参考にしてすすめることになる。</p>
+<h1 id="詰まったら">詰まったら</h1>
+<p>テーマの適応で詰まったら、hugoのバージョンが要件を満たしているか、exampleSiteが正しく動くかを確認してみると良い。</p>
+<p>cssが反映されないなどの現象で詰まったら、<code>config.toml</code>の<code>baseurl</code>に間違いがないか確認してみると良い。</p>
+<h1 id="他はお好きに">他はお好きに</h1>
+<ul>
+<li><code>hugo</code>コマンドでhtmlプロジェクトを生成してから<code>git push</code>までのお決まりの操作をシェルスクリプトにまとめるもよし</li>
+<li><code>public</code>ディレクトリの出力先は<code>hugo -d &lt;ディレクトリパス&gt;</code>で決められるのでディレクトリを完全に分けて管理するもよし</li>
+<li>htmlプロジェクトだけでなく、hugoプロジェクトもgithubで管理するもよし</li>
+<li>元のテーマのcssをいじってみるもよし</li>
+</ul>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2f20190504_about_hugo%2f&text=git%20push%e3%81%a7%e6%9b%b4%e6%96%b0%e3%81%95%e3%82%8c%e3%82%8b%e3%83%96%e3%83%ad%e3%82%b0%e3%82%92%e4%bd%9c%e3%82%8b" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/20190503_how_install_custom_rom/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/android.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/android.png?raw=true" class="card-img" alt="android icon">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">android端末にカスタムROMを焼く</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2019-05-03 53:00">May 3, 2019</time></p>
+      <p>#android </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

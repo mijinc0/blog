@@ -11,10 +11,24 @@
     
     <item>
       <title>symbol(catapult)におけるVRF(VerifiableRandomFunction)</title>
+      <link>https://mijinc0.github.io/blog/20201210_vrf_catapult/</link>
+      <pubDate>Thu, 10 Dec 2020 13:22:00 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/20201210_vrf_catapult/</guid>
+      <description></description>
+    </item><item>
+      <title>symbol(catapult)におけるVRF(VerifiableRandomFunction)</title>
       <link>https://mijinc0.github.io/blog/post/20201210_vrf_catapult/</link>
       <pubDate>Thu, 10 Dec 2020 13:22:00 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20201210_vrf_catapult/</guid>
+      <description></description>
+    </item><item>
+      <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(dragon)</title>
+      <link>https://mijinc0.github.io/blog/20190612_building_catapult_for_arm/</link>
+      <pubDate>Wed, 12 Jun 2019 13:29:56 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/20190612_building_catapult_for_arm/</guid>
       <description></description>
     </item><item>
       <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(dragon)</title>
@@ -25,10 +39,24 @@
       <description></description>
     </item><item>
       <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(cow)</title>
+      <link>https://mijinc0.github.io/blog/20190602_building_catapult_for_arm/</link>
+      <pubDate>Sun, 02 Jun 2019 10:59:20 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/20190602_building_catapult_for_arm/</guid>
+      <description></description>
+    </item><item>
+      <title>x86_64 ubuntu上でcatapultをarm64用にビルドする(cow)</title>
       <link>https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/</link>
       <pubDate>Sun, 02 Jun 2019 10:59:20 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/</guid>
+      <description></description>
+    </item><item>
+      <title>catapult cache</title>
+      <link>https://mijinc0.github.io/blog/20190508_catapult_cache/</link>
+      <pubDate>Wed, 08 May 2019 18:58:30 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/20190508_catapult_cache/</guid>
       <description></description>
     </item><item>
       <title>catapult cache</title>

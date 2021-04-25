@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@mincoshi" />
+  <meta property="og:url" content="https://mijinc0.github.io/blog/20200920_phaser3_tilemap/" />
+  <meta property="og:title" content="Phaser3 タイルマップ アニメーション" />
+  <meta property="og:image" content="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" />
+
+  <title>Phaser3 タイルマップ アニメーション &middot; ByzantinePosts</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  
+  
+  
+  
+  <link href="https://mijinc0.github.io/blog/css/concated.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #ecedef url("https://github.com/mijinc0/blog/blob/image/general/background.png?raw=true") repeat;
+    }
+  </style>
+</head>
+
+  <body class="single-body">
+    <nav class="nav-bar side-padding">
+  <h1 class="nav-header"><a href="https://mijinc0.github.io/blog/" class="nav-text">ByzantinePosts</a></h1>
+  <div class="hamburger-menu">
+    <button onclick="hamburgerMenuPressed.call(this)" aria-haspopup="true" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="menu" class="hamburger-menu-overlay">
+      <li><a href="https://mijinc0.github.io/blog/" class="hamburger-menu-overlay-link">Home</a></li>
+      <li><a href="https://mijinc0.github.io/blog/post/about/" class="hamburger-menu-overlay-link">ABOUT</a></li>
+      <li><a href="https://mijinc0.github.io/blog/categories/android" class="hamburger-menu-overlay-link">Android</a></li><li><a href="https://mijinc0.github.io/blog/categories/game_dev" class="hamburger-menu-overlay-link">Game dev</a></li><li><a href="https://mijinc0.github.io/blog/categories/glsl" class="hamburger-menu-overlay-link">Glsl</a></li><li><a href="https://mijinc0.github.io/blog/categories/js_ts" class="hamburger-menu-overlay-link">Js ts</a></li><li><a href="https://mijinc0.github.io/blog/categories/nem2" class="hamburger-menu-overlay-link">Nem2</a></li><li><a href="https://mijinc0.github.io/blog/categories/programing_tools" class="hamburger-menu-overlay-link">Programing tools</a></li><li><a href="https://mijinc0.github.io/blog/categories/typescript" class="hamburger-menu-overlay-link">Typescript</a></li><li><a href="https://mijinc0.github.io/blog/categories/vue" class="hamburger-menu-overlay-link">Vue</a></li>
+    </ul>
+  </div>
+</nav>
+    <main class="content side-text-padding">
+      <article class="post dropcase">
+        <header class="post-header">
+        	<h1 class="post-title">Phaser3 タイルマップ アニメーション</h1>
+          <p class="post-date">Posted <time datetime="2020-09-20">Sep 20, 2020</time></p>
+        </header>
+        
+        <picture class="post-figure">
+            
+            <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+          <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
+        </picture>
+        
+        <h1 id="phaser3-タイルマップ-アニメーション">Phaser3 タイルマップ アニメーション</h1>
+<p><strong>前回の記事</strong></p>
+<p><a href="https://mijinc0.github.io/blog/post/20200904_phaser3_animation/">https://mijinc0.github.io/blog/post/20200904_phaser3_animation/</a></p>
+<p><strong>タイルマップの記事</strong></p>
+<p><a href="https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/">https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/</a></p>
+<h1 id="概要">概要</h1>
+<p>海や滝などのマップチップや鉱物がキラキラ光る鉱山のマップチップなど、マップチップにアニメーションを付けたいことはある。</p>
+<p>結論から言うとPhaser3のデフォルトの機能でタイルマップのタイルにアニメーションを付けるものはない。なので自分で作る。自分で作るということは、マップ、タイル、レイヤーのプロパティを理解しないといけないということだ。まずはそこから。</p>
+<h1 id="準備-staticlayerとdynamiclayer">準備: StaticLayerとDynamicLayer</h1>
+<p><a href="https://photonstorm.github.io/phaser3-docs/Phaser.Tilemaps.Tilemap.html">https://photonstorm.github.io/phaser3-docs/Phaser.Tilemaps.Tilemap.html</a></p>
+<p>Phaser3の<code>Tilemap</code>クラスには<code>Phaser.Tilemaps.StaticTilemapLayer</code>を作る<code>createStaticLaye</code>と、<code>Phaser.Tilemaps.DynamicTilemapLayer</code>を作る<code>createDynamicLayer</code>が用意されている。</p>
+<p>リファレンスを読めばそこに書いてあるが、以下のように特徴に違いがある。</p>
+<ul>
+<li>StaticLayer : 描写スピードを重視、一度生成してしまうとalpha値を随時変えるなどの柔軟な対応は出来ない。</li>
+<li>DynamicLayer : 様々な操作を生成後にも出来るが、描写スピードを犠牲にしている。</li>
+</ul>
+<p><a href="https://photonstorm.github.io/phaser3-docs/Phaser.Tilemaps.StaticTilemapLayer.html">https://photonstorm.github.io/phaser3-docs/Phaser.Tilemaps.StaticTilemapLayer.html</a><br>
+<a href="https://photonstorm.github.io/phaser3-docs/Phaser.Tilemaps.DynamicTilemapLayer.html">https://photonstorm.github.io/phaser3-docs/Phaser.Tilemaps.DynamicTilemapLayer.html</a></p>
+<p>StaticLayerは一度生成してしまうと、例えば中のタイルのindexを変更しても <strong>タイルのプロパティは変更されるが描写に反映されない</strong> という挙動をする。これは、詳しく見ていないがタイルマップを一つのオブジェクトとして管理して描写している(描写毎に各タイルの情報を確認せずに保持されたオブジェクトを描写している)からだと思われる。</p>
+<p>実際は、下記参照の場所にある通りプロパティ変更後に<code>staticLayer.updateVBOData()</code>をしてやればVBO(頂点バッファオブジェクト)の情報が更新されて描写を変更できるが、リファレンスに登場しない関数なのでPhaser3的には外から叩く関数ではないということなんだろう。</p>
+<p><a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/tilemaps/staticlayer/StaticTilemapLayer.js#L364">https://github.com/photonstorm/phaser/blob/v3.22.0/src/tilemaps/staticlayer/StaticTilemapLayer.js#L364</a></p>
+<p>対してDynamicLayerは生成後に各タイルのプロパティを変更するとそれが次の描写に反映される。今回はアニメーションをさせたいので、こっちを使う。 <strong>先に結論を言えば、DynamicLayerの各タイルのindexを時間経過によって変化させれば、アニメーションするタイルマップが出来上がる</strong> ことになる。</p>
+<p>処理速度を犠牲にするのを嫌うのであれば、基本はStaticLayerで描写して、必要な場所だけDynamicLayerを使うと良いだろう。</p>
+<h1 id="タイルをアニメーションさせる">タイルをアニメーションさせる</h1>
+<p>タイルをアニメーションさせる具体的な方法は、要するにupdateループの中に目的のタイルのindexを変化させるルーチンを仕込めば良いことなり、その方法は沢山ありすぎるので、ここでは書けないが、どこかに以下のような雰囲気の処理を入れる。<br>
+(以下のコードは疑似コードを書いているぐらいに雰囲気で書いているので雰囲気だけ参考にしてください)</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts">update(time: <span style="color:#458;font-weight:bold">number</span>, delta: <span style="color:#458;font-weight:bold">number</span>)<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
+  <span style="font-weight:bold">this</span>.elaspedTime <span style="font-weight:bold">+=</span> delta;
+
+  <span style="font-weight:bold">const</span> currentId <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.getCurrentTileId();
+  <span style="font-weight:bold">const</span> nextId <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.getNextTileId(curentId, <span style="font-weight:bold">this</span>.elaspedTime);
+
+  <span style="font-weight:bold">if</span> (currentId <span style="font-weight:bold">!==</span> nextId) {
+    <span style="color:#998;font-style:italic">// なんと指定インデックスのタイルのインデックスを全て変えてしまう便利な関数が用意されている
+</span><span style="color:#998;font-style:italic"></span>    <span style="font-weight:bold">this</span>.dynamicTilemapLayer.replaceByIndex(currentID, nextId);
+  }
+}
+</code></pre></div><p>アニメーションさせるだけであればコレでOK、素材の規格をしっかり決めて、変なタイルが描写されたりしないようにindexを上手いこと調整してやればよいことになる。</p>
+<p>とはいっても、実際それをするためには &ldquo;アニメーションするタイルセットと静的なタイルセットを別々の素材、別々のオブジェクトとして管理したい&rdquo; などの要望が出ると思う。以降、それらを管理するために必要になるであろう知識を書いていく。アニメーションの話は一旦ここで終わり。</p>
+<h1 id="tilemaptilesetlayerってどうやって生成されるのという話">Tilemap,Tileset,Layerってどうやって生成されるのという話</h1>
+<p>実際、どうやって<code>Tilema</code>,<code>Tileset</code>,<code>Layer(Static or Dynamic)</code>が生成されるのという話は複数パターンがある。というのも、Phaser3がタイルマップの生成にライブラリの利用者が<code>Tiled</code>と呼ばれるフリーのマップエディタを利用することを想定しているからだ。</p>
+<p><code>Tiled</code>が出力したマップデータ(基本は<code>json</code>)のフォーマットに従って便利にタイルマップを生成できるようにしたい、しかし、もっと原始的な(例えば生のマップデータ<code>number[][]</code>を使って生成する)方法にも対応したい、ということで、複数のパターンがある。</p>
+<p>今回はTiledを使うことは想定しないので、<code>number[][]</code>をレイヤーの生データとして使うものとして以降書いていく。</p>
+<p>リファレンスなどの情報に従ってレイヤーを作ると、以下のようにして作ることになると思う。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// this === Phaser.Scene
+</span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> layerData <span style="font-weight:bold">=</span> [
+  [ <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span> ],
+  [ <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span> ],
+  [ <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span> ],
+  [ <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span> ],
+  [ <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span>, <span style="color:#099">1</span> ],
+];
+
+<span style="font-weight:bold">const</span> tilemap <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.make.tilemap({
+  data: <span style="color:#458;font-weight:bold">layerData</span>,
+  tileWidth: <span style="color:#458;font-weight:bold">40</span>,
+  tileHeight: <span style="color:#458;font-weight:bold">40</span>,
+  width: <span style="color:#458;font-weight:bold">10</span>,
+  height: <span style="color:#458;font-weight:bold">5</span>,
+});
+
+<span style="font-weight:bold">const</span> tileset <span style="font-weight:bold">=</span> tilemap.addTilesetImage(<span style="color:#b84">&#39;キャッシュに登録されたtilesetの画像のkey&#39;</span>);
+
+<span style="font-weight:bold">const</span> layer <span style="font-weight:bold">=</span> tilemap.createDynamicLayer(<span style="color:#099">0</span>, tileset);
+</code></pre></div><p>何のことはないが、なんのことがなさすぎて何をやっているのか謎だ。なので、上から順番に見ていくことにする。</p>
+<h3 id="tilemapの生成">tilemapの生成</h3>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">const</span> tilemap <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.make.tilemap({
+  data: <span style="color:#458;font-weight:bold">layerData</span>,
+  tileWidth: <span style="color:#458;font-weight:bold">40</span>,
+  tileHeight: <span style="color:#458;font-weight:bold">40</span>,
+  width: <span style="color:#458;font-weight:bold">10</span>,
+  height: <span style="color:#458;font-weight:bold">5</span>,
+});
+</code></pre></div><p>この時点で、<code>TilemapCreator(this.make.tilemap)</code>は&hellip;</p>
+<ul>
+<li>Static,DynamicLayerになる前のレイヤーデータオブジェクト <code>Array.&lt;Phaser.Tilemaps.LayerData&gt;</code></li>
+<li>レイヤーデータオブジェクト、他設定値を保持するマップデータオブジェクトPhaser <code>Phaser.Tilemaps. MapData</code></li>
+<li>マップデータオブジェクトを保持するタイルマップオブジェクト <code>Phaser.Tilemaps. Tilemap</code></li>
+</ul>
+<p>を生成している。要するに色々生成している。</p>
+<p>ここで意識しておけばよいのは、 <strong>生のデータは分かっている(各タイルと紐づけされるタイルセットのindexは分かっている) が、肝心のタイルセットの情報がない。</strong> ということ。</p>
+<p>余談だがタイルマップオブジェクトは専用のキャッシュが用意されていて、グローバルな空間に貯めておくことが出来る。何度も生のデータから作らなくても、タイルマップのデータを貯めておいて必要な時に取り出して <code>createStatic(Dynamic)Layer</code> ですぐにレイヤーが作れるようになっている(必要であれば)。</p>
+<h3 id="tilesetの生成">tilesetの生成</h3>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">const</span> tileset <span style="font-weight:bold">=</span> tilemap.addTilesetImage(<span style="color:#b84">&#39;キャッシュに登録されたtilesetの画像のkey&#39;</span>);
+</code></pre></div><p>次はこの部分。</p>
+<p>上記で、<code>tilemap</code>にはまだタイルセットの情報が無い、と書いた。タイルセットは<code>addTilesetImage</code>によって生成され、生成されたタイルセットは<code>tilemap</code>内に保管される。複数個生成して、あとから取り出したければ取得用の関数があるのでそれを使って取り出す。上記の例では、戻値が生成されたタイルセットになっているのでそれを直接使っている。</p>
+<p>ここで、&ldquo;どのid(index)のタイルを割り当てるか&quot;は分かっていたが、肝心のタイルセットが無かったtilemapに、待望のタイルセットが用意された。あとは、これらを組み合わせて実際に描写されるレイヤーを作れば良い、となる。</p>
+<h3 id="layerの生成">layerの生成</h3>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">const</span> layer <span style="font-weight:bold">=</span> tilemap.createDynamicLayer(<span style="color:#099">0</span>, tileset);
+</code></pre></div><p>最後にこの部分、以前の記事でも書いたが上記のようにこの手順によって生データからレイヤーオブジェクトを生成するときには常に第一引数のidは<code>0</code>になる。これは、tilemapオブジェクトを生成した時に渡した生データを指定しているのだと思ってもらって良い。</p>
+<p>自分で複数のレイヤーデータオブジェクトをマップデータに持たせた場合には他のidも使えるが、そういうい人はもうこの記事を読む必要自体ないだろう。</p>
+<p>指定したレイヤーデータオブジェクトの各タイルに、タイルセットの情報を渡してあげて、レイヤーオブジェクトを生成して完了となる。</p>
+<p>ちなみに、タイルセットは配列にして複数渡すことも可能。この時、<code>gid</code>を調整して各タイルセットに含まれる各タイルのidが重複しないようにしないといけないので、次はgidについて説明する。</p>
+<h1 id="gidについて">gidについて</h1>
+<p>各タイルセットに含まれるタイルは、一番左上のタイルが<code>0</code>,その一つ右が<code>1</code>&hellip;と順番にidが付くように鳴っているが、最初のidを<code>0</code>ではない値に設定することが出来る。その設定値が<code>gid</code>と呼ばれる。例えば、<code>gid === 4</code>であれば、そのタイルセットの一番左上のタイルは<code>4</code>,その右が<code>5</code>&hellip;と番号が振られていく。(<code>gid</code>は&quot;基準ID&quot;という意味だと思う)</p>
+<p>この<code>gid</code>は、レイヤーオブジェクトを生成する時に、複数のタイルセットを指定した時に、タイルセットのidが重なってしまうのを防ぐ役割を持つ。</p>
+<p>以下のような状況があったとする。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">const</span> tilesetA <span style="font-weight:bold">=</span> tilemap.getTileset(<span style="color:#b84">&#39;tilesetA&#39;</span>);
+<span style="font-weight:bold">const</span> tilesetB <span style="font-weight:bold">=</span> tilemap.getTileset(<span style="color:#b84">&#39;tilesetB&#39;</span>);
+<span style="font-weight:bold">const</span> tilesetC <span style="font-weight:bold">=</span> tilemap.getTileset(<span style="color:#b84">&#39;tilesetC&#39;</span>);
+
+tilemap.createDynamicLayer(<span style="color:#099">0</span>, [tilesetA, tilesetB, tilesetC]);
+</code></pre></div><p>この時、タイルセット内のタイルのidが重複した時、配列の後ろにあるタイルセット(上記の場合だと<code>tilesetC</code>)が優先されて描写される。</p>
+<p>これでは、せっかく複数指定できるのにあまりに扱いづらい。ということで、<code>gid</code>を各タイルセットに設定して、idが重複しないようにしてやる。</p>
+<p><picture>
+    
+    <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20200920_phaser3_tilemap/draw1.png?raw=true">
+    <img src="https://github.com/mijinc0/blog/blob/image/forpost/20200920_phaser3_tilemap/draw1.png?raw=true" alt="draw1" class="small-img smartfloat-left"/>
+</picture>
+<!-- raw HTML omitted --></p>
+<h3 id="gidの設定について">gidの設定について</h3>
+<p><code>gid</code>は任意の値を設定できる。なので、細かい調整をせずに<code>1000</code>や<code>2000</code>にしてしまって良い。こうしておけば、&ldquo;千の位の値はタイルセット固有のIDで、それ以下がそのタイルセットに含まれる各タイル固有のID&quot;のようにして素材を管理できる。</p>
+<p>実際には、<code>1000</code>や<code>2000</code>とかではなくて(それでも良いけど)、最下位2byteが各タイルセットの中のID,3byteめがタイルセット自体のIDのように、<code>number</code>をバイト単位で区切って管理したほうがかっこいいと思う。</p>
+<p><picture>
+    
+    <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20200920_phaser3_tilemap/draw2.png?raw=true">
+    <img src="https://github.com/mijinc0/blog/blob/image/forpost/20200920_phaser3_tilemap/draw2.png?raw=true" alt="draw1" class="small-img smartfloat-left"/>
+</picture>
+<!-- raw HTML omitted --></p>
+<p>これは、<code>gid</code>に限らず、たとえば<code>depth</code>を管理するときなどにも使える。<code>MAX_SAFE_INTEGER</code>の範囲で管理するとして、これを書いている時点で(bit単位まで&quot;かつかつ&quot;で領域を使わないとして)<code>6byte</code>の領域が使えるのだから、例えば<code>2byte</code>ずつで分割して&quot;大分類、中分類、小分類&quot;として値を扱うことも出来る。ただの<code>number</code>に情報が入れば色々と便利。</p>
+
+        
+        
+
+<section class="section sns_parent" id="shareButtonsSection">
+  <div class="container sns_section" id="shareButtonsContainer">
+      <div class="sns_button twitter">
+        <a href="http://twitter.com/intent/tweet?url=https%3a%2f%2fmijinc0.github.io%2fblog%2f20200920_phaser3_tilemap%2f&text=Phaser3%20%e3%82%bf%e3%82%a4%e3%83%ab%e3%83%9e%e3%83%83%e3%83%97%20%e3%82%a2%e3%83%8b%e3%83%a1%e3%83%bc%e3%82%b7%e3%83%a7%e3%83%b3" target="_blank" title="Tweet" id="shareTwetterButton">tweet</a>
+      </div>
+  </div>
+</section>
+
+
+
+      </article>
+      
+    </main>
+    <nav class="end-nav side-padding">
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/20200904_phaser3_animation/" class="card blog-card" rel="bookmark" >
+    
+    <div class="card-img-container">
+      <p class="card-img-overlay">Next Article</p>
+      <picture>
+        
+        <source srcset="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true">
+        <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" class="card-img" alt="phaser">
+      </picture>
+    </div>
+    
+  <article class="card-body">
+    <h2 class="card-title">Phaser3 アニメーション</h2>
+    <p class="card-text"></p>
+    <div class="card-subtext muted-text">
+      <p>Posted <time datetime="2020-09-04 94:00">Sep 4, 2020</time></p>
+      <p>#game_dev </p>
+    </div>
+  </article>
+</a>
+      
+      <a ontouchstart="cardPressed.call(this)" ontouchend="cardReleased.call(this)" ontouchmove="cardReleased.call(this)" 
+  href="https://mijinc0.github.io/blog/" class="card home-card" style="background-image: url( https://github.com/mijinc0/blog/blob/image/general/homeimage.png?raw=true )" rel="bookmark" >
+  Home
+</a>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+  
+  <script src="https://mijinc0.github.io/blog/js/core.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+  </body>
+</html>

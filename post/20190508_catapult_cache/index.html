@@ -57,31 +57,20 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" alt="catapult">
         </picture>
         
-        
-
-<p>※ アイキャッチ画像のロゴは私が勝手に書いたものです。決められたロゴはこれを書いている時点ではありません</p>
-
+        <p>※ アイキャッチ画像のロゴは私が勝手に書いたものです。決められたロゴはこれを書いている時点ではありません</p>
 <p>catapultのキャッシュについて。</p>
-
 <p>キャッシュは、メモリー上にトランザクションやブロック、各アカウントの状態などが貯められる場所だと思えば良い。</p>
-
 <h1 id="catapultcache">CatapultCache</h1>
-
 <p>catapultのキャッシュは、下記図のようなイメージの構造になっている。</p>
-
 <p>実のところ、下記図は分かりやすくするために嘘をついていて、実際には<code>CatapultCache</code>が管理するのは<code>SubCachesPlugin</code>のベクターで、そこに各キャッシュをあてるために、<code>SubCachesPluginAdapter</code>を使って各キャッシュを<code>CatapultCache</code>にaddしている。</p>
-
 <p><picture>
     
     <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20190508_catapult_cache/draw1.png?raw=true">
     <img src="https://github.com/mijinc0/blog/blob/image/forpost/20190508_catapult_cache/draw1.png?raw=true" alt="draw1" class="small-img smartfloat-left"/>
 </picture>
-<br clear="all"></p>
-
+<!-- raw HTML omitted --></p>
 <h1 id="subcaches">SubCaches</h1>
-
 <p>これを書いている時点でcatapult cacheに登録されているサブキャッシュは下記表の通り。</p>
-
 <table>
 <thead>
 <tr>
@@ -91,7 +80,6 @@
 <th>supportMerkleRoot</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>1</td>
@@ -99,56 +87,48 @@
 <td>0</td>
 <td>true</td>
 </tr>
-
 <tr>
 <td>2</td>
 <td>BlockDifficultyCache</td>
 <td>1</td>
 <td>false</td>
 </tr>
-
 <tr>
 <td>3</td>
 <td>HashCache</td>
 <td>2</td>
 <td>false</td>
 </tr>
-
 <tr>
 <td>4</td>
 <td>NamespaceCache</td>
 <td>3</td>
 <td>true</td>
 </tr>
-
 <tr>
 <td>5</td>
 <td>MosaicCache</td>
 <td>4</td>
 <td>true</td>
 </tr>
-
 <tr>
 <td>6</td>
 <td>MultisigCache</td>
 <td>5</td>
 <td>true</td>
 </tr>
-
 <tr>
 <td>7</td>
 <td>HashLockInfoCache</td>
 <td>6</td>
 <td>true</td>
 </tr>
-
 <tr>
 <td>8</td>
 <td>SecretLockInfoCache</td>
 <td>7</td>
 <td>true</td>
 </tr>
-
 <tr>
 <td>9</td>
 <td>PropertyCache</td>
@@ -157,16 +137,12 @@
 </tr>
 </tbody>
 </table>
-
 <h1 id="statehash">StateHash</h1>
-
 <p><code>state hash</code>は、上記キャッシュのうち、<code>supportMerkleRoot</code>が<code>true</code>のものの状態を集計したハッシュ値になる。</p>
-
 <p>catapultではこの<code>state hash</code>をBlockHeaderに詰めて、peerとのキャッシュの状態の整合性を確認できるようになっている。
 つまり、生のトランザクションだけ送信し合うだけでなく、キャッシュの状態をハッシュ値としてやり取りする。これにより、状態が違う相手から送られてきたエンティティを判定して捨てることが出来る。</p>
-
 <p><code>state hash</code>はLogの設定が<code>Debug</code>の時に出力されるログから確認することが出来る。Logが<code>Debug</code>モードの時、下記のようがログが出力されているはず。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">2019-05-06 08:26:30.456527 0x00007f1eb4e2e700: &lt;debug&gt; (consumers::BlockChainProcessor.cpp@49) cache state hash (7 components) at height 10000
+<pre><code class="language-no_attr" data-lang="no_attr">2019-05-06 08:26:30.456527 0x00007f1eb4e2e700: &lt;debug&gt; (consumers::BlockChainProcessor.cpp@49) cache state hash (7 components) at height 10000
 peer-node-1_1   | 1085E6C3C7F759181FDD0CC28C091528F134F1F1471C985CDF523021E0FF1D74     // これがcacheStateHash
 peer-node-1_1   |  + 114B6BAEFE4BAF7558CE68E26DA8584E5A7B7A53B4889CB0C7B0E838298FA4E0  // これが1つめのSubCacheのMerkelRootHash
 peer-node-1_1   |  + 6CD069EE3347EEBDED158E48B99765BD9614789631883C117E28037B42D6C187  // これが2つめのSubCacheのMerkelRootHash
@@ -174,9 +150,9 @@ peer-node-1_1   |  + 65D0CDEB6F8C29A9B164C64FFBC7AD97DF2BA407FE868E1BBC11983DBFF
 peer-node-1_1   |  + 77943B010F0EFA3DEEB436E96D28841933E0710A91D236830DCD580676040CA1  // これが4つめのSubCacheのMerkelRootHash
 peer-node-1_1   |  + C2C2E584F0B5E0F865905FAC78815077D4065286EFAA80AF69563152A46D589D  // これが5つめのSubCacheのMerkelRootHash
 peer-node-1_1   |  + 0000000000000000000000000000000000000000000000000000000000000000  // これが6つめのSubCacheのMerkelRootHash
-peer-node-1_1   |  + 9003CAB7B09CF23431FAFB9768AB10D27097A49A0587F61D9D6CB4CE4BB91962  // これが7つめのSubCacheのMerkelRootHash</code></pre></div>
-<p><code>state hash</code>の計算方法は、<code>StateHash = Hash256( 1番目のCacheのMerkleRootHash | 2番目のCacheのMerkleRootHash | 3番目のCacheのMerkleRootHash... )</code>であり、上記ログの場合だと、下記のようになる。（疑似コード）</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">strBuffer = 114B6BAEFE4BAF7558CE68E26DA8584E5A7B7A53B4889CB0C7B0E838298FA4E0 // ID 0
+peer-node-1_1   |  + 9003CAB7B09CF23431FAFB9768AB10D27097A49A0587F61D9D6CB4CE4BB91962  // これが7つめのSubCacheのMerkelRootHash
+</code></pre><p><code>state hash</code>の計算方法は、<code>StateHash = Hash256( 1番目のCacheのMerkleRootHash | 2番目のCacheのMerkleRootHash | 3番目のCacheのMerkleRootHash... )</code>であり、上記ログの場合だと、下記のようになる。（疑似コード）</p>
+<pre><code class="language-no_attr" data-lang="no_attr">strBuffer = 114B6BAEFE4BAF7558CE68E26DA8584E5A7B7A53B4889CB0C7B0E838298FA4E0 // ID 0
           + 6CD069EE3347EEBDED158E48B99765BD9614789631883C117E28037B42D6C187 // ID 3
           + 65D0CDEB6F8C29A9B164C64FFBC7AD97DF2BA407FE868E1BBC11983DBFF3FB5A // ID 4
           + 77943B010F0EFA3DEEB436E96D28841933E0710A91D236830DCD580676040CA1 // ID 5
@@ -188,16 +164,16 @@ byteBuffer = hex2byte( strBuffer )
 
 hash = Hash::Sha3::256.hexDigest( byteBuffer )
 
-hash == 1085E6C3C7F759181FDD0CC28C091528F134F1F1471C985CDF523021E0FF1D74 // true</code></pre></div>
-<p>下記、<code>CatapultCache.cpp</code>内の<code>CollectSubCacheMerkleRoots関数</code>によって集計されるCacheのIDを出力させてみた結果。これにより、上記MerkleRootHashの順番は、IDによってソートされていることが分かる。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">2019-05-09 00:40:12.171045 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 0
+hash == 1085E6C3C7F759181FDD0CC28C091528F134F1F1471C985CDF523021E0FF1D74 // true
+</code></pre><p>下記、<code>CatapultCache.cpp</code>内の<code>CollectSubCacheMerkleRoots関数</code>によって集計されるCacheのIDを出力させてみた結果。これにより、上記MerkleRootHashの順番は、IDによってソートされていることが分かる。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">2019-05-09 00:40:12.171045 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 0
 2019-05-09 00:40:12.171235 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 3
 2019-05-09 00:40:12.171543 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 4
 2019-05-09 00:40:12.171667 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 5
 2019-05-09 00:40:12.171757 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 6
 2019-05-09 00:40:12.171839 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 7
-2019-05-09 00:40:12.171950 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 8</code></pre></div>
-<p>ちなみに、キャッシュが空の時のMerkleRootは<code>0000000000000000000000000000000000000000000000000000000000000000</code>になる。</p>
+2019-05-09 00:40:12.171950 0x00007f2986f2fac0: &lt;debug&gt; (cache::CatapultCache.cpp@59) CollectSubCacheMerkleRoots CaheID : 8
+</code></pre><p>ちなみに、キャッシュが空の時のMerkleRootは<code>0000000000000000000000000000000000000000000000000000000000000000</code>になる。</p>
 
         
         

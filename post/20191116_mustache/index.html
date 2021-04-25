@@ -57,26 +57,16 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" alt="programing">
         </picture>
         
-        
-
-<p>例えば、規則性のあるモデルとなるようなクラスのためのコードを沢山記述するのは大変。</p>
-
+        <p>例えば、規則性のあるモデルとなるようなクラスのためのコードを沢山記述するのは大変。</p>
 <p>ある程度自動で生成したい。そこで、テンプレートエンジンの <code>mustache</code> を触ってみることにした。</p>
-
 <h2 id="mustache">mustache</h2>
-
 <p><strong>mustache(直訳:口ひげ)</strong> はテンプレートエンジンの一つ。テンプレートとなるファイルと、
 そこに差し込むデータを記述したファイル地を用意して、テンプレートエンジンにくぐらせることで、
 目的のファイルを出力してくれるプログラム。</p>
-
 <p><a href="http://mustache.github.io/">http://mustache.github.io/</a></p>
-
 <p>基本的な使い方を見たほうが早いので、下記に示す。例えば、typescriptのクラスをテンプレートとしたいとき、</p>
-
-<h3 id="1-テンプレートを用意する">1.テンプレートを用意する</h3>
-
+<h3 id="1テンプレートを用意する">1.テンプレートを用意する</h3>
 <p><code>test.mustache</code></p>
-
 <pre><code>class {{className}} {
 	constructor(
 		public {{field}}
@@ -88,33 +78,24 @@
 	}
 	{{/hasFunction}}
 }
-</code></pre>
-
-<h3 id="2-テンプレートに差し込むデータを用意する">2.テンプレートに差し込むデータを用意する</h3>
-
+</code></pre><h3 id="2テンプレートに差し込むデータを用意する">2.テンプレートに差し込むデータを用意する</h3>
 <p><code>test.json</code></p>
-
 <pre><code>{
   &quot;className&quot;: &quot;SomeClass&quot;,
   &quot;field&quot;: &quot;someField&quot;,
   &quot;hasFunction&quot;: true,
   &quot;functionName&quot;: &quot;print&quot;
 }
-</code></pre>
-
-<h3 id="3-mustacheをインストールする">3.mustacheをインストールする</h3>
-
+</code></pre><h3 id="3mustacheをインストールする">3.mustacheをインストールする</h3>
 <p>様々な実装が存在しているが、今回はjavascriptの実装を使う。
 <code>npm</code>でmustacheをインストールする。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ npm install mustache</code></pre></div>
-<h3 id="4-mustacheにテンプレートとデータを渡す">4.mustacheにテンプレートとデータを渡す</h3>
-
+<pre><code class="language-no_attr" data-lang="no_attr">$ npm install mustache
+</code></pre><h3 id="4mustacheにテンプレートとデータを渡す">4.mustacheにテンプレートとデータを渡す</h3>
 <p>下記のコマンドを実行。<code>mustache</code>コマンドにテンプレートとデータを引数で指定し、
 コマンドの出力をファイルにリダイレクトすることで、目的のファイルを生成する。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ mustache ./test.json ./test.mustache &gt; ./SomeClass.ts</code></pre></div>
-<p>コマンドを実行すると、カレントディレクトリに<code>SomeClass.ts</code>というファイルが生成される、
+<pre><code class="language-no_attr" data-lang="no_attr">$ mustache ./test.json ./test.mustache &gt; ./SomeClass.ts
+</code></pre><p>コマンドを実行すると、カレントディレクトリに<code>SomeClass.ts</code>というファイルが生成される、
 その中身は下記のようになる。</p>
-
 <p><code>SomeClass.ts</code></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">class</span> SomeClass {
 	<span style="font-weight:bold">constructor</span>(
@@ -124,35 +105,25 @@
 	print()<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
 		console.log(<span style="color:#b84">&#39;this instance has function&#39;</span>);
 	}
-}</code></pre></div>
-<p><code>{{}}</code>で囲まれた部分がデータ部を参考に置き換わっていること、<code>{{#key}}</code>が<code>key</code>に対応する部分を
+}
+</code></pre></div><p><code>{{}}</code>で囲まれた部分がデータ部を参考に置き換わっていること、<code>{{#key}}</code>が<code>key</code>に対応する部分を
 データ部から参照して、そこが<code>true</code>であれば<code>{{#key}} ~ {{/key}}</code>で囲まれている部分が
 出力されていることなどが確認できる。</p>
-
 <p>基本的なmustacheの使い方、出来ることはこんな感じ。<code>{{#key}} ~ {{/key}}</code>以外にも、他の命令もあるので、
 そこはリファレンスを見ながら書いていけば良い。</p>
-
 <h2 id="javascriptと組み合わせて使う">javascriptと組み合わせて使う</h2>
-
 <p><a href="https://github.com/janl/mustache.js">https://github.com/janl/mustache.js</a></p>
-
 <p>基本的には、前述した使い方で <strong>どの言語のソースコードでも生成できる</strong>。
 単に生成したい言語でテンプレートを書き、そこにデータを差し込めば良いだけなので。</p>
-
 <p>ここで書く <strong>typescriptと組み合わせて使う</strong> とは、前述の操作そのものをtypescriptで書くということ。</p>
-
 <p>勿論、以下に書くよりも単純な使い方をしたければ、</p>
-
 <ol>
 <li>好きな言語でデータ部を指定するjsonファイルを生成するプログラムを書く</li>
 <li>1で生成したjsonファイルと、テンプレートファイルをmustacheに渡す</li>
 </ol>
-
 <p>これでも別に構わないと思う。</p>
-
 <p>ただ、例えば対応する値を関数の戻り値にしたい場合などに、言語で制御できると便利。
 どういうことかというと、下記のようなことが出来るということ。</p>
-
 <p><code>mustache_test.js</code></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="font-weight:bold">const</span> Mustache <span style="font-weight:bold">=</span> require(<span style="color:#b84">&#39;mustache&#39;</span>);
 
@@ -168,13 +139,11 @@
 <span style="font-weight:bold">var</span> output <span style="font-weight:bold">=</span> Mustache.render(template, data);
 
 console.log(output);
-</code></pre></div>
-<p>上記のコードをNode.jsで実行すると、下記のようになる。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ node ./mustache_test.js
-&gt; my name is alice, I&#39;m 6 years old.</code></pre></div>
-<p>上記の場合、<code>name</code>には静的に指定された<code>alice</code>が、<code>calcAge</code>は引数を持たない関数が実行され、
+</code></pre></div><p>上記のコードをNode.jsで実行すると、下記のようになる。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">$ node ./mustache_test.js
+&gt; my name is alice, I'm 6 years old.
+</code></pre><p>上記の場合、<code>name</code>には静的に指定された<code>alice</code>が、<code>calcAge</code>は引数を持たない関数が実行され、
 その戻り値が(ここではランダムな10までの数字)割り当てられているのが分かる。</p>
-
 <p>他にも、<code>{{}}</code>のタグを別のタグにしたりも出来るようだが、あまり使わない機能だろう。
 他のテンプレートエンジンのソースを出力したいときなどに使えるのかもしれない。</p>
 

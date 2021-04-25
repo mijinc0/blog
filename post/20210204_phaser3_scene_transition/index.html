@@ -57,18 +57,11 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
         </picture>
         
-        
-
-<h1 id="phaser3-scenetransition-シーンの遷移">Phaser3 SceneTransition(シーンの遷移)</h1>
-
+        <h1 id="phaser3-scenetransitionシーンの遷移">Phaser3 SceneTransition(シーンの遷移)</h1>
 <p>versiont: <code>3.52.0</code></p>
-
 <p>Phaser3のSceneにはシーンの遷移、つまりあるシーンから別のシーンに移り変わる(遷移)ときに利用できる <code>Transition</code> という機能が付いている。</p>
-
 <p>例えば村のマップからアイテムショップに入る時、現在プレイヤーが存在するマップ(村)を徐々に透明にし、次に侵入するマップ(アイテムショップ)の透明度を徐々に下げていくようにしてシーンが切り替わる演出を作りたいなどの時に使える(伝わるかな?)</p>
-
 <h1 id="transitionの使用方法">Transitionの使用方法</h1>
-
 <p>Transitionを使用してシーンの切り替えを行う時は <code>scene.start</code> を使わずに <code>scene.transition</code> を使用する。引数は <code>Phaser.Types.Scenes.SceneTransitionConfig</code> である。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">this</span>.scene.transition({
   <span style="color:#998;font-style:italic">// 遷移先のシーン
@@ -81,8 +74,8 @@
 </span><span style="color:#998;font-style:italic"></span>  onUpdate<span style="font-weight:bold">:</span> (progress: <span style="color:#458;font-weight:bold">number</span>) <span style="font-weight:bold">=&gt;</span> {
 
   },
-});</code></pre></div>
-<p>これを使う。最初は遷移中に遷移元のシーン、遷移先のシーンに何が起きているのかわからないと思うので、以下の処理をシーンのイベントに仕込んで観察してみることをおすすめする。</p>
+});
+</code></pre></div><p>これを使う。最初は遷移中に遷移元のシーン、遷移先のシーンに何が起きているのかわからないと思うので、以下の処理をシーンのイベントに仕込んで観察してみることをおすすめする。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// 遷移元のシ遷移先ーン
 </span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">class</span> From <span style="font-weight:bold">extends</span> Phaser.Scene {
   init ()<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
@@ -123,23 +116,15 @@
       console.log(<span style="color:#b84">&#39;遷移先: transition: transition complete&#39;</span>);
     });
   }
-}</code></pre></div>
-<p>あとは、両シーンの <code>init</code>, <code>create</code>, <code>update</code>, <code>shutdown</code> にも出力を入れてあげれば何が起きているか分かると思う。</p>
-
+}
+</code></pre></div><p>あとは、両シーンの <code>init</code>, <code>create</code>, <code>update</code>, <code>shutdown</code> にも出力を入れてあげれば何が起きているか分かると思う。</p>
 <h1 id="遷移について">遷移について</h1>
-
 <p>先述の方法で自分でログの出力をみて自分で確認するほうが納得できると思うが、シーンの遷移は以下の図ようになっている。(あくまで一例)</p>
-
-<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20210204_phaser3_scene_transition/draw1.png?raw=true" alt="draw1" /></p>
-
+<p><img src="https://github.com/mijinc0/blog/blob/image/forpost/20210204_phaser3_scene_transition/draw1.png?raw=true" alt="draw1"></p>
 <p>要するに、遷移が開始すると <code>config.duration</code> で指定した時間は遷移元、遷移先の両シーンが立ち上がった状態になり、それぞれ必要なタイミングでTransition用のイベントが発火する、ということである。</p>
-
 <h1 id="transition使用時の注意">Transition使用時の注意</h1>
-
 <p>まず注意すべきなのは、イベントが発火する以外は両シーンが普通に動いている状態であることに注意しないといけない。例えば遷移が始まってから完了するまでの間、プレイヤーの入力を受け付けたくなければ、遷移元は <code>TRANSITION_OUT</code> に、遷移先は <code>TRANSITION_COMPLETE</code> に、入力の許可、拒否をするイベントを登録しないといけない。</p>
-
 <p>次に、ここまでで説明して分かるとおりTransitionは基本的にイベントの登録によって構築しないといけないが、このイベントはシーンのshutdown時にすべて消えるようになっている。そのため、毎回必要になるタイミング、またはシーンの <code>init</code> や <code>create</code> 呼び出し時にイベントを登録する必要がある。</p>
-
 <p>最後に、これは多分バグだと思うが、これを書いている時点で &ldquo;Transition終了のタイミングで遷移元のシーンがshutdownした後、一度だけupdateが呼び出される&rdquo; という挙動をする。shutdown状態のシーンがupdateされてしまうのでバグっぽいが、とりあえず直るまでは注意しておいてほしい。</p>
 
         

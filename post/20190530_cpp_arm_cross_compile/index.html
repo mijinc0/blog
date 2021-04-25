@@ -57,45 +57,31 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" alt="programing">
         </picture>
         
-        
-
-<p>C++のソースコードをubuntu(x86/x64)とCMakeを使ってARM上で動くようにコンパイルする。</p>
-
+        <p>C++のソースコードをubuntu(x86/x64)とCMakeを使ってARM上で動くようにコンパイルする。</p>
 <h1 id="armについて">ARMについて</h1>
-
 <p><code>ARM</code>は<code>ARM Ltd</code>によって設計されたCPUのアーキテクチャ。<code>ARM</code>はこれを自らは製造しておらず、intelやfreescaleなどがライセンス供与して製造している。</p>
-
 <p><code>ARM</code>はCPUの命令セットのアーキテクチャとして<code>RISC</code>(ReduceInstructionSetComputer)を採用している。これは命令の数を減らし、回路を単純化することで演算の速度を高速にしようとする設計手法。ARMは</p>
-
 <p><code>ARM</code>はスマートフォンなどの小型の端末に広く採用されている。</p>
-
 <h1 id="コンパイラのインストール">コンパイラのインストール</h1>
-
 <p>armが<code>hf</code>なのか<code>arm64</code>なのかでコンパイラが変わる。コンパイラは変わるが、操作は基本的には同じ。</p>
-
 <h2 id="for-hf">for hf</h2>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ sudo apt install g++-arm-linux-gnueabihf</code></pre></div>
-<p>インストールはこれだけだが、<code>gnueabihf</code>という部分について触れておく。
+<pre><code class="language-no_attr" data-lang="no_attr">$ sudo apt install g++-arm-linux-gnueabihf
+</code></pre><p>インストールはこれだけだが、<code>gnueabihf</code>という部分について触れておく。
 <code>gnu</code>,<code>eabi</code>,<code>hf</code>が連結されている。</p>
-
-<p><code>eabi</code>はARMのABI(ApplicationBinaryInterface)の一つで、ARMのABIにはもう一つ、<code>oabi</code>がある。<code>eabi</code>はEmbeddedApplicationBinaryInterface、<code>oabi</code>はOldApplicationBinaryInterfaceの略。<br />
+<p><code>eabi</code>はARMのABI(ApplicationBinaryInterface)の一つで、ARMのABIにはもう一つ、<code>oabi</code>がある。<code>eabi</code>はEmbeddedApplicationBinaryInterface、<code>oabi</code>はOldApplicationBinaryInterfaceの略。<br>
 <code>hf</code>はHardFloatの略。Floatと名がつく通り、浮動小数点の扱いについての表記。</p>
-
 <h2 id="for-arm64">for arm64</h2>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ sudo apt install g++-aarch64-linux-gnu</code></pre></div>
-<h1 id="cmakeでコンパイラの指定">CMakeでコンパイラの指定</h1>
-
+<pre><code class="language-no_attr" data-lang="no_attr">$ sudo apt install g++-aarch64-linux-gnu
+</code></pre><h1 id="cmakeでコンパイラの指定">CMakeでコンパイラの指定</h1>
 <p>いくつか方法がある。</p>
-
 <h3 id="cmake実行時のオプションで指定する">cmake実行時のオプションで指定する</h3>
-
 <p><code>CMAKE_CXX_COMPILER</code>(C++用)と<code>CMAKE_C_COMPILER</code>(C用)がcmake内でコンパイラのパスが格納される場所になるので、cmakeコマンド実行時にパスを指定する。下記のようになる。(<code>/usr/bin/arm-linux-gnueabihf-g++-7</code>を指定している。)</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$~/_build$ cmake -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-g++-7 -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-gcc-7 ..</code></pre></div>
-<h3 id="toolchainを使う">toolchainを使う</h3>
-
+<pre><code class="language-no_attr" data-lang="no_attr">$~/_build$ cmake -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-g++-7 -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-gcc-7 ..
+</code></pre><h3 id="toolchainを使う">toolchainを使う</h3>
 <p>cmakeに下記の行を追加してコンパイラを指定する。直接書き込みたくなければ、CMakeのツールチェイン機能を使って指定することも出来る。その際は、<code>cmake</code>コマンドに<code>-DCMAKE_TOOLCHAIN_FILE=&lt;ツールチェイン用のcmakeファイル&gt;</code>オプションを渡してあげる。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cmake" data-lang="cmake"><span style="color:#999">set</span>(<span style="color:#b84">CMAKE_SYSTEM_NAME</span> <span style="color:#b84">Linux</span>)<span style="color:#a61717;background-color:#e3d2d2">
-</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">set</span>(<span style="color:#b84">CMAKE_C_COMPILER</span> <span style="color:#b84">/usr/bin/arm-linux-gnueabihf-g++</span>)</code></pre></div>
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#999">set</span>(<span style="color:#b84">CMAKE_C_COMPILER</span> <span style="color:#b84">/usr/bin/arm-linux-gnueabihf-g++</span>)<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></div>
         
         
 

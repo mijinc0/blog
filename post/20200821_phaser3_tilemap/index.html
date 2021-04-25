@@ -57,18 +57,11 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
         </picture>
         
-        
-
-<h1 id="phaser3-タイルマップ">Phaser3 タイルマップ</h1>
-
+        <h1 id="phaser3-タイルマップ">Phaser3 タイルマップ</h1>
 <p><strong>前回の記事</strong></p>
-
 <p><a href="https://mijinc0.github.io/blog/post/20200821_phaser3_audio/">https://mijinc0.github.io/blog/post/20200821_phaser3_audio/</a></p>
-
 <h2 id="タイルマップエディタ">タイルマップエディタ</h2>
-
 <p>タイルマップは以下のようなデータに一つ一つ指定したタイルの画像を当てはめることでマップを作る。</p>
-
 <pre><code>[
   0, 0, 0, 4, 0, 3, 0, 0,
   0, 1, 0, 0, 0, 0, 0, 0,
@@ -77,27 +70,16 @@
   0, 0, 0, 0, 0, 3, 0, 0,
   0, 2, 0, 2, 0, 0, 0, 0,
 ]
-</code></pre>
-
-<p>ではこのデータ、どうやって作るのかという話になる。</p>
-
+</code></pre><p>ではこのデータ、どうやって作るのかという話になる。</p>
 <h3 id="1-tiledを使う">1. Tiledを使う</h3>
-
 <p><a href="https://www.mapeditor.org/">https://www.mapeditor.org/</a></p>
-
-<p>タイルマップを作成するのに素晴らしいツールがある。無償でも使えるが、支援できる人は少額でもしてあげてほしい。<br />
+<p>タイルマップを作成するのに素晴らしいツールがある。無償でも使えるが、支援できる人は少額でもしてあげてほしい。<br>
 Phaser3ではTiledでタイルマップを作ることがある程度想定された実装をしている。そのため、Tiledによって生成されたタイルマップのデータ(<code>json</code>)からレイヤーオブジェクトを生成するときはある程度よしなにしてくれる。</p>
-
 <h3 id="2-エディタを自作する">2. エディタを自作する</h3>
-
 <p>エディタを作るのも楽しみの一つだと思う人は作ってみても良いかもしれない。どこまでものを作るのかとなるとピンキリになると思うが、たとえばビットマップ等のイメージファイルのデータからタイルマップデータを作るツールを作って、タイルマップの描写自体はそのイメージが扱えるドット絵エディタで行うなどの方法も考えられる。イメージからデータを抽出するのはバイナリデータのフォーマットが分からなければライブラリを使う手がありそう。</p>
-
 <h3 id="3-直打ちする">3. 直打ちする</h3>
-
 <p>極めて非効率で大変だが直打ちしても良い。Phaser3のタイルマップ機能の練習をした時は、私はハードコードした直打ちのデータを使っていました。</p>
-
 <h2 id="タイルマップデータとして生データを使う時">タイルマップデータとして生データを使う時</h2>
-
 <p>タイルマップの作り方を調べていると、以下のような流れでマップのレイヤーデータを作ることになると思う。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// 適当なタイルマップの生データ
 </span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> data <span style="font-weight:bold">=</span> [
@@ -121,15 +103,11 @@ Phaser3ではTiledでタイルマップを作ることがある程度想定さ�
 
 <span style="color:#998;font-style:italic">// 3. create static layer
 </span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> layerId <span style="font-weight:bold">=</span> <span style="color:#099">0</span>;
-<span style="font-weight:bold">return</span> tilemap.createStaticLayer(layerId, tileset, <span style="color:#099">0</span>, <span style="color:#099">0</span>);</code></pre></div>
-<p>よくわからないのが、一番下の<code>layerId</code>だ。</p>
-
+<span style="font-weight:bold">return</span> tilemap.createStaticLayer(layerId, tileset, <span style="color:#099">0</span>, <span style="color:#099">0</span>);
+</code></pre></div><p>よくわからないのが、一番下の<code>layerId</code>だ。</p>
 <p>結論から言うと、上記のように生データを指定した時は常に<code>layerId</code>は<code>0</code>である。これは<code>Tilemap</code>クラスのインスタンスには複数のレイヤーデータを登録することが出来、その登録されたデータのインデックスを指定して生成するから。<code>Tilemap</code>クラスのインスタンスに複数のレイヤーが存在するのは、主にTiledからの出力データを元に<code>Tilemap</code>インスタンスを生成した時だと思って良い。</p>
-
 <h2 id="phaserの標準機能を使わずに自分でタイルマップを作る">Phaserの標準機能を使わずに自分でタイルマップを作る</h2>
-
 <p>用途によっては、Phaserのタイルマップを自分で作りたくなる時もあると思う。例えば、二次元の配列から<code>Phaser.Tilemaps.Tilemap</code>オブジェクトを生成したいが、複数のレイヤーをもたせ、なおかつそのオブジェクトをキャッシュに貯めておきたい場合など。</p>
-
 <p>以下のようにして作る。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// this === Phaser.Scene
 </span><span style="color:#998;font-style:italic"></span>
@@ -209,9 +187,8 @@ layerDataB.height <span style="font-weight:bold">=</span> dataB.length;
 <span style="color:#998;font-style:italic">// 二回目以降の生成はこれだけ。最初にタイルマップを作ってキャッシュしてしまえば楽(要メモリと相談)
 </span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> cachedTilemapObject <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.cache.tilemap.get(<span style="color:#b84">&#39;myTilemap&#39;</span>);
 cachedTilemapObject.createStaticLayer(<span style="color:#b84">&#39;testLayerA&#39;</span>, tileset);
-cachedTilemapObject.createStaticLayer(<span style="color:#b84">&#39;testLayerB&#39;</span>, tileset);</code></pre></div>
-<h2 id="参考">参考</h2>
-
+cachedTilemapObject.createStaticLayer(<span style="color:#b84">&#39;testLayerB&#39;</span>, tileset);
+</code></pre></div><h2 id="参考">参考</h2>
 <p><a href="https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6">https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6</a></p>
 
         

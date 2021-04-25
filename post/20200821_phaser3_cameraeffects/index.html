@@ -57,17 +57,11 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
         </picture>
         
-        
-
-<h1 id="phaser3-カメラエフェクト">Phaser3 カメラエフェクト</h1>
-
-<p><strong>前回の記事</strong><br />
+        <h1 id="phaser3-カメラエフェクト">Phaser3 カメラエフェクト</h1>
+<p><strong>前回の記事</strong><br>
 <a href="https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/">https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/</a></p>
-
 <h2 id="カメラエフェクトをかける方法">カメラエフェクトをかける方法</h2>
-
 <p>Phaser3ではカメラ用の標準的なエフェクトがいくつか用意されている。</p>
-
 <ul>
 <li>フェード(イン/アウト)</li>
 <li>フラッシュ</li>
@@ -76,22 +70,15 @@
 <li>ズーム</li>
 <li>回転</li>
 </ul>
-
 <p>逆に言うと、これら以外は基本的にない(はず)。</p>
-
 <p>例えば、画面全体をグレースケールにするだとか、色味の調整だとか、そういったものが無い。また、雨の演出を入れたいだとか、海中で画面が揺らぐ演出を入れたいだとか、色々とこだわりを出していくと足りないものが増えてくる。</p>
-
 <p>Phaser3でカメラにエフェクトをかけたいとき、主に2つの方法が考えられる</p>
-
 <ol>
 <li>カメラの描写範囲に追随するオブジェクトをシーンに追加する</li>
 <li>シェーダ―を使う</li>
 </ol>
-
 <h2 id="1-カメラの描写範囲に追随するオブジェクトをシーンに追加する">1. カメラの描写範囲に追随するオブジェクトをシーンに追加する</h2>
-
 <p>カメラの描写範囲に追随するオブジェクトをシーンに追加すれば、ゲームをプレイしている人にとっては画面全体にエフェクトがかかっているように見える。</p>
-
 <p>オブジェクトをカメラに追随させるには、<code>setScrollFactor</code>を使えば良い。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// this === Scene
 </span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> camera <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.cameras.main;
@@ -111,23 +98,15 @@
 );
 
 rectangle.setOrigin(<span style="color:#099">0</span>);
-rectangle.setScrollFactor(<span style="color:#099">1</span>);</code></pre></div>
-<p>上記の例だと、半透明のフィルターがカメラにかかっている状態になる。</p>
-
+rectangle.setScrollFactor(<span style="color:#099">1</span>);
+</code></pre></div><p>上記の例だと、半透明のフィルターがカメラにかかっている状態になる。</p>
 <h3 id="注意-worldviewについて">注意: worldViewについて</h3>
-
 <p><code>camera.worldView</code>はその時カメラが描写している範囲を取得することが出来る便利なプロパティ。色々とお世話になることがあると思う。</p>
-
 <p>しかし、この<code>worldView</code>はシーンがupdateされる度に更新され、初期値は<code>{x: 0, y: 0, widht: 0, height: 0}</code>になっている。これがどういうことかというと、シーンの<code>create</code>関数内で<code>worldView</code>を取得すると、常に初期値が返ってきてしまうため、期待した動きをしないことがある。これを避けるには、<code>create</code>内ではその処理を行わないか、自分で描写されるであろう範囲を判断して値を扱わなくてはいけない。</p>
-
-<h2 id="2-シェーダ-を使う">2. シェーダ―を使う</h2>
-
+<h2 id="2-シェーダを使う">2. シェーダ―を使う</h2>
 <p>シェーダー、特にフラグメントシェーダ―を使ってカメラにエフェクトをかける方法。これはレンダラーに<code>WebGL</code>を使っていときのみ有効な手段で、<code>canvas2D</code>を使っているときには出来ない。</p>
-
 <p>シェーダーの説明自体は他の記事で書いているのでそちらを参照してください。</p>
-
 <p><a href="https://mijinc0.github.io/blog/post/20200811_about_shader/">https://mijinc0.github.io/blog/post/20200811_about_shader/</a></p>
-
 <p>以下のようにして使う。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">const</span> fragShader <span style="font-weight:bold">=</span> <span style="color:#b84">`
 </span><span style="color:#b84">  GLSLシェーダーのコード
@@ -150,15 +129,13 @@ rectangle.setScrollFactor(<span style="color:#099">1</span>);</code></pre></div>
 
 <span style="color:#998;font-style:italic">// どちらかの方法で良い
 </span><span style="color:#998;font-style:italic"></span>camera.setRenderToTexture(pipelineInstance); <span style="color:#998;font-style:italic">// インスタンスを直接渡す
-</span><span style="color:#998;font-style:italic"></span>camera.setRenderToTexture(<span style="color:#b84">&#39;pipelineName&#39;</span>); <span style="color:#a61717;background-color:#e3d2d2">// 登録時のキーで指定</span></code></pre></div>
-<p>上記の他に、<code>TextureTintPipeline</code>を継承したカスタムパイプラインクラスを用意して、そのインスタンスを使う方法もある。カスタムパイプラインクラスは、その中に、GLGL内の<code>uniform</code>変数をセットする関数などを用意することで、普通のオブジェクトの操作をしているような感覚でシェーダーの変数を操作できるようになるなどの利点がある。</p>
-
+</span><span style="color:#998;font-style:italic"></span>camera.setRenderToTexture(<span style="color:#b84">&#39;pipelineName&#39;</span>); <span style="color:#998;font-style:italic">// 登録時のキーで指定
+</span></code></pre></div><p>上記の他に、<code>TextureTintPipeline</code>を継承したカスタムパイプラインクラスを用意して、そのインスタンスを使う方法もある。カスタムパイプラインクラスは、その中に、GLGL内の<code>uniform</code>変数をセットする関数などを用意することで、普通のオブジェクトの操作をしているような感覚でシェーダーの変数を操作できるようになるなどの利点がある。</p>
 <h2 id="参考">参考</h2>
-
-<p><strong>GLSLの勉強など</strong><br />
-<a href="https://wgld.org/d/webgl/">https://wgld.org/d/webgl/</a><br />
-<a href="https://qiita.com/doxas/items/b8221e92a2bfdc6fc211">https://qiita.com/doxas/items/b8221e92a2bfdc6fc211</a><br />
-<a href="https://qiita.com/doxas/items/5a7b6dedff4bc2ce1586">https://qiita.com/doxas/items/5a7b6dedff4bc2ce1586</a><br />
+<p><strong>GLSLの勉強など</strong><br>
+<a href="https://wgld.org/d/webgl/">https://wgld.org/d/webgl/</a><br>
+<a href="https://qiita.com/doxas/items/b8221e92a2bfdc6fc211">https://qiita.com/doxas/items/b8221e92a2bfdc6fc211</a><br>
+<a href="https://qiita.com/doxas/items/5a7b6dedff4bc2ce1586">https://qiita.com/doxas/items/5a7b6dedff4bc2ce1586</a><br>
 <a href="https://thebookofshaders.com/">https://thebookofshaders.com/</a></p>
 
         

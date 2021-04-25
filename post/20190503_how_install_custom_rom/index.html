@@ -57,252 +57,149 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/android.png?raw=true" alt="android icon">
         </picture>
         
-        
-
-<p>カスタムROMは、数年前に何度か焼いたことがあるぐらいで、改めてやると全く覚えていなかったのと、そもそも随分様相が変わったようだ。これはその時に書いた備忘録に色々書き加えたもの。</p>
-
+        <p>カスタムROMは、数年前に何度か焼いたことがあるぐらいで、改めてやると全く覚えていなかったのと、そもそも随分様相が変わったようだ。これはその時に書いた備忘録に色々書き加えたもの。</p>
 <p>ちなみに、私はandroidに詳しいわけではないので、内容に間違いが含まれているかもしれない。</p>
-
-<p>なお、お決まりですが、 <strong>この記事を参考にして作業した結果、スマートフォンが使用不可になったり（所謂&rdquo;文鎮&rdquo;化）、その他なんらかの不利益が貴方に生じても私は責任を負いませんので、もし参考にする場合は自己責任でお願いします。そして、メーカーの補償は一切効かないものと覚悟してください。</strong></p>
-
+<p>なお、お決まりですが、 <strong>この記事を参考にして作業した結果、スマートフォンが使用不可になったり（所謂&quot;文鎮&quot;化）、その他なんらかの不利益が貴方に生じても私は責任を負いませんので、もし参考にする場合は自己責任でお願いします。そして、メーカーの補償は一切効かないものと覚悟してください。</strong></p>
 <p>また、覚悟を決めて作業をする場合は、このページでも他でもそうですが、作業する前に一通り読み切って理解してから作業を始めたほうが良いです。途中で詰まって引き返したくなっても引き返せなくなる可能性があるので。</p>
-
 <h1 id="まえがき">まえがき</h1>
-
-<p>androidはGooglが立ち上げたスマートフォン用OSのオープンソースプロジェクトである。各携帯メーカー（ベンター）は、このオープンソースプロジェクトに、各端末でそのOSが動くように手を加えて、端末の中にインストールして、市販の&rdquo;スマートフォン&rdquo;として販売している。</p>
-
-<p>ベンダーが手を加えて端末にインストールするandroidベースのOS、謂わば&rdquo;Official&rdquo;のように扱われるそれは、<code>StockROM</code>と呼ばれる。その一方で、有志が集まって作ったOSもある。それらが<code>CustomROM</code>と呼ばれる。</p>
-
+<p>androidはGooglが立ち上げたスマートフォン用OSのオープンソースプロジェクトである。各携帯メーカー（ベンター）は、このオープンソースプロジェクトに、各端末でそのOSが動くように手を加えて、端末の中にインストールして、市販の&quot;スマートフォン&quot;として販売している。</p>
+<p>ベンダーが手を加えて端末にインストールするandroidベースのOS、謂わば&quot;Official&quot;のように扱われるそれは、<code>StockROM</code>と呼ばれる。その一方で、有志が集まって作ったOSもある。それらが<code>CustomROM</code>と呼ばれる。</p>
 <p>このカスタムROMだが、例えばPCのOSでいうとubuntuのようなもののように感じられ、記憶領域にOSを焼きこめばすぐに動くように感じるが、スマートフォンの場合はPCと違ってそう簡単な話ではない。</p>
-
 <p>もともと、ベンダーが提供しているROMはGoogleが提供している<code>AOSP(AndroidOpenSourceProject)</code>(StockROMのベースになるもの)に手を加えたもので、AOSPとベンダーの実装部分が密になっていた。（ベンダーの実装部分を含めて一つのOSとして機能していたというイメージだと思う）そのため、AOSPがアップデートされたからといって、StockROMがすぐに対応できるわけではなかった。</p>
-
 <p>そしてこのことが、様々なバージョンのandroidを様々な人が使うような自体に陥ってしまった。これは不味いぞということになった。</p>
-
 <p>この問題を解決すべく、<code>Android 8.0(oreo)</code>から、<code>ProjectTreble</code>という名前のプロジェクトが立ち上がった。目的は、<code>簡単にOSをアップデート出来るようにすること</code>である。</p>
-
 <p>今回は、この<code>ProjectTreble</code>対応機にカスタムROMを焼いた手順を残す。(PC側のOSはubuntu)</p>
-
 <h2 id="projecttreble">ProjectTreble</h2>
-
 <p>ユーザーが使用しているandoridのバージョンがあまりにもまばらである問題を根本から解決すべく立ち上がったのがこの<code>ProjectTreble</code>である。どうやって解決するのかというと、<code>OS部分(AOSP)とベンダーの実装部分を分離する</code>ことで解決を図ろうというのがこのプロジェクトである。</p>
-
 <p>ProjectTrebleはベンダーに向けたインターフェースを提供する。ベンダーはこのインターフェースとデバイスを繋ぐ実装部分を用意する。これにより、OSが取っ替えられても接続部分がつながりさえすればOSは動く、というイメージなのだと思う。</p>
-
 <h1 id="用語">用語</h1>
-
 <p>Android廻りで見かける用語。</p>
-
 <h3 id="aosp">AOSP</h3>
-
 <p>AndroidOpenSourceProject。Googleが作る、androidのベースになるプロジェクト。</p>
-
 <h3 id="gsi">GSI</h3>
-
 <p>GenericSystemImage。ProjectTreble対応機はOSを取っ替えやすく作られていると書いた。この <strong>取っ替えられる</strong> 部分がGSIだと思えば良いと思う。</p>
-
 <h3 id="イメージファイル">イメージファイル</h3>
-
 <p>拡張子が<code>img</code>のファイル。ディレクトリ構造などをそのまま記録したファイル。コレを展開するとシステムの本体(ディレクトリ構造とその中に入れられた各ファイル群)が出てくる。例えば<code>好きなCustomROMをダウンロードする</code>などと説明にあれば、基本的にはsystemパーティションに焼くためのOSのイメージファイルをWebサイトからダウンロードするのだと思えば良い。これは別にandroidに限った用語ではない。</p>
-
 <h1 id="ツール群">ツール群</h1>
-
 <p>ROM焼き時にお世話になるツール群。</p>
-
 <h2 id="adb">adb</h2>
-
 <p>AndroidDebugBridge。OSを立ち上げた状態で使用できる。PCから端末にandroid用のコマンドを送信できるツールだと思えば良い。</p>
-
 <pre><code>$ sudo apt install adb
-</code></pre>
-
-<p>でインストールできる。</p>
-
+</code></pre><p>でインストールできる。</p>
 <p>例えば端末に接続されたshellをPC上で起動したければ、</p>
-
 <pre><code>$ adb shell
-</code></pre>
-
-<p>で端末に入った状態のshellを起動できる。ここで、例えば権限の関係でエラーが出て操作ができなくなったりしたときは、adbサーバーがsudoで起動されなかったせいだったりするので、一旦殺して立ち上げ直せば解決することがある（下記のように）。</p>
-
+</code></pre><p>で端末に入った状態のshellを起動できる。ここで、例えば権限の関係でエラーが出て操作ができなくなったりしたときは、adbサーバーがsudoで起動されなかったせいだったりするので、一旦殺して立ち上げ直せば解決することがある（下記のように）。</p>
 <pre><code>$ adb kill-server
 $ sudo adb start-server
-</code></pre>
-
-<h2 id="fastboot">fastboot</h2>
-
+</code></pre><h2 id="fastboot">fastboot</h2>
 <p>fastbootモード(bootloaderで止まっているような状態)時に使用できる。PCから端末にROMの領域を上書きしたり消したりする命令を送るのに使う。</p>
-
 <pre><code>$ sudo apt install fastboot
-</code></pre>
-
-<p>でインストール出来る。</p>
-
+</code></pre><p>でインストール出来る。</p>
 <p>fastbootでよく使うのは<code>flash</code>と<code>erase</code>だ。<code>flash</code>はパーティションを指定してROM上にイメージを書き込む時に使うコマンド（上書きされる）。<code>erase</code>はキャッシュなど、パーティションを指定してROM上のデータを消したい時に使うコマンド。</p>
-
 <p>ROM焼きにおいては、端末保護のためにflashやeraseを禁止（lock）されているのを最初に外す必要がある。その後、このflashやeraseのお世話になる。</p>
-
 <p>ちなみに、flasｈingのlockを解除するときもこのfastbootのお世話になるし、後述するTWRPをROMに焼いたり一時的に端末で使ったりするときにもお世話になる。ROM焼きの大事な操作の殆どはこのfastbootによって行われる。</p>
-
 <h2 id="twrp">TWRP</h2>
-
 <p>TeamWinRecoveryProject。</p>
-
 <p>Androidには通常のOSを起動するモードとは別に、リカバリーモードというモードがあり、このモードを利用することでROM上のデータを操作したり出来る。工場出荷時の状態に戻すファクトリーリカバリーなどをよく使うことになると思う。</p>
-
 <p>プリセットでもリカバリーモード起動時のプログラムははいっているが、機能が限定的である。そのため、リカバリーモードで色々な操作を
 出来るようにと作られたのがこのTWRPである。これは<code>CustomRecovery</code>と呼ばれる。</p>
-
 <p><code>fastboot flash recovery &lt;twrp&gt;</code>で直に端末に焼きこむことも出来るが、現在使っているROMのフルバックアップとそのデータを使って復旧したいだけであれば<code>fastboot boot &lt;PC上のtwrpイメージファイル&gt;</code>で一時的にTWRPを端末で起動できる。</p>
-
 <p>twrpは、端末に合ったものを使う必要があるので、使いたい端末ごとに検索をかけて探す必要がある。</p>
-
 <h1 id="androidのパーティション">androidのパーティション</h1>
-
 <p>手順を説明するのは簡単だが、結局のところProjectTreble対応機においてROM焼きとは <strong>ProjectTrebleによって分離されたsystemパーティションを好きなイメージファイルで上書きする</strong> 行為である。また、その間もfastbootを使ってrecovery領域を上書きしたり、cache領域を削除したりするので、android端末の記憶領域がどうなっているのか（どこに何が入れられて、どこを上書き、削除する必要があるのか）を知っておくことは重要である。(全て書くわけではない)</p>
-
 <h3 id="boot">boot</h3>
-
-<p>通常起動モード時にOSの中核になるシステム。つまりkernel。<br />
+<p>通常起動モード時にOSの中核になるシステム。つまりkernel。<br>
 androidファイルシステム上ではルートディレクトリ直下に<code>/boot</code>としてマウントされる。</p>
-
 <h3 id="recovery">recovery</h3>
-
-<p>リカバリー起動モード時に立ち上がるシステム。<br />
+<p>リカバリー起動モード時に立ち上がるシステム。<br>
 androidファイルシステム上ではルートディレクトリ直下に<code>/recovery</code>としてマウントされる。</p>
-
 <h3 id="system">system</h3>
-
-<p>通常起動モード時にOSとなる部分。プリセットのアプリもここに入る。今回はここを上書きする行為がメイン。<br />
+<p>通常起動モード時にOSとなる部分。プリセットのアプリもここに入る。今回はここを上書きする行為がメイン。<br>
 androidファイルシステム上ではルートディレクトリ直下に<code>/system</code>としてマウントされる。</p>
-
 <h3 id="userdata">userdata</h3>
-
 <p>個人設定や、ユーザーが追加でインストールしたアプリがここに入る。ファクトリーリセットは、この領域を削除する行為。</p>
-
 <h3 id="cache">cache</h3>
-
 <p>アプリ用のキャシュ。</p>
-
 <h1 id="rom焼き">ROM焼き</h1>
-
 <p>やっとROM焼きの手順。途中で書いたが、ProjectTreble対応機種では <strong>system領域を好きなイメージで書き換えることが目標。</strong></p>
-
 <p>大まかな手順は</p>
-
 <ol>
 <li>flasingのロック解除</li>
 <li>現状の保存（リカバリー）</li>
 <li>ROMを選ぶ</li>
 <li>ROMを焼く</li>
 </ol>
-
 <p>である。</p>
-
 <h2 id="0-基本的な操作">0. 基本的な操作</h2>
-
 <p>ROM焼き中に行う基本的な操作を説明しておく。</p>
-
 <h3 id="端末をfastbootモードにする">端末をfastbootモードにする</h3>
-
 <p>2つの方法がある。USBデバックを許可した端末のOS起動中に、<code>adb</code>コマンドを使って起動する方法と、端末の物理キーを使用して起動する方法。</p>
-
 <blockquote>
-<p><strong>adbを使う場合</strong><br />
-Developer optionsから、USBデバックを許可し、PCにUSBで繋いだ後、PCの端末を開いて<br />
-<code>$ adb reboot fastboot</code><br />
+<p><strong>adbを使う場合</strong><br>
+Developer optionsから、USBデバックを許可し、PCにUSBで繋いだ後、PCの端末を開いて<br>
+<code>$ adb reboot fastboot</code> <br>
 とコマンドを打てば良い。</p>
 </blockquote>
-
-<p>-</p>
-
+<ul>
+<li></li>
+</ul>
 <blockquote>
-<p><strong>物理キーを使う場合</strong><br />
+<p><strong>物理キーを使う場合</strong><br>
 一度端末の電源を落とした後、<code>電源ボタン</code>と<code>音量を下げるボタン</code>を同時押し(長押し)していれば起動する。</p>
 </blockquote>
-
 <h2 id="1-flasingのロック解除">1. flasingのロック解除</h2>
-
 <p>目的がsystem領域を好きなイメージで書き換えること(この操作を<code>flashing</code>と呼ぶ)であるが、通常はユーザーがROMを書き換えるようなことはしないはずなので、端末保護のためにロックがかかっている。これを最初に解除してやる必要がある。</p>
-
 <p>Webで検索を欠けるのであれば、<code>OEMアンロック</code>や<code>ブートローダーアンロック</code>や<code>flasing unlock</code>などのワードで検索をかけると良い。</p>
-
 <p>肝心の方法だが、残念ながらどの端末でも共通というわけにはいかない。Webで検索をかけ、すぐに見つかる手順でアンロックできれば良いが、メーカーによっては解除用のシークレット（パスワードみたいなもの）をメーカーから教えてもらう必要があったりもする。そのあたりも最初に調べたほうが良い。</p>
-
 <p>ただ、何のヒントもないと困るので、大まかな説明として、</p>
-
 <ol>
 <li><code>fastboot flasing unlock</code></li>
 <li><code>fastboot oem unlock</code></li>
 <li>OS立ち上げ時に<code>setting</code>-&gt;<code>Developer options</code>-&gt;<code>OEM unlock</code></li>
 </ol>
-
 <p>あたりの（それっぽい）操作によってアンロックを行い、fastbootモード起動時の画面のステータス内に</p>
-
 <ol>
 <li><code>flasing unlocked</code></li>
 <li><code>oem unlocked</code></li>
 </ol>
-
 <p>などのステータスが確認できれば、flashingのロックが解除に成功したと思って良い。</p>
-
-<h2 id="2-現状の保存-リカバリー">2. 現状の保存（リカバリー）</h2>
-
+<h2 id="2-現状の保存リカバリー">2. 現状の保存（リカバリー）</h2>
 <p>何か起きた時に端末を救えるように、現状のリカバリーを取っておく。ここで、<code>TWRP</code>が出てくる。</p>
-
 <p><code>TWRP + 端末名</code>で検索し、合うものをダウンロードする。</p>
-
 <p>イメージをダウンロードしたら、イメージのある場所でターミナルを開き、fastbootモード状態の端末をPCにUSBでつなぎ、</p>
-
 <pre><code>$ fastboot boot &lt;twrpのイメージファイル&gt;
-</code></pre>
-
-<p>でTWRPを起動できる。（以降、必要であれば<code>sudo</code>をつける）<br />
+</code></pre><p>でTWRPを起動できる。（以降、必要であれば<code>sudo</code>をつける）<br>
 これは一時的なもので、この方法だとTWRPを立ち上げるたびにそのイメージファイルのある場所でターミナルを開いて、同じようにコマンドを打つ必要がある。もし、恒久的にリカバリー起動モード時にTWRPを立ち上げさせたい場合は、</p>
-
 <pre><code>$ fastboot flash recovery &lt;twrpのイメージファイル&gt;
-</code></pre>
-
-<p>でROMにTWRPのイメージを焼くことが出来る。</p>
-
+</code></pre><p>でROMにTWRPのイメージを焼くことが出来る。</p>
 <p><strong>ここで、注意が必要。もしTWRPをROMに焼いている場合、再び端末のブートローダーをロックすると、次からアンロックが出来なくなる。</strong> 個人的に試していないが、そうらしいので注意。</p>
-
 <p>端末にSDカードを入れて、TWRPを起動してそこにROMのフルリカバリーを焼いておけば安心。リカバリーの操作は画面の表示に従えば良い。それほど難しい操作ではないはず。</p>
-
 <h2 id="3-romを選ぶ">3. ROMを選ぶ</h2>
-
 <p>下記ページにまとめられているので、好きなものを選ぶ。ここで、下記ページに飛んだ先にある表内の、<code>Partition Style</code>について説明をする。</p>
-
 <p><a href="https://github.com/phhusson/treble_experimentations/wiki/Generic-System-Image-%28GSI%29-list">https://github.com/phhusson/treble_experimentations/wiki/Generic-System-Image-%28GSI%29-list</a></p>
-
 <blockquote>
-<p><strong>Partition Style</strong><br />
+<p><strong>Partition Style</strong><br>
 androidでは、7.0あたりから<code>seamless update</code>という計画が始まっている。
-これは、記憶領域をA/Bの２つの大きなパーティションに分けて、交互に利用しようとする計画だ。<br />
-　<br />
-例えば、<code>A/B</code>の２つにパーティションが分けられた端末で、現在<code>A</code>のパーティションをユーザーが使っていたとする。そのOSに新しいアップデートが来ると、現在使用していない<code>B</code>のパーティションにそのアップデートされたOSを焼く。アップデートに成功すれば、次回立ち上げ時に今度は<code>B</code>のパーティションをユーザーは使用し、<code>A</code>は、その又次のアップデート時に使う場所となる。<br />
-　<br />
-これにより、例えばアップデートに失敗しても、使っていないパーティション内でのトラブルなので、現在使っているシステムに影響を与えないし、現在使っていない領域の内容を書き換えるため、アップデート中も端末を使用することが可能（だから <strong><em>シームレス</em></strong> アップデート）。<br />
-　<br />
-ここで、PartionStyleの意味が分かる。<code>A/B</code>はシームレスアップデート対応の端末。<code>A (A-only)</code>は従来通り、パーティションを分けていない端末。<br />
-　<br />
-メリットが多そうなシームレスアップデートだが、ProjectTrebleと違って対応に強制力はなく、対応端末は現状少ないらしい。<br />
-　<br />
-自分の端末がシームレスアップデートに対応しているかどうかは、<code>adb</code>コマンドからプロパティを出力することで確認できる。<br />
-　<br />
+これは、記憶領域をA/Bの２つの大きなパーティションに分けて、交互に利用しようとする計画だ。<br>
+　<br>
+例えば、<code>A/B</code>の２つにパーティションが分けられた端末で、現在<code>A</code>のパーティションをユーザーが使っていたとする。そのOSに新しいアップデートが来ると、現在使用していない<code>B</code>のパーティションにそのアップデートされたOSを焼く。アップデートに成功すれば、次回立ち上げ時に今度は<code>B</code>のパーティションをユーザーは使用し、<code>A</code>は、その又次のアップデート時に使う場所となる。<br>
+　<br>
+これにより、例えばアップデートに失敗しても、使っていないパーティション内でのトラブルなので、現在使っているシステムに影響を与えないし、現在使っていない領域の内容を書き換えるため、アップデート中も端末を使用することが可能（だから <em><strong>シームレス</strong></em> アップデート）。<br>
+　<br>
+ここで、PartionStyleの意味が分かる。<code>A/B</code>はシームレスアップデート対応の端末。<code>A (A-only)</code>は従来通り、パーティションを分けていない端末。<br>
+　<br>
+メリットが多そうなシームレスアップデートだが、ProjectTrebleと違って対応に強制力はなく、対応端末は現状少ないらしい。<br>
+　<br>
+自分の端末がシームレスアップデートに対応しているかどうかは、<code>adb</code>コマンドからプロパティを出力することで確認できる。<br>
+　<br>
 <code>$ adb shell getprop ro.build.ad_update</code>
-　<br />
+　<br>
 結果が<code>true</code>でなければ、端末はシームレスアップデートには対応していない。</p>
 </blockquote>
-
 <h2 id="4-romを焼く">4. ROMを焼く</h2>
-
 <p>flasing（ブートローダー）をアンロックして、ROMをダウンロードしたら、いよいよ、ROMを焼く。</p>
-
 <p>ROMを焼くには<code>fastboot</code>の<code>flash</code>コマンドを使用する。ここで、<code>A/B (seamless update対応端末)</code>と<code>A-only (seamless update非対応端末)、</code>で打つコマンドが変わるので注意。</p>
-
 <h3 id="a-only">A-only</h3>
-
 <pre><code>$ fastboot erase system
 
 $ fastboot flash system &lt;カスタムROMのイメージファイル&gt;
@@ -310,40 +207,22 @@ $ fastboot flash system &lt;カスタムROMのイメージファイル&gt;
 $ fastboot -w
 
 $ fastboot reboot
-</code></pre>
-
-<h3 id="a-b">A/B</h3>
-
+</code></pre><h3 id="ab">A/B</h3>
 <p>手元にA/B対応の端末がないので試せていません。別の記事を調べてください。</p>
-
 <p>以上で、上手くいけば差し替えたOSが動き出すはずだ。</p>
-
-<h1 id="その後-googleに端末を登録">その後（Googleに端末を登録）</h1>
-
+<h1 id="その後googleに端末を登録">その後（Googleに端末を登録）</h1>
 <p>カスタムROMを入れ、いざ端末を立ち上げて初期設定画面に進むと、「この端末は登録されていない」旨の警告が出て進めなくなると思う。これは、Googleが決めたことで、ある時からGoogleAppsを使用するにはGoogleの登録を受けることが必要になったためだ。</p>
-
 <p>登録は、PCでGoogleのHPに赴いて指示に従えばよいだけ。Googleアカウントを使って登録することになる。内容としては、端末固有のIDをGoogleに知らせるだけで済む。この固有のIDの取得方法も、そのページに書かれているはず。下記のようなコマンドを打つ。</p>
-
 <pre><code>$ adb root
 $ adb shell 'sqlite3 /data/data/com.google.android.gsf/databases/gservices.db &quot;select * from main where name = \&quot;android_id\&quot;;&quot;'
-</code></pre>
-
-<p>初期設定時、警告が出ている状態の端末をPCに繋いて、上記コマンドを打つ。コピペで良い。そうすると、20桁？ぐらいの数字が出てくるので、それを登録する。</p>
-
+</code></pre><p>初期設定時、警告が出ている状態の端末をPCに繋いて、上記コマンドを打つ。コピペで良い。そうすると、20桁？ぐらいの数字が出てくるので、それを登録する。</p>
 <p>反映まで少し時間がかかることもあるので、気長に待つ。登録できれば、端末の初期設定が先に進むはずだ。</p>
-
 <p>だん（DONE）</p>
-
 <h1 id="その他">その他</h1>
-
 <h2 id="gapps">GApps</h2>
-
 <p>カスタムROMは、ものによっては必要最低限のものしかあえて入れていないものもある。GooglePlayさえ無ければ、アプリを入れるのも大変なので。最低限コレぐらいはほしい。</p>
-
 <p>そんな時に、ある程度 <strong>お決まりの</strong> アプリをパッケージングしてくれるサイトがあると便利。それが、GApps。</p>
-
 <p><a href="https://opengapps.org/">https://opengapps.org/</a></p>
-
 <p>TWRPがあるととても簡単にダウンロードしたアプリをインストールできる。</p>
 
         

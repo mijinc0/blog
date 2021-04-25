@@ -57,37 +57,24 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
         </picture>
         
-        
-
-<h1 id="phaser3-シーン管理">Phaser3 シーン管理</h1>
-
-<p><strong>前回の記事</strong><br />
+        <h1 id="phaser3-シーン管理">Phaser3 シーン管理</h1>
+<p><strong>前回の記事</strong><br>
 <a href="https://mijinc0.github.io/blog/post/20200820_phaser3_about/">https://mijinc0.github.io/blog/post/20200820_phaser3_about/</a></p>
-
-<p>Phaser3のシーン管理について。<br />
+<p>Phaser3のシーン管理について。<br>
 ※ typesriptで書くことを前提にしています</p>
-
 <h2 id="基本">基本</h2>
-
 <p>Phaserのシーンを扱う時、チュートリアルに従って書くと<code>Scene</code>を継承したクラスを自分で用意することになると思う。</p>
-
 <p><code>Scene</code>クラスには<code>init</code>,<code>preload</code>,<code>create</code>,<code>update</code>を用意し、シーンが開始して終了するまで、それぞれのフェーズで必要な処理をそこに書いていく。</p>
-
 <ul>
 <li><code>init</code> : 主にpreload前にやっておきたい初期化処理を書く</li>
 <li><code>preload</code> : 主にアセット(スプライトや音楽など)を読込む処理を書く</li>
 <li><code>create</code> : シーンにタイルマップやスプライトを配置する処理を書く(シーンを作るメインはここ)</li>
 <li><code>update</code> : 1フレーム毎に実行される処理を書く</li>
 </ul>
-
 <p>上記は公式のチュートリアルでも説明されていたはずなので上記で簡単におさらい。</p>
-
 <p><code>preload</code>は<code>preload</code>中に<code>LoaderPlugin</code>を使ったアセットのロード処理が全て完了したら、次の<code>create</code>が呼び出されるようになっている。また、シーンに描写したいスプライトなどを配置する処理を書くのは主に<code>create</code>になるが、<code>preload</code>中にオブジェクトを配置しても描写はされる。これは、簡単なローディングシーンを実装するときに使える。</p>
-
 <h2 id="シーンの開始について">シーンの開始について</h2>
-
 <p><code>SceneManager</code>の<code>add</code>関数によって追加されたシーンを開始する方法はいくつかある。</p>
-
 <ul>
 <li><code>SceneManager</code>の<code>start</code>関数</li>
 <li><code>SceneManager</code>の<code>run</code>関数</li>
@@ -96,8 +83,7 @@
 <li><code>ScenePlugin</code>の<code>launch</code>関数</li>
 <li>(<code>ScenePlugin</code>の<code>restart</code>関数)</li>
 </ul>
-
-<p><code>SceneManager</code>は<code>Game</code>クラス内で<code>this.scene</code>をするとアクセス出来、<code>ScenePlugin</code>は<code>Scene</code>クラス内で<code>this.scene</code>をするとアクセス出来る。似たような操作感で似たような関数を使うことになる部分が&rdquo;ややこしい&rdquo;ポイント。</p>
+<p><code>SceneManager</code>は<code>Game</code>クラス内で<code>this.scene</code>をするとアクセス出来、<code>ScenePlugin</code>は<code>Scene</code>クラス内で<code>this.scene</code>をするとアクセス出来る。似たような操作感で似たような関数を使うことになる部分が&quot;ややこしい&quot;ポイント。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">import</span> <span style="font-weight:bold">*</span> <span style="font-weight:bold">as</span> Phaser from <span style="color:#b84">&#39;phaser&#39;</span>;
 
 <span style="font-weight:bold">export</span> <span style="font-weight:bold">class</span> CustomGame <span style="font-weight:bold">extends</span> Phaser.Game {
@@ -112,50 +98,35 @@
     <span style="color:#998;font-style:italic">// SceneManager
 </span><span style="color:#998;font-style:italic"></span>    <span style="font-weight:bold">this</span>.scene;
   }
-}</code></pre></div><div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">import</span> <span style="font-weight:bold">*</span> <span style="font-weight:bold">as</span> Phaser from <span style="color:#b84">&#39;phaser&#39;</span>;
+}
+</code></pre></div><div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">import</span> <span style="font-weight:bold">*</span> <span style="font-weight:bold">as</span> Phaser from <span style="color:#b84">&#39;phaser&#39;</span>;
 
 <span style="font-weight:bold">export</span> <span style="font-weight:bold">class</span> CustomScene <span style="font-weight:bold">extends</span> Phaser.Scene {
   init(data: <span style="color:#458;font-weight:bold">any</span>)<span style="font-weight:bold">:</span> <span style="font-weight:bold">void</span> {
     <span style="color:#998;font-style:italic">// ScenePlugin
 </span><span style="color:#998;font-style:italic"></span>    <span style="font-weight:bold">this</span>.scene;
   }
-}</code></pre></div>
-<p>それぞれ簡単に見ていく。</p>
-
-<h3 id="scenemanager-start">SceneManager.start</h3>
-
+}
+</code></pre></div><p>それぞれ簡単に見ていく。</p>
+<h3 id="scenemanagerstart">SceneManager.start</h3>
 <p>これがSceneManagerでシーンを開始する時の基礎的な関数。</p>
-
-<h3 id="scenemanager-run">SceneManager.run</h3>
-
+<h3 id="scenemanagerrun">SceneManager.run</h3>
 <p>run関数は指定されたシーンの状態によって挙動を変える。</p>
-
 <ul>
 <li>pause状態    : resume関数を呼ぶ</li>
 <li>sleep状態    : wake関数を呼ぶ</li>
 <li>完全な停止状態 : start関数を呼ぶ</li>
 </ul>
-
 <p>全く動いていないシーンに対しては<code>run</code>でも<code>start</code>でも、結局のとろこ<code>run</code>関数内で<code>start</code>を呼ぶので同じことをしている。</p>
-
-<h3 id="sceneplugin-start">ScenePlugin.start</h3>
-
+<h3 id="scenepluginstart">ScenePlugin.start</h3>
 <p>現在のシーン (ScenePluginはSceneクラス内で<code>scene</code>プロパティにアクセスすることを思い出して欲しい) を停止して、新たに指定したシーンを開始する。</p>
-
-<h3 id="sceneplugin-run">ScenePlugin.run</h3>
-
+<h3 id="scenepluginrun">ScenePlugin.run</h3>
 <p>SceneManagerのrunを呼ぶのと同じ。</p>
-
-<h3 id="sceneplugin-launch">ScenePlugin.launch</h3>
-
+<h3 id="scenepluginlaunch">ScenePlugin.launch</h3>
 <p>SceneManagerのstartを呼ぶのと同じ。だが、<code>ScenePlugin.start</code>が現在のシーンを停止して、新しいシーンをstartさせるのに対し、こちらは新たしいシーンをstartさせるだけであることに注目してほしい。</p>
-
 <p>関数の説明に &ldquo;Launch the given Scene and run it in parallel with this one.&rdquo; とあるのはそのため。</p>
-
 <h3 id="sceneの開始まとめ">Sceneの開始まとめ</h3>
-
 <p>使い分けとしては以下のようにまとめる。</p>
-
 <ol>
 <li>Gameクラス内において、シーンを開始するだけであれば<code>start</code>を使う</li>
 <li>Gameクラス内において、シーンの状態によって新規開始、再開、などを分けたければ<code>run</code>を使う</li>
@@ -163,28 +134,17 @@
 <li>Sceneクラス内において、現在のシーンをそのままに新しいシーンをその状態によって新規開始、再開、などを分けて開始したければ<code>run</code>を使う</li>
 <li>Sceneクラス内において、現在のシーンをそのままに新規開始したければ<code>launch</code>を使う</li>
 </ol>
-
 <h2 id="マルチシーン">マルチシーン</h2>
-
 <p>Phaser3では並行して複数のシーンを動かすことが出来る。</p>
-
 <p>&ldquo;並行して&rdquo; とあるが、非同期で動いているわけではない。一つのフレーム(一回のupdateループ)内で複数のシーンが同時にupdateされるという意味である。動かす順番は、<code>SceneManager.add</code>によって追加した順に動く。(後から変えることも出来る)</p>
-
 <p>この順番は大事で、<code>SceneManager.add</code>で追加された順に描写される、つまり、後から追加されたシーンの描写は重なった時に手前に描写されるということを意味する。</p>
-
 <p>例えば、画面を真っ暗にした状態でメッセージだけ表示したいときのことを考えてみる。勿論一つのシーン内で<code>depth(z-index)</code>を調整してメッセージのみを表示することは可能だ。だが、とても面倒くさいと思わないか。また、雨のエフェクトを画面に追加するときのことを考えてほしい。
 雨のエフェクトはほしいが、メッセージが見づらくなるのは嫌だとなると、一つのシーンでそれを調整するのは面倒ではないか。</p>
-
 <p>これらを解決する方法として、複数のシーンを立てておいてメッセージなどのUIは手前のシーンに描写、キャラクターなどが存在するシーンと分けるという手段がある。これなら、それらを<code>depth</code>の調整をせずに達成することが出来る。メッセージボックス等のUIを必ず手前のシーンに描写すると決めてしまえば、ゲーム本体のシーンがフェードアウトして真っ暗になってもメッセージボックスは表示できるし、雨のエフェクトがかかっていてもメッセージボックスには影響を与えない。</p>
-
 <h2 id="参考">参考</h2>
-
 <p><a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/scene/SceneManager.js">https://github.com/photonstorm/phaser/blob/v3.22.0/src/scene/SceneManager.js</a></p>
-
 <p><a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/scene/ScenePlugin.js">https://github.com/photonstorm/phaser/blob/v3.22.0/src/scene/ScenePlugin.js</a></p>
-
 <p><a href="https://photonstorm.github.io/phaser3-docs/Phaser.Scenes.SceneManager.html">https://photonstorm.github.io/phaser3-docs/Phaser.Scenes.SceneManager.html</a></p>
-
 <p><a href="https://photonstorm.github.io/phaser3-docs/Phaser.Scenes.ScenePlugin.html">https://photonstorm.github.io/phaser3-docs/Phaser.Scenes.ScenePlugin.html</a></p>
 
         

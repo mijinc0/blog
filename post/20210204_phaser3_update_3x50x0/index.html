@@ -57,41 +57,25 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
         </picture>
         
-        
-
-<h1 id="phaser3-ver3-50-0-で色々と変わっていた">Phaser3 ver3.50.0 で色々と変わっていた</h1>
-
+        <h1 id="phaser3-ver3500-で色々と変わっていた">Phaser3 ver3.50.0 で色々と変わっていた</h1>
 <p>これまで私がずっと使っていたのは <code>3.24.1</code> だったが、久しぶりにnpm updateしたらバージョンも <code>3.52.0</code> になっていて、その中で色々と変わってPhaser3のバージョンアップに合わせて色々書き直すところが出たのでそのまとめ。</p>
-
 <p>変更点は後述するとして、とりあえず書いておきたいのは <strong>破壊的な変更を含め活発にupdateされているので(活発なのはとても良いこと)記事が古くなることがこれからも起こり続けると思うので注意してね</strong> ということ。私が使っているPhaser3となんか違うな、と思ったらバージョンの違いを疑ってみてください。</p>
-
 <p>なので、内部の細かい処理をここで書いてもそもそもあまり参考にならないかもしれない。また、これからは覚えている限りバージョンを書こうと思っています。</p>
-
 <p>以降、自分が影響を受けた範囲で記述。書いてある他にもいろいろあると思います。</p>
-
 <h1 id="tilemapの変更">Tilemapの変更</h1>
-
 <p>それまで、動的にタイルの状態が変更できる <code>DynamicTilemapLayer</code> と描写が固定されるが描写速度に優れた <code>StaticTilemapLayer</code> に分かれていたのが、 <code>TilemapLayer</code> に統合されました。</p>
-
 <p><a href="https://github.com/photonstorm/phaser/commit/0ba1f08f800efdad6a4f22adea27c300fe292212#diff-507b75a31f355e5d4fe9433df4f5cb052e5c0ea0f140dd04ecea0fda494854a7">https://github.com/photonstorm/phaser/commit/0ba1f08f800efdad6a4f22adea27c300fe292212#diff-507b75a31f355e5d4fe9433df4f5cb052e5c0ea0f140dd04ecea0fda494854a7</a></p>
-
 <h1 id="animationの変更">Animationの変更</h1>
-
 <p>それまでSpriteのアニメーションはSpriteに <code>GameObject.Component.Animation</code> がくっついていて、これが各Spriteのアニメ―ジョンの状態を保管していたのが、 <code>Animation.AnimationState</code> に変更になりました。</p>
-
 <p>また、 <code>Animation.Animation</code> はEventEmitterを継承し、アニメーションの各イベント(startやcomplete)の発火はSpriteオブジェクトとAnimationオブジェクトに対して行われていたが、AnimationオブジェクトがEventEmitterを継承しなくなったのでアニメーションに関わるイベントは全てSpriteオブジェクトに仕掛けることになりました。この関係で、イベント名も変更され、Sprite用のイベント名 <code>SPRITE_ANIMATION_XXX_EVENT</code> などが削除されて単に <code>ANIMATION_COMPLETE</code> (これはSprite用)などになりました。</p>
-
 <p>アニメーションは <code>Animation.Animation</code> は状態を持たず、 <code>Animation.AnimationState</code> が状態を持つ仕様なので <code>Animation.Animation</code> オブジェクトがEventEmitterを持たないのは自然なことだと思った。</p>
-
 <h1 id="戻値いろいろ変わっている">戻値いろいろ変わっている</h1>
-
 <p>Phaser3は、例えばSpriteの操作を行う場合&hellip;</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts">sprite
   .setOrigin(<span style="color:#099">0</span>)
   .setPosition(<span style="color:#099">256</span>, <span style="color:#099">16</span>)
-  .setDepth(<span style="color:#099">4</span>);</code></pre></div>
-<p>のようにチェーンさせて書けるように戻り地を <code>this</code> にしていることが多いのですが、一部そうなっていなかった関数があったのですが、それが <code>this</code> に変更されていました。私が確認したのは <code>Tilemap</code> 廻りですが、他にもそういうところが有るかもしれない。</p>
-
+  .setDepth(<span style="color:#099">4</span>);
+</code></pre></div><p>のようにチェーンさせて書けるように戻り地を <code>this</code> にしていることが多いのですが、一部そうなっていなかった関数があったのですが、それが <code>this</code> に変更されていました。私が確認したのは <code>Tilemap</code> 廻りですが、他にもそういうところが有るかもしれない。</p>
 <p>私はtypescriptを使っているので戻り値の変更はコンパイルが蹴ってくれるので良いのですが、jsで書いている場合は実行時エラーを踏むまで気付きにくそうだなと思った。</p>
 
         

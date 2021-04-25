@@ -57,16 +57,10 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/phaser.png?raw=true" alt="phaser">
         </picture>
         
-        
-
-<h1 id="phaser3-アニメーション">Phaser3 アニメーション</h1>
-
+        <h1 id="phaser3-アニメーション">Phaser3 アニメーション</h1>
 <p><strong>前回の記事</strong></p>
-
 <p><a href="https://mijinc0.github.io/blog/post/20200821_phaser3_loading_scene/">https://mijinc0.github.io/blog/post/20200821_phaser3_loading_scene/</a></p>
-
 <h2 id="基本">基本</h2>
-
 <p>作成。作成したアニメーションは指定のキーでキャッシュに貯められる。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// this === Phaser.Scene
 </span><span style="color:#998;font-style:italic"></span>
@@ -75,11 +69,10 @@
   frames: <span style="color:#458;font-weight:bold">this.anims.generateFrameNumbers</span>(<span style="color:#b84">&#39;spritesheetKey&#39;</span>, {start: <span style="color:#458;font-weight:bold">0</span>, end: <span style="color:#458;font-weight:bold">4</span>}),
   frameRate: <span style="color:#458;font-weight:bold">1</span>,
   repeat: <span style="color:#458;font-weight:bold">0</span>,
-});</code></pre></div>
-<p>再生。再生にはアニメーションオブジェクト(Phaser.Animations.Animationインスタンス)を指定する方法と、
+});
+</code></pre></div><p>再生。再生にはアニメーションオブジェクト(Phaser.Animations.Animationインスタンス)を指定する方法と、
 キャッシュに登録されたキーで指定する方法があるが、アニメーションオブジェクトを指定しても内部でキーを取り出して
 キャッシュに登録されたアニメーションを取得しようとするので、やっていることは同じである。</p>
-
 <p>これは言い換えれば、 <strong>キャッシュに登録されていないアニメーションオブジェクトをplay関数に渡してもアニメーションは再生されない</strong> ということである。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// this === Phaser.Scene
 </span><span style="color:#998;font-style:italic"></span>
@@ -98,8 +91,8 @@
 </span><span style="color:#998;font-style:italic"></span>sprite.anims.play(<span style="color:#b84">&#39;test&#39;</span>);
 
 <span style="color:#998;font-style:italic">// アニメーションオブジェクトで指定
-</span><span style="color:#998;font-style:italic"></span>sprite.anims.play(animA);</code></pre></div>
-<p>つまり、以下のようなのはダメ。</p>
+</span><span style="color:#998;font-style:italic"></span>sprite.anims.play(animA);
+</code></pre></div><p>つまり、以下のようなのはダメ。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// this === Phaser.Scene
 </span><span style="color:#998;font-style:italic"></span><span style="font-weight:bold">const</span> sprite <span style="font-weight:bold">=</span> <span style="font-weight:bold">this</span>.add.sprite(<span style="color:#099">100</span>, <span style="color:#099">100</span>, <span style="color:#b84">&#39;spritesheetKey&#39;</span>);
 
@@ -110,15 +103,11 @@
 });
 
 <span style="color:#998;font-style:italic">// 上記の方法ではキャッシュにアニメーションオブジェクトが登録されないのでダメ。
-</span><span style="color:#998;font-style:italic"></span>sprite.anims.play(anim);</code></pre></div>
-<p><code>GameObjects.Components.Animation</code>の<code>play</code>関数と<code>AnimationManager</code>の<code>create</code>関数の中身を覗いてみれば分かる。</p>
-
+</span><span style="color:#998;font-style:italic"></span>sprite.anims.play(anim);
+</code></pre></div><p><code>GameObjects.Components.Animation</code>の<code>play</code>関数と<code>AnimationManager</code>の<code>create</code>関数の中身を覗いてみれば分かる。</p>
 <p><a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L512">https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L512</a></p>
-
 <p><a href="https://github.com/photonstorm/phaser/blob/acac51bf39c41d17eafb895a9004aeabfb2486da/src/animations/AnimationManager.js#L365">https://github.com/photonstorm/phaser/blob/acac51bf39c41d17eafb895a9004aeabfb2486da/src/animations/AnimationManager.js#L365</a></p>
-
 <p>大事なのは以下の部分。</p>
-
 <p><code>GameObjects.Components.Animation.play</code></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="font-weight:bold">if</span> (key <span style="font-weight:bold">instanceof</span> BaseAnimation)
 {
@@ -126,8 +115,7 @@
 }
 
 <span style="color:#998;font-style:italic">// 上記urlより抜粋
-</span></code></pre></div>
-<p><code>AnimationManager.create</code></p>
+</span></code></pre></div><p><code>AnimationManager.create</code></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">anim <span style="font-weight:bold">=</span> <span style="font-weight:bold">new</span> Animation(<span style="font-weight:bold">this</span>, key, config);
 
 <span style="font-weight:bold">this</span>.anims.set(key, anim);
@@ -135,13 +123,9 @@
 <span style="font-weight:bold">this</span>.emit(Events.ADD_ANIMATION, key, anim);
 
 <span style="color:#998;font-style:italic">// 上記urlより抜粋
-</span></code></pre></div>
-<p>ということで、普通に紹介されている方法でアニメーションは取り扱うように。</p>
-
+</span></code></pre></div><p>ということで、普通に紹介されている方法でアニメーションは取り扱うように。</p>
 <h2 id="如何にしてアニメーションはupdateされるか">如何にしてアニメーションはupdateされるか</h2>
-
 <p>アニメーションは如何にしてupdateされるか、結論から言うと以下のようになっている。</p>
-
 <ol>
 <li><code>scene.add</code>でspriteが追加されると、sceneの<code>UpdateList</code>にspriteが追加される</li>
 <li>毎フレームactiveなsceneの<code>UpdateList</code>がupdateされる(sceneUpdate)</li>
@@ -149,31 +133,21 @@
 <li>spriteのpreUpdateには<code>this.anims.update(time, delta)</code>が仕込まれている</li>
 <li><code>GameObjects.Components.Animation</code>はupdateされると、現在の状態に応じてspriteに必要なテクスチャをセットする</li>
 </ol>
-
 <p>ざっくり書くと以上のような流れでアニメーションは再生される。</p>
-
 <p>以下、参考になる部分</p>
-
-<p><a href="https://github.com/photonstorm/phaser/blob/979ef9c71d024bde87f029219daf7203abc71e55/src/gameobjects/UpdateList.js#L145">https://github.com/photonstorm/phaser/blob/979ef9c71d024bde87f029219daf7203abc71e55/src/gameobjects/UpdateList.js#L145</a><br />
-<a href="https://github.com/photonstorm/phaser/blob/05c4a3304f393e51e468dc1734037f63347ac9cd/src/gameobjects/sprite/Sprite.js#L131">https://github.com/photonstorm/phaser/blob/05c4a3304f393e51e468dc1734037f63347ac9cd/src/gameobjects/sprite/Sprite.js#L131</a><br />
+<p><a href="https://github.com/photonstorm/phaser/blob/979ef9c71d024bde87f029219daf7203abc71e55/src/gameobjects/UpdateList.js#L145">https://github.com/photonstorm/phaser/blob/979ef9c71d024bde87f029219daf7203abc71e55/src/gameobjects/UpdateList.js#L145</a><br>
+<a href="https://github.com/photonstorm/phaser/blob/05c4a3304f393e51e468dc1734037f63347ac9cd/src/gameobjects/sprite/Sprite.js#L131">https://github.com/photonstorm/phaser/blob/05c4a3304f393e51e468dc1734037f63347ac9cd/src/gameobjects/sprite/Sprite.js#L131</a><br>
 <a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L971">https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L971</a></p>
-
 <h2 id="如何にしてアニメーションは開始されるか">如何にしてアニメーションは開始されるか</h2>
-
 <p>アニメーションの再生の起点となるのが<code>GameObjects.Components.Animation</code>は<code>play</code>関数。これは普段スプライトアニメーションを再生する時に使う関数。基本の部分で説明した関数。</p>
-
 <p>これを呼ぶと、AnimatioManagerからキャッシュに登録されたアニメーションオブジェクトを取得すると同時に、 <strong>アニメーションオブジェクトの設定をGameObjects.Components.Animationの設定に反映する</strong> ということをする。これが意外と大事。</p>
-
 <p>(ここまでの話で一旦参照になる部分)</p>
-
-<p><a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L512">https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L512</a><br />
-<a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L583">https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L583</a><br />
-<a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L410">https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L410</a><br />
-<a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/animations/AnimationManager.js#L437">https://github.com/photonstorm/phaser/blob/v3.22.0/src/animations/AnimationManager.js#L437</a><br />
+<p><a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L512">https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L512</a><br>
+<a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L583">https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L583</a><br>
+<a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L410">https://github.com/photonstorm/phaser/blob/v3.22.0/src/gameobjects/components/Animation.js#L410</a><br>
+<a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/animations/AnimationManager.js#L437">https://github.com/photonstorm/phaser/blob/v3.22.0/src/animations/AnimationManager.js#L437</a><br>
 <a href="https://github.com/photonstorm/phaser/blob/v3.22.0/src/animations/Animation.js#L480">https://github.com/photonstorm/phaser/blob/v3.22.0/src/animations/Animation.js#L480</a></p>
-
 <p>キャッシュに登録されたアニメーションオブジェクトの設定は、再生開始時に<code>GameObjects.Components.Animation</code>に設定を写す。設定を映された<code>GameObjects.Components.Animation</code>は自身の設定に従ってアニメーションを再生する。より感覚的に言えば <strong>キャッシュに登録されたアニメーションオブジェクト内の設定はデフォルトの設定、後からアニメーションの設定を変えたければplay関数実行後にGameObjects.Components.Animation(つまりsprite.anims)の設定を変更する事</strong> 、ということである。</p>
-
 <p>以下が具体的な説明。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="color:#998;font-style:italic">// this === Phaser.Scene
 </span><span style="color:#998;font-style:italic"></span>
@@ -190,7 +164,8 @@
 <span style="color:#998;font-style:italic">// ここでデフォルトの設定がsprite.animsに写る
 </span><span style="color:#998;font-style:italic"></span>sprite.anims.play(<span style="color:#b84">&#39;test&#39;</span>);
 <span style="color:#998;font-style:italic">// 後から設定を変えたければplay関数語に設定を変更すること
-</span><span style="color:#998;font-style:italic"></span>sprite.anims.repeat <span style="font-weight:bold">=</span> <span style="color:#099">1</span>;</code></pre></div>
+</span><span style="color:#998;font-style:italic"></span>sprite.anims.repeat <span style="font-weight:bold">=</span> <span style="color:#099">1</span>;
+</code></pre></div>
         
         
 

@@ -5,11 +5,18 @@
     <description>Recent content in Posts on ByzantinePosts</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja</language>
-    <lastBuildDate>Thu, 04 Feb 2021 18:24:49 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 25 Apr 2021 20:11:56 +0900</lastBuildDate>
     
         <atom:link href="https://mijinc0.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Phaser3 Loaderプラグイン</title>
+      <link>https://mijinc0.github.io/blog/post/20210425_phaser3_loader_plugin/</link>
+      <pubDate>Sun, 25 Apr 2021 20:11:56 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/post/20210425_phaser3_loader_plugin/</guid>
+      <description></description>
+    </item><item>
       <title>Phaser3 SceneTransition(シーンの遷移)</title>
       <link>https://mijinc0.github.io/blog/post/20210204_phaser3_scene_transition/</link>
       <pubDate>Thu, 04 Feb 2021 18:24:49 +0900</pubDate>
@@ -71,13 +78,6 @@
       <pubDate>Fri, 21 Aug 2020 11:59:50 +0900</pubDate>
       
       <guid>https://mijinc0.github.io/blog/post/20200821_phaser3_tilemap/</guid>
-      <description></description>
-    </item><item>
-      <title>Phaser3 音を鳴らす</title>
-      <link>https://mijinc0.github.io/blog/post/20200821_phaser3_audio/</link>
-      <pubDate>Fri, 21 Aug 2020 10:47:38 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/post/20200821_phaser3_audio/</guid>
       <description></description>
     </item>
   </channel>

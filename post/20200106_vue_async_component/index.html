@@ -57,38 +57,28 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" alt="programing">
         </picture>
         
-        
-
-<p>公式リファレンス:<br />
+        <p>公式リファレンス:<br>
 <a href="https://jp.vuejs.org/v2/guide/components-dynamic-async.html">https://jp.vuejs.org/v2/guide/components-dynamic-async.html</a></p>
-
 <p>Vueでコンポーネントを作っていくと、単純に部品となるようなコンポーネントではあまり問題にならないが、
 部品をまとめるコンポーネントを作るときなどに、あまりにも規模が大きくなりすぎることがある。</p>
-
 <p>例えば、同じクラス(親)を継承した子供クラスのオブジェクトの内容を表示したいときなどでは、
 無策で書くとその時に必要のないコンポーネントまでクライアントにダウンロードさせることになってしまう。</p>
-
 <p><picture>
     
     <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20200106_vue_async_component/draw1.png?raw=true">
     <img src="https://github.com/mijinc0/blog/blob/image/forpost/20200106_vue_async_component/draw1.png?raw=true" alt="draw1" class="small-img smartfloat-left"/>
 </picture>
-<br clear="all"></p>
-
-<p><br></p>
-
+<!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
 <p><picture>
     
     <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20200106_vue_async_component/draw2.png?raw=true">
     <img src="https://github.com/mijinc0/blog/blob/image/forpost/20200106_vue_async_component/draw2.png?raw=true" alt="draw1" class="small-img smartfloat-left"/>
 </picture>
-<br clear="all"></p>
-
-<p><br></p>
-
+<!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
 <p>上記の図のように、「商品」を継承した子供クラスが3つあり、これを一つの画面にまとめて表示させたいとする。この時、
 共有部分は問題にならないが、各子供クラス特有の部分が問題に成る。</p>
-
 <p>例えば、「乗り物」クラスのオブジェクトの情報を表示したい時、本来であれば「乗り物」クラスの内容を表示するコンポーネントのみを
 クライアントはダウンロードすべきだ。しかし、普通にVueを描いていくと、本来必要のない「食べ物」や「本」用に用意したコンポーネントも
 クライアントにダウンロードすることを要求してしまう。</p>
@@ -119,22 +109,16 @@
     ....
   }
 }
-<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span></code></pre></div>
-<p>上記のように書いた場合、クライアントは最初に <code>Vehicle</code>, <code>Food</code>, <code>Book</code> の3つのコンポーネントを
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span>
+</code></pre></div><p>上記のように書いた場合、クライアントは最初に <code>Vehicle</code>, <code>Food</code>, <code>Book</code> の3つのコンポーネントを
 サーバーからダウンロードし、表示するべきコンポーネントのみを <code>child</code> に代入して表示させる。</p>
-
 <p>実際には、<code>Vehicle</code> を表示するだけの時に <code>Food</code> も <code>Book</code> も必要ない。必要があれば
 必要な時に必要な部分のみをサーバーに要求するほうが良い。</p>
-
 <p>これを、 <strong>非同期コンポーネント</strong> が解決してくれる。</p>
-
 <h2 id="非同期コンポーネントの基本">非同期コンポーネントの基本</h2>
-
 <p>コンポーネントを必要な時だけ、必要な分だけ要求することは一旦忘れて、まずは基本から。</p>
-
 <p>非同期コンポーネントは、子コンポーネントの指定に、そのコンポーネントを生成する関数(公式リファレンス内ではファクトリ関数と呼ばれている)
 を指定することで定義する。</p>
-
 <p>これは見たほうが早い。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">&lt;</span>script lang<span style="font-weight:bold">=</span><span style="color:#b84">&#34;ts&#34;</span><span style="font-weight:bold">&gt;</span>
 <span style="font-weight:bold">import</span> { Component, Prop, Vue } from <span style="color:#b84">&#39;vue-property-decorator&#39;</span>;
@@ -151,12 +135,10 @@
     ....
   }
 }
-<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span></code></pre></div>
-<p>上記のように、子コンポーネントである <code>Vheicle</code> を直接指定するのではなく、 <code>Vheicle</code> と名前を付けた
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span>
+</code></pre></div><p>上記のように、子コンポーネントである <code>Vheicle</code> を直接指定するのではなく、 <code>Vheicle</code> と名前を付けた
 <code>Vheicle</code> を生成する関数を親に渡す。</p>
-
 <p>親は、この関数を必要になったときにはじめて実行し、その場で子コンポーネントの生成を試みる。</p>
-
 <p>これが非同期コンポーネントの基本。子コンポーネントを生成するファクトリ関数の中身は、好きに書いて良い。例えば、</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">&lt;</span>script lang<span style="font-weight:bold">=</span><span style="color:#b84">&#34;ts&#34;</span><span style="font-weight:bold">&gt;</span>
 <span style="font-weight:bold">import</span> { Component, Prop, Vue } from <span style="color:#b84">&#39;vue-property-decorator&#39;</span>;
@@ -178,21 +160,15 @@
     ....
   }
 }
-<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span></code></pre></div>
-<p>と書いて、 <code>Vehicle</code> 生成時にコンソールに出力することも出来る。最終的に、目的のコンポーネントオブジェクトが返れば良い。</p>
-
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span>
+</code></pre></div><p>と書いて、 <code>Vehicle</code> 生成時にコンソールに出力することも出来る。最終的に、目的のコンポーネントオブジェクトが返れば良い。</p>
 <h2 id="分割ダウンロード">分割ダウンロード</h2>
-
 <p>では、目的であるコンポーネントを必要な時だけ、必要な分だけ要求する部分について。</p>
-
 <p><strong>非同期コンポーネントの基本</strong> で書いたやり方では、最初に <code>import Vehicle from './Vehicle.vue';</code> を
 書いてしまったために、このコンポーネントを要求すると同時に <code>Vechicle</code> をサーバーに要求してしまう。(生成が非同期になっただけ)</p>
-
 <p>なので、 <code>import</code> の部分を関数の中に放り込んでやる。こうすれば、親コンポーネントは必要になった時にはじめて子コンポーネントを
 生成するファクトリ関数を呼び出し、そのなかにある <code>import</code> によって初めてサーバーに必要なコンポーネントを要求するようになる。</p>
-
 <p>typescript(javascript)には、静的なimportの他に、動的なimportが用意されており、コード内にimportを埋め込む際にはこちらを使う。</p>
-
 <p>よって、以下のようになる。</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ts" data-lang="ts"><span style="font-weight:bold">&lt;</span>script lang<span style="font-weight:bold">=</span><span style="color:#b84">&#34;ts&#34;</span><span style="font-weight:bold">&gt;</span>
 <span style="font-weight:bold">import</span> { Component, Prop, Vue } from <span style="color:#b84">&#39;vue-property-decorator&#39;</span>;
@@ -209,24 +185,17 @@
     ....
   }
 }
-<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span></code></pre></div>
-<p>これで、 <code>Vechicle</code> が必要な時にクライアントがサーバーに要求するようになった。</p>
-
+<span style="font-weight:bold">&lt;</span><span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span>
+</code></pre></div><p>これで、 <code>Vechicle</code> が必要な時にクライアントがサーバーに要求するようになった。</p>
 <h2 id="おまけ-循環参照にも使われる">おまけ: 循環参照にも使われる</h2>
-
 <p><a href="https://jp.vuejs.org/v2/guide/components-edge-cases.html#%E5%BE%AA%E7%92%B0%E5%8F%82%E7%85%A7">https://jp.vuejs.org/v2/guide/components-edge-cases.html#%E5%BE%AA%E7%92%B0%E5%8F%82%E7%85%A7</a></p>
-
 <p>非同期コンポーネントは循環参照したいときにも使われる。</p>
-
 <p>循環参照とは、</p>
-
 <ol>
 <li>コンポーネントAがコンポーネントBを子コンポーネントとする</li>
 <li>コンポーネントBがコンポーネントAを子コンポーネントとする</li>
 </ol>
-
 <p>の2つが同時に存在している状態だ。</p>
-
 <p>普通に書いたのでは、Vueは循環参照を勝手に解釈して解決してくれない。そこで、非同期コンポーネントを利用して、
 使用時に解決できるようにこちらがVueに教えてあげないといけない。</p>
 

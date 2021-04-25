@@ -57,86 +57,65 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/programing.png?raw=true" alt="programing">
         </picture>
         
-        
-
-<p>RocksDBの中身を覗いたり内容を書き換えたりする時に、GUIツールがあれば便利です。</p>
-
+        <p>RocksDBの中身を覗いたり内容を書き換えたりする時に、GUIツールがあれば便利です。</p>
 <p>実際、GUIツールもいくつかあります。ですが、それらを触ってみて、どうも私としては使いにくいなと正直思いました。</p>
-
 <p>で、もっと簡単なものが無いのかと探していたら、RocksDBをビルドした時に一緒にCLIツールもビルドされていたことを知りました。そのひとつが<code>ldb</code>。ちょっと覗いたり、値を書き換えたりするだけであれば十分これで事足りる感じだったので、簡単に使い方を記録しておきます。</p>
-
 <h2 id="rocksdb">RocksDB</h2>
-
 <p><a href="https://github.com/facebook/rocksdb">https://github.com/facebook/rocksdb</a></p>
-
 <p>levelDBをフォークしてfacebookが作ったキーバリュー型のデータストアです。</p>
-
 <h2 id="ldb">ldb</h2>
-
 <p>RocksDBのCLI(CUI)ツールです。RocksDBをビルドすると、<code>&lt;ビルド用ディレクトリ&gt;/tools</code>の中に<code>ldb</code>コマンドが含まれていることが分かると思います。</p>
-
 <h2 id="データの中身を全て出力する">データの中身を全て出力する</h2>
-
 <p>簡単です。<code>scan</code>コマンドで出力できます。データベースの指定は、<code>--db</code>オプションで指定します。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">// 基本
+<pre><code class="language-no_attr" data-lang="no_attr">// 基本
 # ldb --db=&lt;データベースのパス&gt; scan
 
 // 例
-# ldb --db=/home/user/data/SampleRocksDB/ scan</code></pre></div>
-<p>ただ、上記の場合だと、バイトデータをそのまま出力するので、そのままでは文字化けして読めない場合もあります。</p>
-
+# ldb --db=/home/user/data/SampleRocksDB/ scan
+</code></pre><p>ただ、上記の場合だと、バイトデータをそのまま出力するので、そのままでは文字化けして読めない場合もあります。</p>
 <p>そういう時に、<code>--hex</code>オプションを重ねて付けることで、Hex文字列として中身を出力できます。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">// 基本
+<pre><code class="language-no_attr" data-lang="no_attr">// 基本
 # ldb --db=&lt;データベース&gt; --hex scan
 
 // 例
-# ldb --db=/home/user/data/SampleRocksDB/ --hex scan</code></pre></div>
-<h2 id="キーを指定してその値を取得する">キーを指定してその値を取得する</h2>
-
+# ldb --db=/home/user/data/SampleRocksDB/ --hex scan
+</code></pre><h2 id="キーを指定してその値を取得する">キーを指定してその値を取得する</h2>
 <p><code>get</code>コマンドを使います。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">// 基本
+<pre><code class="language-no_attr" data-lang="no_attr">// 基本
 # ldb --db=&lt;データベースのパス&gt; get &lt;key&gt;
 
 // 例
-# ldb --db=/home/user/data/SampleRocksDB/ get some_key</code></pre></div>
-<p>もし、<code>key</code>が入力可能な状態であれば上記の書き方で済みますが、キーがバイトデータであった場合、入力するのが困難です。</p>
-
+# ldb --db=/home/user/data/SampleRocksDB/ get some_key
+</code></pre><p>もし、<code>key</code>が入力可能な状態であれば上記の書き方で済みますが、キーがバイトデータであった場合、入力するのが困難です。</p>
 <p>そういうときは、<code>--hex</code>オプションを使うことでHex文字列でキーの指定が出来ます。注意としては、<code>0x</code>の接頭辞を付けることを忘れずに。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">// 基本
+<pre><code class="language-no_attr" data-lang="no_attr">// 基本
 # ldb --db=&lt;データベースのパス&gt; --hex get 0xFFFFFFFFFF
 
 // 例
-# ldb --db=/home/user/data/SampleRocksDB/ --hex get 0xf1647c</code></pre></div>
-<h2 id="書き込む">書き込む</h2>
-
+# ldb --db=/home/user/data/SampleRocksDB/ --hex get 0xf1647c
+</code></pre><h2 id="書き込む">書き込む</h2>
 <p><code>put</code>コマンドが使えます。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">// 基本
+<pre><code class="language-no_attr" data-lang="no_attr">// 基本
 ldb --db=&lt;データベースのパス&gt; put &lt;key&gt; &lt;value&gt;
 
 // 例( apple : red を保存 )
-# ldb --db=/home/user/data/SampleRocksDB/ put apple red</code></pre></div>
-<p>また、ここでも<code>--hex</code>を利用できます。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">// 基本
+# ldb --db=/home/user/data/SampleRocksDB/ put apple red
+</code></pre><p>また、ここでも<code>--hex</code>を利用できます。</p>
+<pre><code class="language-no_attr" data-lang="no_attr">// 基本
 ldb --db=&lt;データベースのパス&gt; --hex put 0xFFFFFF 0x000000
 
 // 例
-# ldb --db=/home/user/data/SampleRocksDB/ put 0xFFFFFF 0x000000</code></pre></div>
-<p><code>OK</code>とログが出れば書き込み完了です。</p>
-
+# ldb --db=/home/user/data/SampleRocksDB/ put 0xFFFFFF 0x000000
+</code></pre><p><code>OK</code>とログが出れば書き込み完了です。</p>
 <h2 id="テーブルのリストを取得する">テーブルのリストを取得する</h2>
-
 <p>RocksDBは、一つのデータベースの中に複数のテーブルを持つ場合があります。それらは<code>column_families</code>と呼ばれています。</p>
-
 <p>データベースの中に含まれるテーブル名を取得するには、<code>list_column_families</code>コマンドを使います。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr"># ldb list_column_families &lt;データベースのパス&gt;</code></pre></div>
-<p><code>list_column_families</code>コマンドでデータベースを指定するときは、<code>--db</code>オプションは使わずにデータベースの直後にパスを書きます。</p>
-
-<h2 id="column-familiesを指定する">column_familiesを指定する</h2>
-
+<pre><code class="language-no_attr" data-lang="no_attr"># ldb list_column_families &lt;データベースのパス&gt;
+</code></pre><p><code>list_column_families</code>コマンドでデータベースを指定するときは、<code>--db</code>オプションは使わずにデータベースの直後にパスを書きます。</p>
+<h2 id="column_familiesを指定する">column_familiesを指定する</h2>
 <p>ここまで、いくつかコマンドを紹介してきましたが、それらは全て<code>default</code>のテーブル(column_family)を暗黙的に指定していました。別のテーブルを指定してそれらの操作をしたいときは、<code>--column_family</code>オプションwの使います。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr"># ldb --db=/home/user/data/SampleRocksDB/ --hex --column_family=another_table scan</code></pre></div>
-<p>上記の場合、<code>/home/user/data/SampleRocksDB/</code>のデータベースの<code>another_table</code>テーブルの中身を、<code>hex</code>で全て出力ることになります。</p>
-
+<pre><code class="language-no_attr" data-lang="no_attr"># ldb --db=/home/user/data/SampleRocksDB/ --hex --column_family=another_table scan
+</code></pre><p>上記の場合、<code>/home/user/data/SampleRocksDB/</code>のデータベースの<code>another_table</code>テーブルの中身を、<code>hex</code>で全て出力ることになります。</p>
 <p>以上。</p>
 
         

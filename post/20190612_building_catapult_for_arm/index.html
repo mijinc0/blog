@@ -57,24 +57,15 @@
           <img src="https://github.com/mijinc0/blog/blob/image/featured/catapult.png?raw=true" alt="catapult">
         </picture>
         
-        
-
-<p>[注意]この記事で書かれている不具合は、これを書いている時点でarm64向けにクロスコンパイルした時に起こるものです。通常の(x64上でx64向けにビルドする)時には起きません。</p>
-
+        <p>[注意]この記事で書かれている不具合は、これを書いている時点でarm64向けにクロスコンパイルした時に起こるものです。通常の(x64上でx64向けにビルドする)時には起きません。</p>
 <p>前回の記事</p>
-
 <p><a href="https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/">https://mijinc0.github.io/blog/post/20190602_building_catapult_for_arm/</a></p>
-
 <p>前回、catapultのarm向けクロスコンパイルを行こないました。最初は<code>version dragon</code>でビルドをし、<code>catapult.server</code>の起動は確認しましたが、、<code>catapult.tools.nemgen</code>がどうもビルド出来ず、中途半端な状態になったためにバージョンを一旦<code>cow</code>に下げた記事に変更しました。</p>
-
 <p>その後、<code>version dragon</code>のarm向けのクロスコンパイルが出来たので、それに関して書きます。</p>
-
 <h1 id="さいしょに">さいしょに</h1>
-
 <p>基本的には前回の記事と同じ。ただ、<code>catapult.tools.nemgen</code>をビルドする時にエラーが出るので、その対処のみを抜き出して書きます。</p>
-
 <p>まずは、前回の記事に沿って<code>catapult.tools.nemgen</code>をビルドすると、どういったエラーが出るのかについて書いておきます。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">catapult-server.d/_build$  cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..
+<pre><code class="language-no_attr" data-lang="no_attr">catapult-server.d/_build$  cmake -DBOOST_ROOT=~/boost-build-1.69.0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=~/toolchain.arm.cmake ..
 catapult-server.d/_build$ make catapult.tools.nemgen -j3
 
 Scanning dependencies of target external
@@ -97,74 +88,65 @@ Scanning dependencies of target catapult.tools.nemgen
 In file included from /home/mij/catapult-server.d/_build/inc/catapult/state/RootNamespace.h:22:0,
                  from /home/mij/catapult-server.d/tools/nemgen/NemesisConfiguration.h:24,
                  from /home/mij/catapult-server.d/tools/nemgen/BlockSaver.cpp:22:
-/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:36: error: &#39;NamespaceId&#39; was not declared in this scope
+/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:36: error: 'NamespaceId' was not declared in this scope
    using Path = utils::CheckedArray&lt;NamespaceId, Namespace_Max_Depth&gt;;
                                     ^~~~~~~~~~~
-/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:36: note: suggested alternative: &#39;Namespace&#39;
+/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:36: note: suggested alternative: 'Namespace'
    using Path = utils::CheckedArray&lt;NamespaceId, Namespace_Max_Depth&gt;;
                                     ^~~~~~~~~~~
                                     Namespace
-/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:49: error: &#39;Namespace_Max_Depth&#39; was not declared in this scope
+/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:49: error: 'Namespace_Max_Depth' was not declared in this scope
    using Path = utils::CheckedArray&lt;NamespaceId, Namespace_Max_Depth&gt;;
                                                  ^~~~~~~~~~~~~~~~~~~
 /home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:68: error: template argument 1 is invalid
    using Path = utils::CheckedArray&lt;NamespaceId, Namespace_Max_Depth&gt;;
                                                                     ^
 /home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:32:68: error: template argument 2 is invalid
-/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:36:28: error: &#39;Path&#39; does not name a type
+/home/mij/catapult-server.d/_build/inc/catapult/state/Namespace.h:36:28: error: 'Path' does not name a type
 
 (省略 : 果てしなく続くエラー文)
 
-/home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp:209:53: error: &#39;nonce&#39; was not declared in this scope
+/home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp:209:53: error: 'nonce' was not declared in this scope
     auto mosaicId = transactions.addMosaicDefinition(nonce, mosaicEntry.definition().properties());
                                                      ^~~~~
-/home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp:209:53: note: suggested alternative: &#39;nice&#39;
+/home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp:209:53: note: suggested alternative: 'nice'
     auto mosaicId = transactions.addMosaicDefinition(nonce, mosaicEntry.definition().properties());
                                                      ^~~~~
                                                      nice
 /home/mij/catapult-server.d/tools/nemgen/NemesisConfiguration.cpp: At global scope:
-/home/mij/catapult-server.d/tools/nemgen/NemesisConfiguration.cpp:81:8: error: &#39;auto catapult::tools::nemgen::{anonymous}::CreateMosaicEntry(const catapult::utils::ConfigurationBag&amp;, const Key&amp;, const string&amp;, int)&#39; defined but not used [-Werror=unused-function]
+/home/mij/catapult-server.d/tools/nemgen/NemesisConfiguration.cpp:81:8: error: 'auto catapult::tools::nemgen::{anonymous}::CreateMosaicEntry(const catapult::utils::ConfigurationBag&amp;, const Key&amp;, const string&amp;, int)' defined but not used [-Werror=unused-function]
    auto CreateMosaicEntry(
         ^~~~~~~~~~~~~~~~~
 cc1plus: all warnings being treated as errors
-tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/build.make:110: recipe for target &#39;tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/NemesisConfiguration.cpp.o&#39; failed
+tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/build.make:110: recipe for target 'tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/NemesisConfiguration.cpp.o' failed
 make[3]: *** [tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/NemesisConfiguration.cpp.o] Error 1
 /home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp: At global scope:
-/home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp:54:15: error: &#39;std::__cxx11::string catapult::tools::nemgen::{anonymous}::GetChildName(const string&amp;)&#39; defined but not used [-Werror=unused-function]
+/home/mij/catapult-server.d/tools/nemgen/BlockGenerator.cpp:54:15: error: 'std::__cxx11::string catapult::tools::nemgen::{anonymous}::GetChildName(const string&amp;)' defined but not used [-Werror=unused-function]
    std::string GetChildName(const std::string&amp; namespaceName) {
                ^~~~~~~~~~~~
 cc1plus: all warnings being treated as errors
-tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/build.make:62: recipe for target &#39;tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/BlockGenerator.cpp.o&#39; failed
+tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/build.make:62: recipe for target 'tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/BlockGenerator.cpp.o' failed
 make[3]: *** [tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/BlockGenerator.cpp.o] Error 1
-CMakeFiles/Makefile2:14165: recipe for target &#39;tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/all&#39; failed
+CMakeFiles/Makefile2:14165: recipe for target 'tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/all' failed
 make[2]: *** [tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/all] Error 2
-CMakeFiles/Makefile2:14177: recipe for target &#39;tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/rule&#39; failed
+CMakeFiles/Makefile2:14177: recipe for target 'tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/rule' failed
 make[1]: *** [tools/nemgen/CMakeFiles/catapult.tools.nemgen.dir/rule] Error 2
-Makefile:2417: recipe for target &#39;catapult.tools.nemgen&#39; failed
-make: *** [catapult.tools.nemgen] Error 2</code></pre></div>
-<p>最下部付近を読んでいくと、どうやら<code>BlockGenerator.cpp.o</code>の生成に失敗している様子。<br />
+Makefile:2417: recipe for target 'catapult.tools.nemgen' failed
+make: *** [catapult.tools.nemgen] Error 2
+</code></pre><p>最下部付近を読んでいくと、どうやら<code>BlockGenerator.cpp.o</code>の生成に失敗している様子。<br>
 そして、例えば最上部付近を読んでみると、<code>'NamespaceId' was not declared in this scope</code>とエラー文にあるとおり、定義されているはずの宣言を見つけることが出来ていない。つまり、インクルード廻りのエラーだと考えられます。</p>
-
 <p>そして、結論から言うと、これに対処することで、ビルドが通るようになります。</p>
-
 <h1 id="環境">環境</h1>
-
 <h3 id="catapult">catapult</h3>
-
 <p>Dragon</p>
-
 <h3 id="コンパイルするos">コンパイルするOS</h3>
-
 <p>x86_64 GNU/Linux
 NAME=“Ubuntu”
 VERSION=“18.04.2 LTS (Bionic Beaver)”</p>
-
 <h1 id="対処">対処</h1>
-
-<p>理由は後回しにして、&rdquo;何をすべきか&rdquo;を書きます。</p>
-
+<p>理由は後回しにして、&ldquo;何をすべきか&quot;を書きます。</p>
 <p>対処自体は簡単で、<code>catapult-server.d/tools/CMakeLists.txt</code>の上部、<code>include_directories(. ${CMAKE_BINARY_DIR}/inc)</code>に<code>BEFORE</code>オプションを追加します。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr"># catapult-server.d/tools/CMakeLists.txt
+<pre><code class="language-no_attr" data-lang="no_attr"># catapult-server.d/tools/CMakeLists.txt
 
 cmake_minimum_required(VERSION 3.2)
 
@@ -177,52 +159,39 @@ add_subdirectory(health)
 add_subdirectory(nemgen)
 add_subdirectory(network)
 add_subdirectory(statusgen)
-add_subdirectory(tools)</code></pre></div>
-<p>これでビルドすれば通ります。</p>
-
+add_subdirectory(tools)
+</code></pre><p>これでビルドすれば通ります。</p>
 <h1 id="何をしているのか">何をしているのか</h1>
-
 <p><code>BEFORE</code>を追記することで、その場所でインクルードされるディレクトリの優先順位を上げています。</p>
-
 <h1 id="何故そんなことをする必要があるのか">何故そんなことをする必要があるのか</h1>
-
 <p>先に、少しビルド時の挙動について触れておきます。</p>
-
 <p><a href="https://github.com/nemtech/catapult-server/blob/master/BUILDING.md">https://github.com/nemtech/catapult-server/blob/master/BUILDING.md</a></p>
-
 <p>上記の<code>CATAPULT</code>の部分を見ると、<code>ninja -j4</code>を実行する前に<code>ninja publish</code>を実行しています。この操作は、pythonスクリプトを動かしているのですが、この操作によって、<code>_build</code>ディレクトリ内に<code>inc</code>ディレクトリが生成されます。</p>
-
-<p>この<code>inc</code>ディレクトリには、ビルドに必要なヘッダファイルが収められています。<br />
+<p>この<code>inc</code>ディレクトリには、ビルドに必要なヘッダファイルが収められています。<br>
 そして、<code>対処</code>のパートで<code>BEFORE</code>を追記した部分を読むと、<code>include_directories(. ${CMAKE_BINARY_DIR}/inc)</code>とあるとおり、<code>ninja publish</code>によって生成した<code>inc</code>ディレクトリを参照するように指示していることがわかります。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">$ ninja publish
-$ ninja -j4</code></pre></div>
-<p>何故<code>src</code>内のヘッダファイルを直接参照しないのかと言うと、恐らく<code>plugins</code>や<code>extensions</code>などは<code>src</code>内のヘッダファイルをインクルードするが、それらが収まるディレクトリツリーの外に完全に出てしまっているので、直接ディレクトリをインクルードすると煩雑になる。そのため、一旦<code>inc</code>ディレクトリを生成してその中に<code>src</code>や<code>plubins</code>等で使うヘッダファイルを集約して、そこを参照するようにしているのだと考えられます。</p>
-
+<pre><code class="language-no_attr" data-lang="no_attr">$ ninja publish
+$ ninja -j4
+</code></pre><p>何故<code>src</code>内のヘッダファイルを直接参照しないのかと言うと、恐らく<code>plugins</code>や<code>extensions</code>などは<code>src</code>内のヘッダファイルをインクルードするが、それらが収まるディレクトリツリーの外に完全に出てしまっているので、直接ディレクトリをインクルードすると煩雑になる。そのため、一旦<code>inc</code>ディレクトリを生成してその中に<code>src</code>や<code>plubins</code>等で使うヘッダファイルを集約して、そこを参照するようにしているのだと考えられます。</p>
 <p>とにかく、ビルドするときには<code>inc</code>ディレクトリ内のヘッダファイルをインクルードしたいのです。</p>
-
 <p>そして今回、それが失敗しています。詳しい話は書くと長くなるので書きませんが、本来インクルードすべきではない別の場所を参照してしまっています。（下記図参照）</p>
-
 <p><picture>
     
     <source srcset="https://github.com/mijinc0/blog/blob/image/forpost/20190612_building_catapult_for_arm/draw1.png?raw=true">
     <img src="https://github.com/mijinc0/blog/blob/image/forpost/20190612_building_catapult_for_arm/draw1.png?raw=true" alt="draw1" class="small-img smartfloat-left"/>
 </picture>
-<br clear="all"></p>
-
+<!-- raw HTML omitted --></p>
 <p>下記、Makefileに<code>warning</code>を追記してインクルードされているディレクトリを出力させてみた結果。</p>
-
-<h3 id="x86-64">x86_64</h3>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">/usr/bin/x86_64-linux-gnu-g++-7  $(CXX_DEFINES)
+<h3 id="x86_64">x86_64</h3>
+<pre><code class="language-no_attr" data-lang="no_attr">/usr/bin/x86_64-linux-gnu-g++-7  $(CXX_DEFINES)
                                  $(CXX_INCLUDES) -isystem boost-build-1.69.0/include
                                                  -Icatapult-server/tools/.
                                                  -Iatapult-server/_build/inc
                                  $(CXX_FLAGS)
                                  -o CMakeFiles/catapult.tools.nemgen.dir/BlockGenerator.cpp.o
-                                 -c catapult-server/tools/nemgen/BlockGenerator.cpp</code></pre></div>
-<p><code>x86_64</code>で普通にビルドしたときは、<code>BlockGenerator.cpp.o</code>をコンパイルするときには<code>boost-build-1.69.0/include</code>、<code>catapult-server/tools/.</code>、<code>catapult-server/_build/inc</code>がインクルードディレクトリとして指定されている。</p>
-
+                                 -c catapult-server/tools/nemgen/BlockGenerator.cpp
+</code></pre><p><code>x86_64</code>で普通にビルドしたときは、<code>BlockGenerator.cpp.o</code>をコンパイルするときには<code>boost-build-1.69.0/include</code>、<code>catapult-server/tools/.</code>、<code>catapult-server/_build/inc</code>がインクルードディレクトリとして指定されている。</p>
 <h3 id="arm64">arm64</h3>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-no_attr" data-lang="no_attr">/usr/bin/aarch64-linux-gnu-g++-7  $(CXX_DEFINES)
+<pre><code class="language-no_attr" data-lang="no_attr">/usr/bin/aarch64-linux-gnu-g++-7  $(CXX_DEFINES)
                                   $(CXX_INCLUDES) -isystem /home/mij/boost-build-1.69.0/include
                                                   -Icatapult-server
                                                   -Icatapult-server/src
@@ -231,9 +200,8 @@ $ ninja -j4</code></pre></div>
                                                   -Icatapult-server/_build/inc
                                   $(CXX_FLAGS)
                                   -o CMakeFiles/catapult.tools.nemgen.dir/BlockGenerator.cpp.o
-                                  -c catapult-server.d/tools/nemgen/BlockGenerator.cpp</code></pre></div>
-<p><code>arm64</code>向けにクロスコンパイルしたときは、<code>catapult-server</code>と<code>catapult-server/src</code>と<code>catapult-server/plugins/txes/mosaic/src</code>が<code>catapult-server/_build/inc</code>よりも優先される位置でインクルードの指定を受けている。この為に本意でない場所のファイルをインクルードしてしまっていた。</p>
-
+                                  -c catapult-server.d/tools/nemgen/BlockGenerator.cpp
+</code></pre><p><code>arm64</code>向けにクロスコンパイルしたときは、<code>catapult-server</code>と<code>catapult-server/src</code>と<code>catapult-server/plugins/txes/mosaic/src</code>が<code>catapult-server/_build/inc</code>よりも優先される位置でインクルードの指定を受けている。この為に本意でない場所のファイルをインクルードしてしまっていた。</p>
 <p>なぜそれらが<code>arm64</code>向けにビルドするときのみ残ってしまうのかが分からないが、理由が分かればもう少し良い修正方法がありそう。</p>
 
         

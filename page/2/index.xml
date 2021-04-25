@@ -10,13 +10,6 @@
         <atom:link href="https://mijinc0.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Phaser3 タイルマップ</title>
-      <link>https://mijinc0.github.io/blog/20200821_phaser3_tilemap/</link>
-      <pubDate>Fri, 21 Aug 2020 11:59:50 +0900</pubDate>
-      
-      <guid>https://mijinc0.github.io/blog/20200821_phaser3_tilemap/</guid>
-      <description></description>
-    </item><item>
       <title>Phaser3 音を鳴らす</title>
       <link>https://mijinc0.github.io/blog/20200821_phaser3_audio/</link>
       <pubDate>Fri, 21 Aug 2020 10:47:38 +0900</pubDate>
@@ -79,6 +72,13 @@
       
       <guid>https://mijinc0.github.io/blog/20200106_vue_async_component/</guid>
       <description></description>
+    </item><item>
+      <title>Vueの動的コンポーネント(typescript)</title>
+      <link>https://mijinc0.github.io/blog/20200105_vue_dynamic_component/</link>
+      <pubDate>Sun, 05 Jan 2020 22:27:10 +0900</pubDate>
+      
+      <guid>https://mijinc0.github.io/blog/20200105_vue_dynamic_component/</guid>
+      <description>Vueの動的コンポーネント</description>
     </item>
   </channel>
 </rss>
